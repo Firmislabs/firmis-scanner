@@ -51,32 +51,25 @@ export function getDarkThemeStyles(): string {
       color: var(--text);
     }
 
-    body.dark .platform-section {
-      border-bottom-color: var(--border);
-    }
+    /* .platform-section and .threat dark overrides moved to details selectors below */
 
     body.dark .platform-stats {
       color: var(--text-muted);
     }
 
-    body.dark .threat {
-      background: var(--card-bg);
-      border-color: var(--border);
-    }
-
-    body.dark .threat-toggle.severity-critical {
+    body.dark .threat-header.severity-critical {
       background: #3d0000;
     }
 
-    body.dark .threat-toggle.severity-high {
+    body.dark .threat-header.severity-high {
       background: #2d0a0a;
     }
 
-    body.dark .threat-toggle.severity-medium {
+    body.dark .threat-header.severity-medium {
       background: #2d1a00;
     }
 
-    body.dark .threat-toggle.severity-low {
+    body.dark .threat-header.severity-low {
       background: #001a2d;
     }
 
@@ -121,13 +114,69 @@ export function getDarkThemeStyles(): string {
       border-bottom-color: var(--border);
     }
 
-    body.dark .grade-badge {
-      background: rgba(0,0,0,0.3);
-      border-color: rgba(255,255,255,0.1);
+    body.dark .compliance-section {
+      border-top-color: var(--border);
     }
 
-    body.dark .grade-ring {
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.1), 0 4px 14px rgba(0,0,0,0.4);
+    body.dark .compliance-section h2 {
+      color: var(--text);
+    }
+
+    body.dark .compliance-intro {
+      color: var(--text-muted);
+    }
+
+    body.dark .compliance-framework {
+      background: var(--card-bg);
+      border-color: var(--border);
+    }
+
+    body.dark .compliance-framework-header {
+      background: var(--summary-card-bg);
+      border-bottom-color: var(--border);
+    }
+
+    body.dark .compliance-table thead tr {
+      background: var(--code-bg);
+    }
+
+    body.dark .compliance-table th {
+      color: var(--text-muted);
+      border-bottom-color: var(--border);
+    }
+
+    body.dark .compliance-table td {
+      color: var(--text);
+      border-bottom-color: var(--border);
+    }
+
+    body.dark .compliance-table tbody tr:hover td {
+      background: var(--summary-card-bg);
+    }
+
+    body.dark .compliance-control {
+      color: #93c5fd;
+    }
+
+    body.dark .compliance-description {
+      color: var(--text);
+    }
+
+    body.dark .compliance-findings {
+      color: #f87171;
+    }
+
+    body.dark details.platform-section {
+      border-bottom-color: var(--border);
+    }
+
+    body.dark details.threat {
+      background: var(--card-bg);
+      border-color: var(--border);
+    }
+
+    body.dark details.threat > summary::after {
+      color: var(--text-muted);
     }
 
     body.dark .filter-bar {
@@ -135,27 +184,28 @@ export function getDarkThemeStyles(): string {
       border-bottom-color: var(--border);
     }
 
-    body.dark .filter-label { color: var(--text-muted); }
+    body.dark .search-input {
+      background: var(--code-bg);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    body.dark .search-input::placeholder {
+      color: var(--text-muted);
+    }
 
     body.dark .filter-btn {
       background: var(--card-bg);
       border-color: var(--border);
-      color: var(--text-muted);
-    }
-
-    body.dark .filter-btn.active {
       color: var(--text);
-      border-color: #4b5563;
     }
 
-    body.dark .expand-all-btn {
-      background: var(--card-bg);
-      border-color: var(--border);
+    body.dark .filter-btn:hover {
+      background: var(--summary-card-bg);
+    }
+
+    body.dark .filter-count {
       color: var(--text-muted);
     }
-
-    body.dark .platform-toggle h2 { color: var(--text); }
-    body.dark .platform-chevron::after { color: var(--text-muted); }
-    body.dark .threat-chevron::after { color: var(--text-muted); }
   `
 }

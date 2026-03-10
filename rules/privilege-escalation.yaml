@@ -253,3 +253,272 @@ rules:
     carefully.
 
     '
+
+- id: pe-011
+  name: Sudo/Root Escalation in Agent Config
+  description: "Detects sudo, root, or administrator escalation commands embedded in agent configurations or scripts"
+  category: privilege-escalation
+  severity: critical
+  version: "1.0"
+  enabled: true
+  confidenceThreshold: 60
+  platforms:
+    - claude
+    - mcp
+    - codex
+    - cursor
+    - crewai
+    - autogpt
+    - openclaw
+    - nanobot
+  patterns:
+    - type: regex
+      pattern: '\bsudo\s+(?!-v\b|--version\b)[a-zA-Z]'
+      weight: 75
+      description: "sudo command execution (excluding version checks)"
+    - type: regex
+      pattern: '(?i)\brun(?:_?[aA]s)?\s+(?:root|administrator)\b'
+      weight: 80
+      description: "Run-as root or administrator escalation pattern"
+    - type: regex
+      pattern: '\bdoas\s+[a-zA-Z]'
+      weight: 75
+      description: "doas (OpenBSD privilege escalation) command"
+    - type: regex
+      pattern: '(?i)\bas\s+root\b'
+      weight: 70
+      description: "Explicit 'as root' privilege context"
+    - type: regex
+      pattern: '(?i)\brunas\s+/user:(?:administrator|system)\b'
+      weight: 85
+      description: "Windows runas with administrator or SYSTEM account"
+  remediation: |
+    AI agents must not execute commands with elevated privileges.
+    Remove sudo, doas, runas, and run-as-root patterns from agent configurations.
+    Use least-privilege service accounts and grant only the minimum permissions needed.
+  references:
+    - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency"
+    - "https://atlas.mitre.org/techniques/AML.T0043"
+
+- id: pe-012
+  name: World-Writable File Permission Setting
+  description: "Detects chmod commands that set world-writable or world-executable bits, enabling privilege escalation via file replacement"
+  category: privilege-escalation
+  severity: high
+  version: "1.0"
+  enabled: true
+  confidenceThreshold: 55
+  platforms:
+    - claude
+    - mcp
+    - codex
+    - cursor
+    - crewai
+    - autogpt
+    - openclaw
+    - nanobot
+  patterns:
+    - type: regex
+      pattern: 'chmod\s+(?:0?777|0?666|0?755)\s'
+      weight: 75
+      description: "chmod with world-writable or world-executable numeric mode"
+    - type: regex
+      pattern: 'chmod\s+[augo]*\+[rwx]*w[rwx]*\s'
+      weight: 70
+      description: "chmod with symbolic +w adding world-write permission"
+    - type: regex
+      pattern: 'chown\s+root(?:[:.]root)?\s'
+      weight: 80
+      description: "chown transferring ownership to root"
+    - type: regex
+      pattern: 'os\.chmod\s*\(.*,\s*0o(?:777|666|755)\s*\)'
+      weight: 75
+      description: "Python os.chmod with overly permissive octal mode"
+  remediation: |
+    Overly permissive file modes (777, 666) and root ownership changes are privilege
+    escalation enablers. Use the principle of least privilege: 640 for files, 750 for
+    directories. Never grant world-write permissions on files that could be executed.
+  references:
+    - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency"
+    - "https://atlas.mitre.org/techniques/AML.T0049"
+
+- id: pe-013
+  name: Docker Privileged Container or Capability Addition
+  description: "Detects Docker --privileged flag or --cap-add usage that grants host-level capabilities to containers"
+  category: privilege-escalation
+  severity: critical
+  version: "1.0"
+  enabled: true
+  confidenceThreshold: 60
+  platforms:
+    - claude
+    - mcp
+    - codex
+    - cursor
+    - crewai
+    - autogpt
+    - openclaw
+    - nanobot
+  patterns:
+    - type: regex
+      pattern: 'docker\s+run\s+(?:[^\n]*\s)?--privileged\b'
+      weight: 90
+      description: "docker run with --privileged flag grants all host capabilities"
+    - type: regex
+      pattern: 'docker\s+run\s+(?:[^\n]*\s)?--cap-add\s+(?:SYS_ADMIN|ALL|NET_ADMIN|SYS_PTRACE)'
+      weight: 90
+      description: "docker run --cap-add with dangerous capability"
+    - type: regex
+      pattern: 'security_opt.*apparmor.*unconfined'
+      weight: 85
+      description: "Docker security_opt disabling AppArmor confinement"
+    - type: regex
+      pattern: '"privileged"\s*:\s*true'
+      weight: 85
+      description: "Docker Compose or JSON config with privileged: true"
+    - type: regex
+      pattern: 'privileged:\s*true\b'
+      weight: 85
+      description: "YAML container spec with privileged: true"
+  remediation: |
+    Privileged containers have unrestricted access to the host kernel.
+    Remove --privileged and high-privilege --cap-add flags. Use specific minimal
+    capabilities only when absolutely required and document the justification.
+  references:
+    - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency"
+    - "https://atlas.mitre.org/techniques/AML.T0049"
+
+- id: pe-014
+  name: AWS IAM Wildcard Permission Policy
+  description: "Detects IAM policy statements granting wildcard Action or Resource permissions, violating least-privilege"
+  category: privilege-escalation
+  severity: critical
+  version: "1.0"
+  enabled: true
+  confidenceThreshold: 65
+  platforms:
+    - claude
+    - mcp
+    - codex
+    - cursor
+    - crewai
+    - autogpt
+    - openclaw
+    - nanobot
+  patterns:
+    - type: regex
+      pattern: '"Action"\s*:\s*"\*"'
+      weight: 90
+      description: "IAM policy Action: '*' grants all AWS actions"
+    - type: regex
+      pattern: '"Resource"\s*:\s*"\*"'
+      weight: 75
+      description: "IAM policy Resource: '*' applies to all AWS resources"
+    - type: regex
+      pattern: '"Effect"\s*:\s*"Allow"'
+      weight: 40
+      description: "IAM Allow effect (contextual — needs Action/Resource wildcard)"
+    - type: regex
+      pattern: 'Action:\s*[''"]?\*[''"]?'
+      weight: 88
+      description: "YAML/HCL IAM Action wildcard"
+  remediation: |
+    IAM policies with Action: '*' or combined Action: '*' + Resource: '*' grant
+    full AWS account access. Apply least-privilege: enumerate only the specific
+    actions and resources required. Use IAM Access Analyzer to validate policies.
+  references:
+    - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM08 Excessive Permissions"
+    - "https://atlas.mitre.org/techniques/AML.T0049"
+
+- id: pe-015
+  name: Setuid/Setgid Bit Setting
+  description: "Detects chmod commands that set the setuid or setgid bit, enabling privilege escalation via SUID binaries"
+  category: privilege-escalation
+  severity: critical
+  version: "1.0"
+  enabled: true
+  confidenceThreshold: 65
+  platforms:
+    - claude
+    - mcp
+    - codex
+    - cursor
+    - crewai
+    - autogpt
+    - openclaw
+    - nanobot
+  patterns:
+    - type: regex
+      pattern: 'chmod\s+[246][0-7]{3}\s'
+      weight: 90
+      description: "chmod setting setuid (4xxx) or setgid (2xxx) numeric mode"
+    - type: regex
+      pattern: 'chmod\s+[ugo]*\+s\b'
+      weight: 90
+      description: "chmod +s setting setuid or setgid symbolic bit"
+    - type: regex
+      pattern: '\bsetuid\s*\(\s*0\s*\)'
+      weight: 85
+      description: "C setuid(0) call — drop to root UID"
+    - type: regex
+      pattern: '\bsetgid\s*\(\s*0\s*\)'
+      weight: 85
+      description: "C setgid(0) call — drop to root GID"
+    - type: regex
+      pattern: 'os\.setuid\s*\(\s*0\s*\)'
+      weight: 90
+      description: "Python os.setuid(0) — escalate to root"
+  remediation: |
+    SUID/SGID binaries run with the owner's privileges regardless of who executes them.
+    AI agents must never set the setuid or setgid bit. Remove all chmod +s and numeric
+    setuid/setgid modes. Audit any binary with these bits already set.
+  references:
+    - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency"
+    - "https://atlas.mitre.org/techniques/AML.T0049"
+
+- id: pe-016
+  name: Crontab and Systemd Persistence Installation
+  description: "Detects crontab modifications and systemd unit installations used to establish persistent backdoor execution"
+  category: privilege-escalation
+  severity: high
+  version: "1.0"
+  enabled: true
+  confidenceThreshold: 60
+  platforms:
+    - claude
+    - mcp
+    - codex
+    - cursor
+    - crewai
+    - autogpt
+    - openclaw
+    - nanobot
+  patterns:
+    - type: regex
+      pattern: 'crontab\s+-[eilr]'
+      weight: 75
+      description: "crontab modification (edit/install/list/remove flags)"
+    - type: regex
+      pattern: '@reboot\s+[^\s]'
+      weight: 80
+      description: "@reboot cron directive — runs on every system boot"
+    - type: regex
+      pattern: 'systemctl\s+enable\s+(?!--now\s+)?[a-zA-Z0-9_-]+\.service'
+      weight: 70
+      description: "systemctl enable persisting a service across reboots"
+    - type: regex
+      pattern: 'cp\s+.*\.service\s+/etc/systemd/system/'
+      weight: 80
+      description: "Copying a systemd unit file to system service directory"
+    - type: regex
+      pattern: '/etc/cron\.(?:d|daily|weekly|monthly|hourly)/[a-zA-Z0-9_-]+'
+      weight: 75
+      description: "Writing to a system cron drop-in directory"
+  remediation: |
+    Crontab and systemd service installation are common persistence mechanisms.
+    AI agents must not modify scheduled tasks or install services without explicit
+    user authorization. Remove crontab edits and systemctl enable calls.
+    Review any @reboot entries — these survive reboots and are hard to detect.
+  references:
+    - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency"
+    - "https://atlas.mitre.org/techniques/AML.T0043"

@@ -1,43 +1,5 @@
-import { existsSync } from 'node:fs'
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import type { PlatformType, DetectedPlatform, FirmisConfig } from '../types/index.js'
 import { PlatformRegistry } from './platforms/index.js'
-
-/**
- * Quick filesystem probe to detect which platforms are plausibly present.
- * Avoids running all 8 analyzers on large directories.
- */
-async function detectPlausiblePlatforms(targetPath: string): Promise<PlatformType[]> {
-  const detected: PlatformType[] = []
-  const probe = (rel: string) => existsSync(join(targetPath, rel))
-
-  if (probe('.claude') || probe('skills')) detected.push('claude')
-  if (probe('mcp.json') || probe('claude_desktop_config.json')) detected.push('mcp')
-  if (probe('.cursor')) detected.push('cursor')
-  if (probe('crew.yaml') || probe('crew.yml')) detected.push('crewai')
-  if (probe('nanobot.yaml')) detected.push('nanobot')
-  if (probe('.openclaw')) detected.push('openclaw')
-
-  // Check package.json deps for platform hints
-  const pkgPath = join(targetPath, 'package.json')
-  if (existsSync(pkgPath)) {
-    try {
-      const raw = await readFile(pkgPath, 'utf-8')
-      const pkg = JSON.parse(raw) as {
-        dependencies?: Record<string, string>
-        devDependencies?: Record<string, string>
-      }
-      const deps = { ...pkg.dependencies, ...pkg.devDependencies }
-      if ('@modelcontextprotocol/sdk' in deps) detected.push('mcp')
-      if ('crewai' in deps) detected.push('crewai')
-    } catch {
-      // ignore parse errors
-    }
-  }
-
-  return [...new Set(detected)]
-}
 
 export interface DiscoveryResult {
   platforms: DetectedPlatform[]
@@ -95,13 +57,12 @@ export class PlatformDiscovery {
       return this.discoverAtPath(config.platforms, config.targetPath)
     }
 
-    // If a target path is specified without platforms, smart-detect first
+    // If a target path is specified without platforms, try all platforms against it
     if (config.targetPath) {
-      const plausible = await detectPlausiblePlatforms(config.targetPath)
-      const platformsToScan = plausible.length > 0
-        ? plausible
-        : PlatformRegistry.getSupportedPlatforms()
-      return this.discoverAtPath(platformsToScan, config.targetPath)
+      return this.discoverAtPath(
+        PlatformRegistry.getSupportedPlatforms(),
+        config.targetPath
+      )
     }
 
     if (config.platforms && config.platforms.length > 0) {

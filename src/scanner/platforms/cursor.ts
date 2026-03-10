@@ -71,8 +71,6 @@ export class CursorAnalyzer extends BasePlatformAnalyzer {
         if (!entry.isDirectory() || this.shouldExcludeDir(entry.name)) {
           continue
         }
-        if (!this.isValidComponentName(entry.name)) continue
-        if (await this.isGitignored(expandedPath, entry.name)) continue
 
         const extensionPath = join(expandedPath, entry.name)
         const packageJsonPath = join(extensionPath, 'package.json')
@@ -98,11 +96,10 @@ export class CursorAnalyzer extends BasePlatformAnalyzer {
     const files: string[] = []
 
     try {
-      const ignorePatterns = await this.getIgnorePatterns(component.path)
       const matchedFiles = await fg(this.filePatterns, {
         cwd: component.path,
         absolute: true,
-        ignore: [...ignorePatterns, '**/out/**', '**/dist/**'],
+        ignore: ['**/node_modules/**', '**/.git/**', '**/out/**', '**/dist/**'],
       })
 
       files.push(...matchedFiles)

@@ -28,18 +28,27 @@ export class MCPAnalyzer extends BasePlatformAnalyzer {
 
   private analyzedConfigFiles = new Set<string>()
 
-  private readonly configPaths = [
-    '~/.config/mcp/mcp.json',
-    '~/Library/Application Support/Claude/claude_desktop_config.json',
-    '.vscode/mcp.json',
-  ]
+  private getConfigPaths(): string[] {
+    const paths = [
+      '~/.config/mcp/mcp.json',
+      '.vscode/mcp.json',
+      '~/.cursor/mcp.json',
+      '.cursor/mcp.json',
+    ]
+    if (process.platform === 'darwin') {
+      paths.push('~/Library/Application Support/Claude/claude_desktop_config.json')
+    } else {
+      paths.push('~/.config/claude/claude_desktop_config.json')
+    }
+    return paths
+  }
 
   private readonly basePaths = ['~/.config/mcp/', '~/.mcp/servers/']
 
   async detect(): Promise<DetectedPlatform[]> {
     const detected: DetectedPlatform[] = []
 
-    for (const configPath of this.configPaths) {
+    for (const configPath of this.getConfigPaths()) {
       const expandedPath = this.expandHome(configPath)
       if (await this.fileExists(expandedPath)) {
         const config = await this.readJSON<MCPConfig>(expandedPath)
@@ -105,8 +114,6 @@ export class MCPAnalyzer extends BasePlatformAnalyzer {
         if (!entry.isDirectory() || this.shouldExcludeDir(entry.name)) {
           continue
         }
-        if (!this.isValidComponentName(entry.name)) continue
-        if (await this.isGitignored(expandedPath, entry.name)) continue
 
         const serverPath = join(expandedPath, entry.name)
         const packageJsonPath = join(serverPath, 'package.json')
@@ -169,11 +176,10 @@ export class MCPAnalyzer extends BasePlatformAnalyzer {
         '**/go.mod',
       ]
 
-      const ignorePatterns = await this.getIgnorePatterns(component.path)
       const matchedFiles = await fg(patterns, {
         cwd: component.path,
         absolute: true,
-        ignore: [...ignorePatterns, '**/dist/**', '**/build/**'],
+        ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**'],
       })
 
       // Deduplicate in case configPath is already in matched files

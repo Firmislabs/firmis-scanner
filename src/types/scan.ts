@@ -6,6 +6,25 @@ import type { PlatformType, SeverityLevel } from './config.js'
 export type ComponentType = 'skill' | 'server' | 'plugin' | 'extension' | 'agent'
 
 /**
+ * Compliance frameworks supported for control mapping
+ */
+export type ComplianceFramework =
+  | 'soc2'
+  | 'ai-act'
+  | 'gdpr'
+  | 'nist-ai-rmf'
+  | 'owasp-agentic'
+
+/**
+ * Maps a finding to a specific compliance control
+ */
+export interface ComplianceMapping {
+  framework: ComplianceFramework
+  control: string
+  description: string
+}
+
+/**
  * Threat categories
  */
 export type ThreatCategory =
