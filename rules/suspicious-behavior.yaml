@@ -365,13 +365,13 @@ rules:
     confidenceThreshold: 60
     patterns:
       - type: regex
-        pattern: '(?<!\.)exec\s*\('
+        pattern: '\bexec\s*\('
         weight: 75
-        description: Python standalone exec() for arbitrary code execution (excludes method calls like regex.exec())
+        description: Python function for arbitrary code execution
       - type: regex
-        pattern: '(?<!\.)eval\s*\('
+        pattern: '\beval\s*\('
         weight: 75
-        description: Python standalone eval() for arbitrary expression evaluation (excludes method calls like obj.eval())
+        description: Python function for arbitrary expression evaluation
       - type: regex
         pattern: 'pickle\.loads?\s*\('
         weight: 80

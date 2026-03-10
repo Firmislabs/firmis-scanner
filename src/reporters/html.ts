@@ -10,8 +10,8 @@ import {
   generatePlatformResults,
   generateRuntimeRisks,
   generateFooter,
+  generateFilterScript,
 } from './html-sections.js'
-import { getHtmlScripts } from './html-scripts.js'
 
 export class HtmlReporter implements FileReporter {
   private readonly outputPath: string
@@ -51,7 +51,7 @@ function generateHtml(result: ScanResult): string {
     ${generateRuntimeRisks(result)}
     ${generateFooter(result)}
   </div>
-  ${getHtmlScripts()}
+  ${generateFilterScript()}
 </body>
 </html>`
 }

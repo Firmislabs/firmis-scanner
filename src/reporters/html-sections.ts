@@ -43,21 +43,15 @@ const GRADE_COLORS: Record<SecurityGrade, string> = {
   F: '#e74c3c',
 }
 
-function gradeDescription(grade: SecurityGrade): string {
-  const map: Record<SecurityGrade, string> = {
-    A: 'Excellent', B: 'Good', C: 'Fair', D: 'Poor', F: 'Critical',
-  }
-  return map[grade]
-}
+const THEME_SCRIPT = `<script>(function(){var s=localStorage.getItem('firmis-theme');if(s==='dark')document.body.classList.add('dark');document.addEventListener('DOMContentLoaded',function(){var b=document.getElementById('theme-toggle');if(!b)return;b.textContent=document.body.classList.contains('dark')?'Light Mode':'Dark Mode';b.addEventListener('click',function(){var d=document.body.classList.toggle('dark');localStorage.setItem('firmis-theme',d?'dark':'light');b.textContent=d?'Light Mode':'Dark Mode';});});}());<\/script>`
 
 export function generateHeader(result: ScanResult): string {
   const grade = result.score
   const color = GRADE_COLORS[grade]
   const date = escapeHtml(new Date(result.startedAt).toLocaleString())
-  const desc = gradeDescription(grade)
-  const threats = result.summary.threatsFound
 
   return `
+    ${THEME_SCRIPT}
     <div class="header">
       <div class="header-top">
         <div class="header-info">
@@ -67,14 +61,9 @@ export function generateHeader(result: ScanResult): string {
             <button class="theme-toggle" id="theme-toggle">Dark Mode</button>
           </div>
         </div>
-        <div class="grade-badge" style="--grade-color:${color};">
-          <div class="grade-ring">
-            <span class="grade-letter">${grade}</span>
-          </div>
-          <div class="grade-detail">
-            <span class="grade-desc">${desc}</span>
-            <span class="grade-sub">${threats} threat${threats !== 1 ? 's' : ''} found</span>
-          </div>
+        <div class="grade-badge" style="border-color:${color};background:${color}22;">
+          <span class="grade-letter" style="color:${color};">${grade}</span>
+          <span class="grade-label">Security Grade</span>
         </div>
       </div>
     </div>
@@ -160,34 +149,6 @@ export function generateSummary(result: ScanResult): string {
     `
 }
 
-export function generateFilterBar(result: ScanResult): string {
-  const { bySeverity } = result.summary
-  const levels: Array<{ key: SeverityLevel; label: string }> = [
-    { key: 'critical', label: 'Critical' },
-    { key: 'high', label: 'High' },
-    { key: 'medium', label: 'Medium' },
-    { key: 'low', label: 'Low' },
-  ]
-  const buttons = levels
-    .map(l => {
-      const count = bySeverity[l.key]
-      return `<button class="filter-btn active" data-severity="${l.key}">
-        <span class="filter-dot ${l.key}"></span>${l.label} <span class="filter-count">${count}</span>
-      </button>`
-    })
-    .join('')
-
-  return `
-    <div class="filter-bar">
-      <div class="filter-group">
-        <span class="filter-label">Filter:</span>
-        ${buttons}
-      </div>
-      <button class="expand-all-btn" id="expand-all">Expand All</button>
-    </div>
-    `
-}
-
 export function generateNoThreats(): string {
   return `
     <div class="no-threats">
@@ -216,15 +177,18 @@ function buildCopyPrompt(threat: Threat): string {
   ].join('\\n')
 }
 
-function buildThreatToggle(componentName: string, threat: Threat): string {
-  return `<div class="threat-toggle severity-${threat.severity}">
+function buildThreatHeader(componentName: string, threat: Threat, escapedPrompt: string): string {
+  const onclick = `(function(btn){navigator.clipboard.writeText('${escapedPrompt}').then(function(){var t=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=t;},2000);});})(this)`
+  return `<div class="threat-header severity-${threat.severity}">
         <div class="threat-title">${escapeHtml(threat.message)}</div>
         <div class="threat-meta">
-          <span class="badge badge-${threat.severity}">${threat.severity}</span>
-          <span>${escapeHtml(componentName)}</span>
-          <span>${formatCategory(threat.category)}</span>
-          <span>${Math.round(threat.confidence)}%</span>
-          <span class="threat-chevron"></span>
+          <span>Component: <strong>${escapeHtml(componentName)}</strong></span>
+          <span>Severity: <span class="badge badge-${threat.severity}">${threat.severity}</span></span>
+          <span>Category: <strong>${formatCategory(threat.category)}</strong></span>
+          <span>Confidence: <strong>${Math.round(threat.confidence)}%</strong></span>
+        </div>
+        <div class="threat-actions">
+          <button class="copy-claude-btn" onclick="${onclick}">Copy for Claude</button>
         </div>
       </div>`
 }
@@ -232,8 +196,7 @@ function buildThreatToggle(componentName: string, threat: Threat): string {
 export function generateThreat(componentName: string, threat: Threat): string {
   const anchor = `threat-${escapeHtml(threat.id)}`
   const escapedPrompt = escapeHtml(buildCopyPrompt(threat))
-  const onclick = `(function(btn){navigator.clipboard.writeText('${escapedPrompt}').then(function(){var t=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=t;},2000);});})(this)`
-  const toggle = buildThreatToggle(componentName, threat)
+  const header = buildThreatHeader(componentName, threat, escapedPrompt)
   const evidenceItems = threat.evidence
     .map(e => `<li class="evidence-item">${escapeHtml(e.description)}</li>`)
     .join('')
@@ -241,9 +204,14 @@ export function generateThreat(componentName: string, threat: Threat): string {
     ? `<div class="threat-section"><h4>Remediation</h4><p>${escapeHtml(threat.remediation)}</p></div>`
     : ''
 
+  const isExpanded = threat.severity === 'critical' || threat.severity === 'high'
+  const openAttr = isExpanded ? ' open' : ''
+
   return `
-    <div class="threat" id="${anchor}" data-severity="${threat.severity}">
-      ${toggle}
+    <details class="threat" id="${anchor}" data-severity="${threat.severity}" data-category="${escapeHtml(threat.category)}"${openAttr}>
+      <summary class="threat-summary">
+        ${header}
+      </summary>
       <div class="threat-body">
         <div class="threat-section">
           <h4>Evidence</h4>
@@ -254,11 +222,8 @@ export function generateThreat(componentName: string, threat: Threat): string {
           <div class="code-location">${escapeHtml(threat.location.file)}:${threat.location.line}:${threat.location.column}</div>
         </div>
         ${remediation}
-        <div class="threat-actions">
-          <button class="copy-claude-btn" onclick="${onclick}">Copy for Claude</button>
-        </div>
       </div>
-    </div>
+    </details>
     `
 }
 
@@ -285,24 +250,91 @@ export function generatePlatformResults(result: ScanResult): string {
         : generateNoThreats()
 
       return `
-        <div class="platform-section">
-          <div class="platform-toggle">
-            <div>
-              <h2>${formatPlatformName(platform.platform)}</h2>
-              <p class="platform-stats">
-                ${components.length} components &middot;
-                <span class="platform-visible-count">${totalThreats} threats</span>
-              </p>
-            </div>
-            <span class="platform-chevron"></span>
-          </div>
-          <div class="platform-threats">
-            ${threatsHtml}
-          </div>
-        </div>
+        <details class="platform-section" data-platform="${escapeHtml(platform.platform)}" open>
+          <summary class="platform-header">
+            <h2>${formatPlatformName(platform.platform)}</h2>
+            <p class="platform-stats">
+              ${components.length} components scanned &middot; ${totalThreats} threats detected
+            </p>
+          </summary>
+          ${threatsHtml}
+        </details>
         `
     })
     .join('')
+}
+
+export function generateFilterBar(result: ScanResult): string {
+  const total = result.summary.threatsFound
+  if (total === 0) return ''
+
+  return `
+    <div class="filter-bar" id="filter-bar">
+      <div class="filter-group">
+        <label class="filter-checkbox"><input type="checkbox" data-filter="critical" checked><span class="badge badge-critical">Critical</span></label>
+        <label class="filter-checkbox"><input type="checkbox" data-filter="high" checked><span class="badge badge-high">High</span></label>
+        <label class="filter-checkbox"><input type="checkbox" data-filter="medium" checked><span class="badge badge-medium">Medium</span></label>
+        <label class="filter-checkbox"><input type="checkbox" data-filter="low" checked><span class="badge badge-low">Low</span></label>
+      </div>
+      <div class="filter-search">
+        <input type="text" id="threat-search" placeholder="Search threats..." class="search-input">
+      </div>
+      <div class="filter-actions">
+        <button class="filter-btn" id="expand-all">Expand All</button>
+        <button class="filter-btn" id="collapse-all">Collapse All</button>
+      </div>
+      <div class="filter-count">
+        <span id="visible-count">${total}</span> of ${total} threats shown
+      </div>
+    </div>
+    `
+}
+
+export function generateFilterScript(): string {
+  return `<script>
+(function() {
+  var bar = document.getElementById('filter-bar');
+  if (!bar) return;
+
+  var checkboxes = bar.querySelectorAll('input[data-filter]');
+  var searchInput = document.getElementById('threat-search');
+  var countEl = document.getElementById('visible-count');
+  var threats = document.querySelectorAll('details.threat[data-severity]');
+
+  function applyFilters() {
+    var active = {};
+    checkboxes.forEach(function(cb) { active[cb.dataset.filter] = cb.checked; });
+    var query = (searchInput.value || '').toLowerCase();
+    var shown = 0;
+
+    threats.forEach(function(el) {
+      var sev = el.dataset.severity;
+      var text = el.textContent.toLowerCase();
+      var matchSev = active[sev];
+      var matchSearch = !query || text.indexOf(query) !== -1;
+      var visible = matchSev && matchSearch;
+      el.style.display = visible ? '' : 'none';
+      if (visible) shown++;
+    });
+
+    if (countEl) countEl.textContent = shown;
+  }
+
+  checkboxes.forEach(function(cb) { cb.addEventListener('change', applyFilters); });
+  if (searchInput) searchInput.addEventListener('input', applyFilters);
+
+  var expandBtn = document.getElementById('expand-all');
+  var collapseBtn = document.getElementById('collapse-all');
+
+  if (expandBtn) expandBtn.addEventListener('click', function() {
+    threats.forEach(function(el) { if (el.style.display !== 'none') el.open = true; });
+  });
+
+  if (collapseBtn) collapseBtn.addEventListener('click', function() {
+    threats.forEach(function(el) { el.open = false; });
+  });
+})();
+<\/script>`
 }
 
 export function generateRuntimeRisks(result: ScanResult): string {

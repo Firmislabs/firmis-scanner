@@ -50,7 +50,7 @@
     "malware"
   ],
   "author": "Firmis Labs",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/riteshkew/firmis-scanner.git"
