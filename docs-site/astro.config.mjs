@@ -36,7 +36,7 @@ export default defineConfig({
               'Prompt injection detection',
               'Supply chain vulnerability analysis',
               'Agent BOM (CycloneDX 1.7)',
-              '209 YAML detection rules',
+              '212 YAML detection rules',
               'SARIF and JSON output',
               'CI/CD pipeline integration',
             ],
@@ -67,6 +67,7 @@ export default defineConfig({
         {
           label: 'CLI Reference',
           items: [
+            { label: 'init', slug: 'cli/init', badge: { text: 'New', variant: 'note' } },
             { label: 'scan', slug: 'cli/scan', badge: { text: 'GA', variant: 'success' } },
             { label: 'discover', slug: 'cli/discover', badge: { text: 'GA', variant: 'success' } },
             { label: 'bom', slug: 'cli/bom', badge: { text: 'GA', variant: 'success' } },

@@ -7,9 +7,55 @@ import { Aside, Card, CardGrid, Steps, Tabs, TabItem } from '@astrojs/starlight/
 
 Every PR that ships without a security scan is a gamble. This one takes five minutes to set up and runs on every push from that point on — no maintenance required.
 
-## Quickstart
+## Quickstart — Official Action
 
-Add this workflow to your repository to scan on every push and pull request.
+The fastest way to add Firmis to your CI. The official composite action handles Node setup, scanning, PR comments with grade badges, and HTML report upload.
+
+```yaml title=".github/workflows/firmis.yml"
+name: Firmis Security Scan
+on: [push, pull_request]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: riteshkew/firmis-scanner@v1
+        with:
+          severity: medium
+          fail-on: high
+```
+
+That's it. On PRs, you'll get a comment with your security grade badge and threat count. The full HTML report is uploaded as a build artifact.
+
+### Action inputs
+
+| Input | Description | Default |
+|---|---|---|
+| `severity` | Minimum severity to report | `medium` |
+| `fail-on` | Exit non-zero at this severity | `high` |
+| `sync` | Sync results to firmislabs.com | `false` |
+| `firmis-token` | Auth token for `--sync` | — |
+| `node-version` | Node.js version | `20` |
+
+### Action outputs
+
+| Output | Description |
+|---|---|
+| `grade` | Security grade (A–F) |
+| `threats-found` | Number of threats at or above severity |
+| `report-path` | Path to generated HTML report |
+
+<Aside type="tip">
+  To sync results to the Firmis dashboard, set `sync: 'true'` and store your auth token as a GitHub secret named `FIRMIS_TOKEN`.
+</Aside>
+
+## Alternative — Manual workflow
+
+If you prefer full control, use `npx firmis ci` directly:
 
 ```yaml title=".github/workflows/firmis.yml"
 name: Firmis Security Scan

@@ -17,6 +17,7 @@
 - [firmis compliance — Compliance Reporting](https://docs.firmislabs.com/cli/compliance): One scan. Five frameworks. SOC 2, EU AI Act, GDPR, NIST AI RMF, OWASP LLM Top 10. Firmis generates the evidence auditors need — automatically. Beta.
 - [firmis discover — Discover AI Platforms and Components](https://docs.firmislabs.com/cli/discover): Before you scan, find out what you're dealing with. Discovery maps every AI component in your project: platforms, tools, dependencies, and model references.
 - [firmis fix — Auto-Remediate Security Threats](https://docs.firmislabs.com/cli/fix): Scanning finds the problems. Fix writes the patches. Review the diff, apply what you want. Beta.
+- [firmis init — Set Up Firmis in Your Project](https://docs.firmislabs.com/cli/init): One command to detect AI tools, run your first scan, generate config, and see what to do next. The fastest way to get started with Firmis.
 - [firmis list — List Detected Platforms](https://docs.firmislabs.com/cli/list): Instantly see which AI agent platforms Firmis has found in your project. The fastest way to confirm what's in scope before scanning.
 - [firmis monitor — Runtime Monitoring](https://docs.firmislabs.com/cli/monitor): Watch what your AI agents actually do while they're running. Detect threats as they happen, not after the fact. Beta.
 - [firmis pentest — Dynamic Security Probing](https://docs.firmislabs.com/cli/pentest): Static analysis finds what's written in the code. Pentest finds what actually happens when you call the tool. Beta.
@@ -37,7 +38,7 @@
 
 ## Rules
 
-- [Built-in Rules](https://docs.firmislabs.com/rules/built-in-rules): Complete reference for all 209 built-in Firmis detection rules across 16 threat categories.
+- [Built-in Rules](https://docs.firmislabs.com/rules/built-in-rules): Complete reference for all 215 built-in Firmis detection rules across 16 threat categories.
 - [Custom Rules](https://docs.firmislabs.com/rules/custom-rules): Write and load your own YAML detection rules to extend Firmis with project-specific threat patterns. Same schema as the 209 built-in rules. Example first, schema second.
 - [Ignoring Findings](https://docs.firmislabs.com/rules/ignoring-findings): Not every finding is a real threat. Here's how to tell Firmis what's safe — without disabling rules or bypassing scans.
 - [Rules Overview](https://docs.firmislabs.com/rules/overview): 209 rules. 16 categories. All open-source YAML you can read, extend, or override. Here's how they work.
