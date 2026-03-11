@@ -4,6 +4,30 @@ URL: https://docs.firmislabs.com/changelog
 
 > All notable changes to Firmis Scanner are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.7.0] — 2026-03-11
+
+### Added
+- **`firmis init`** — one-command project setup: detects AI tools, runs first scan, generates `.firmisrc.json`, shows next steps with contextual upgrade path
+- **GitHub Action** (`riteshkew/firmis-scanner@v1`) — composite action with PR grade badge comments, HTML report artifacts, and optional dashboard sync
+- 8 new detection rules across agent-memory-poisoning, credential-harvesting, insecure-config, known-malicious, network-abuse, prompt-injection, supply-chain, and tool-poisoning categories
+- Total rules: 212 across 16 categories
+- Behavioral scoring wired into runtime monitor decision engine
+- Training data pipeline: auto-export labeled sessions, synthetic data generation, weight calibration via grid search
+
+### Fixed
+- Behavioral scoring was not triggering decisions (score scale mismatch: 0-1 vs 0-100)
+- Slowdrip attack template missing exfiltration phase (100% false negative rate)
+
+## [1.6.1] — 2026-03-10
+
+### Added
+- Cloud dashboard Phase 1 MVP (Cloudflare Pages deployment)
+- `firmis login`, `firmis logout`, `firmis whoami` commands
+- `--sync` flag for scan result upload to firmislabs.com
+- `firmis badge` for README security grade badge
+- Post-scan CTA for lead generation
+- Scan history with local storage
+
 ## [1.3.0] — 2026-03-01
 
 ### Added
@@ -359,13 +383,21 @@ URL: https://docs.firmislabs.com/quickstart
 
 Your Claude skills, MCP servers, and AI plugins run code you didn't write, from sources you didn't audit. One command tells you if that's a problem.
 
-## Run your first scan
+## Set up your project
+
+```bash title="Terminal"
+npx firmis init
+```
+
+Detects your AI tools, runs a full security scan, shows your grade, and generates a `.firmisrc.json` config — all in one command. [Learn more about `init` →](/cli/init)
+
+Or if you just want a quick scan without setup:
 
 ```bash title="Terminal"
 npx firmis scan .
 ```
 
-That's it. Firmis auto-detects Claude Skills, MCP Servers, Codex Plugins, Cursor Rules, and 4 more platforms — no config file, no manifest, nothing to set up.
+Both auto-detect Claude Skills, MCP Servers, Codex Plugins, Cursor Rules, and 4 more platforms — no config file, no manifest, nothing to set up.
 
 ## What you'll see
 
@@ -393,7 +425,7 @@ This is what a real finding looks like:
  Found 3 threats (2 critical, 1 high) in 1.2s
 ```
 
-209 rules. 16 threat categories. Results in under two seconds.
+212 rules. 16 threat categories. Results in under two seconds.
 
 <details>
 <summary>No findings? Here's why that might happen.</summary>
@@ -974,6 +1006,97 @@ Fix is not autopilot. It's a co-pilot — it does the research and writes the fi
 
 - [scan](/cli/scan) — detect threats before fixing
 - [Threat Categories](/reference/threat-categories) — what gets fixed and why
+
+---
+
+# firmis init — Set Up Firmis in Your Project
+
+URL: https://docs.firmislabs.com/cli/init
+
+You just heard about Firmis and you want to know if your AI stack is safe. `firmis init` answers that question in under 30 seconds — no config, no docs, no signup.
+
+## Usage
+
+```bash title="Terminal"
+firmis init [path]
+```
+
+If `[path]` is omitted, Firmis initializes in the current directory.
+
+## What it does
+
+## Example output
+
+```text title="Terminal"
+  Firmis Scanner
+
+  Detecting AI tools...
+
+  ✓ Claude Skills: 5 components
+  ✓ MCP Servers: 3 components
+  ✓ Cursor Extensions: 2 components
+
+  Scanning for threats...
+
+  Security grade: C
+  12 threats found
+  3 critical  5 high  3 medium  1 low
+
+  ✓ Config written to .firmisrc.json
+
+  Next steps:
+  12 threats found. Here's what to do:
+
+  Free:
+    firmis scan --html   Export full HTML report
+    firmis ci            Block threats in CI
+    firmis badge         Show security status in README
+
+  Pro — fix & protect:
+    firmis fix           Auto-fix 8 of these threats
+    firmis monitor start Watch for runtime threats
+    firmis pentest       Run active probe tests
+
+    → firmis login  to activate Pro
+```
+
+## Generated config
+
+`firmis init` writes a `.firmisrc.json` in your project root:
+
+```json title=".firmisrc.json"
+{
+  "platforms": ["claude", "mcp", "cursor"],
+  "severity": "low",
+  "failOn": "high",
+  "exclude": ["node_modules", ".git", "dist", "build"]
+}
+```
+
+This file is picked up automatically by `firmis scan` and `firmis ci` on subsequent runs.
+
+## Re-running init
+
+If `.firmisrc.json` already exists, `firmis init` exits early to avoid overwriting your config:
+
+```text
+  .firmisrc.json already exists.
+  Run firmis scan to use your existing config.
+```
+
+Delete the file first if you want to re-initialize.
+
+## What to do next
+
+After running `firmis init`, your most useful next steps depend on what was found:
+
+| Situation | Next command | Why |
+|---|---|---|
+| You want to see the full report | `firmis scan --html` | Interactive HTML with evidence and remediation |
+| You want CI protection | `firmis ci` | Fails builds on high/critical threats |
+| You want a README badge | `firmis badge` | Shows your security grade publicly |
+| You want to fix threats | `firmis fix` | Auto-remediates fixable findings |
+| You want runtime monitoring | `firmis monitor --install` | Watches tool calls in real-time |
 
 ---
 
@@ -2415,14 +2538,14 @@ URL: https://docs.firmislabs.com/rules/built-in-rules
 
 {/* This file is auto-generated by scripts/generate-rules.ts. Do not edit manually. */}
 
-Firmis ships with **209 built-in detection rules** across **16 threat categories**, covering prompt injection, credential harvesting, supply chain attacks, and more.
+Firmis ships with **215 built-in detection rules** across **16 threat categories**, covering prompt injection, credential harvesting, supply chain attacks, and more.
 
 ## Summary
 
 | Severity | Count |
 |----------|-------|
-| 🔴 Critical | 57 |
-| 🟠 High | 101 |
+| 🔴 Critical | 61 |
+| 🟠 High | 103 |
 | 🟡 Medium | 48 |
 | 🟢 Low | 3 |
 
@@ -3841,11 +3964,17 @@ Restrict allowed origins to an explicit allowlist of trusted domains.
 
 | ID | Name | Severity | Confidence | Platforms |
 |----|------|----------|------------|-----------|
+| `pe-011` | Sudo/Root Escalation in Agent Config | 🔴 Critical | 60% | All |
+| `pe-013` | Docker Privileged Container or Capability Addition | 🔴 Critical | 60% | All |
+| `pe-014` | AWS IAM Wildcard Permission Policy | 🔴 Critical | 65% | All |
+| `pe-015` | Setuid/Setgid Bit Setting | 🔴 Critical | 65% | All |
 | `privesc-001` | Sudo/Root Command Execution | 🔴 Critical | 85% | All |
 | `privesc-002` | Process Injection Patterns | 🔴 Critical | 90% | All |
 | `privesc-004` | Setuid/Capability Manipulation | 🔴 Critical | 85% | All |
 | `privesc-007` | Kernel Module Loading | 🔴 Critical | 90% | All |
 | `privesc-009` | Container Escape Patterns | 🔴 Critical | 85% | All |
+| `pe-012` | World-Writable File Permission Setting | 🟠 High | 55% | All |
+| `pe-016` | Crontab and Systemd Persistence Installation | 🟠 High | 60% | All |
 | `privesc-003` | Shell Escape Sequences | 🟠 High | 80% | All |
 | `privesc-005` | Cron/Scheduled Task Manipulation | 🟠 High | 80% | All |
 | `privesc-006` | Service/Daemon Manipulation | 🟠 High | 80% | All |
@@ -3853,6 +3982,78 @@ Restrict allowed origins to an explicit allowlist of trusted domains.
 | `privesc-008` | Environment Path Manipulation | 🟡 Medium | 70% | All |
 
 ### Rule Details
+
+#### `pe-011` — Sudo/Root Escalation in Agent Config
+
+**Severity:** 🔴 Critical | **Category:** Privilege Escalation | **Confidence threshold:** 60% | **Platforms:** All
+
+Detects sudo, root, or administrator escalation commands embedded in agent configurations or scripts
+
+**Remediation:**
+
+AI agents must not execute commands with elevated privileges.
+Remove sudo, doas, runas, and run-as-root patterns from agent configurations.
+Use least-privilege service accounts and grant only the minimum permissions needed.
+
+**References:**
+- https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency
+- https://atlas.mitre.org/techniques/AML.T0043
+
+---
+
+#### `pe-013` — Docker Privileged Container or Capability Addition
+
+**Severity:** 🔴 Critical | **Category:** Privilege Escalation | **Confidence threshold:** 60% | **Platforms:** All
+
+Detects Docker --privileged flag or --cap-add usage that grants host-level capabilities to containers
+
+**Remediation:**
+
+Privileged containers have unrestricted access to the host kernel.
+Remove --privileged and high-privilege --cap-add flags. Use specific minimal
+capabilities only when absolutely required and document the justification.
+
+**References:**
+- https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency
+- https://atlas.mitre.org/techniques/AML.T0049
+
+---
+
+#### `pe-014` — AWS IAM Wildcard Permission Policy
+
+**Severity:** 🔴 Critical | **Category:** Privilege Escalation | **Confidence threshold:** 65% | **Platforms:** All
+
+Detects IAM policy statements granting wildcard Action or Resource permissions, violating least-privilege
+
+**Remediation:**
+
+IAM policies with Action: '*' or combined Action: '*' + Resource: '*' grant
+full AWS account access. Apply least-privilege: enumerate only the specific
+actions and resources required. Use IAM Access Analyzer to validate policies.
+
+**References:**
+- https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM08 Excessive Permissions
+- https://atlas.mitre.org/techniques/AML.T0049
+
+---
+
+#### `pe-015` — Setuid/Setgid Bit Setting
+
+**Severity:** 🔴 Critical | **Category:** Privilege Escalation | **Confidence threshold:** 65% | **Platforms:** All
+
+Detects chmod commands that set the setuid or setgid bit, enabling privilege escalation via SUID binaries
+
+**Remediation:**
+
+SUID/SGID binaries run with the owner's privileges regardless of who executes them.
+AI agents must never set the setuid or setgid bit. Remove all chmod +s and numeric
+setuid/setgid modes. Audit any binary with these bits already set.
+
+**References:**
+- https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency
+- https://atlas.mitre.org/techniques/AML.T0049
+
+---
 
 #### `privesc-001` — Sudo/Root Command Execution
 
@@ -3911,6 +4112,43 @@ Detects attempts to escape container environments
 **Remediation:**
 
 Container escape attempts are critical security issues. Remove these patterns.
+
+---
+
+#### `pe-012` — World-Writable File Permission Setting
+
+**Severity:** 🟠 High | **Category:** Privilege Escalation | **Confidence threshold:** 55% | **Platforms:** All
+
+Detects chmod commands that set world-writable or world-executable bits, enabling privilege escalation via file replacement
+
+**Remediation:**
+
+Overly permissive file modes (777, 666) and root ownership changes are privilege
+escalation enablers. Use the principle of least privilege: 640 for files, 750 for
+directories. Never grant world-write permissions on files that could be executed.
+
+**References:**
+- https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency
+- https://atlas.mitre.org/techniques/AML.T0049
+
+---
+
+#### `pe-016` — Crontab and Systemd Persistence Installation
+
+**Severity:** 🟠 High | **Category:** Privilege Escalation | **Confidence threshold:** 60% | **Platforms:** All
+
+Detects crontab modifications and systemd unit installations used to establish persistent backdoor execution
+
+**Remediation:**
+
+Crontab and systemd service installation are common persistence mechanisms.
+AI agents must not modify scheduled tasks or install services without explicit
+user authorization. Remove crontab edits and systemctl enable calls.
+Review any @reboot entries — these survive reboots and are hard to detect.
+
+**References:**
+- https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency
+- https://atlas.mitre.org/techniques/AML.T0043
 
 ---
 
@@ -7664,9 +7902,51 @@ URL: https://docs.firmislabs.com/integrations/github-actions
 
 Every PR that ships without a security scan is a gamble. This one takes five minutes to set up and runs on every push from that point on — no maintenance required.
 
-## Quickstart
+## Quickstart — Official Action
 
-Add this workflow to your repository to scan on every push and pull request.
+The fastest way to add Firmis to your CI. The official composite action handles Node setup, scanning, PR comments with grade badges, and HTML report upload.
+
+```yaml title=".github/workflows/firmis.yml"
+name: Firmis Security Scan
+on: [push, pull_request]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: riteshkew/firmis-scanner@v1
+        with:
+          severity: medium
+          fail-on: high
+```
+
+That's it. On PRs, you'll get a comment with your security grade badge and threat count. The full HTML report is uploaded as a build artifact.
+
+### Action inputs
+
+| Input | Description | Default |
+|---|---|---|
+| `severity` | Minimum severity to report | `medium` |
+| `fail-on` | Exit non-zero at this severity | `high` |
+| `sync` | Sync results to firmislabs.com | `false` |
+| `firmis-token` | Auth token for `--sync` | — |
+| `node-version` | Node.js version | `20` |
+
+### Action outputs
+
+| Output | Description |
+|---|---|
+| `grade` | Security grade (A–F) |
+| `threats-found` | Number of threats at or above severity |
+| `report-path` | Path to generated HTML report |
+
+## Alternative — Manual workflow
+
+If you prefer full control, use `npx firmis ci` directly:
 
 ```yaml title=".github/workflows/firmis.yml"
 name: Firmis Security Scan
