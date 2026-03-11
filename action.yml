@@ -1,0 +1,151 @@
+name: 'Firmis Security Scan'
+description: 'Scan AI agent components for security threats using Firmis Scanner'
+branding:
+  icon: 'shield'
+  color: 'purple'
+
+inputs:
+  severity:
+    description: 'Minimum severity to report (low|medium|high|critical)'
+    required: false
+    default: 'medium'
+  fail-on:
+    description: 'Exit non-zero for this severity or above (low|medium|high|critical)'
+    required: false
+    default: 'high'
+  sync:
+    description: 'Sync results to firmislabs.com dashboard'
+    required: false
+    default: 'false'
+  firmis-token:
+    description: 'Auth token for --sync (from firmis login, stored as a secret)'
+    required: false
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '20'
+
+outputs:
+  grade:
+    description: 'Security grade (A-F)'
+    value: ${{ steps.parse.outputs.grade }}
+  threats-found:
+    description: 'Number of threats found at or above the specified severity'
+    value: ${{ steps.parse.outputs.threats-found }}
+  report-path:
+    description: 'Path to the generated HTML report'
+    value: firmis-report.html
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install Firmis Scanner
+      shell: bash
+      run: npm install -g firmis-scanner
+
+    - name: Configure Auth
+      if: inputs.sync == 'true' && inputs.firmis-token != ''
+      shell: bash
+      run: |
+        mkdir -p ~/.firmis
+        printf '%s' '${{ inputs.firmis-token }}' > ~/.firmis/auth.json
+        chmod 600 ~/.firmis/auth.json
+
+    - name: Run Scan (JSON)
+      id: scan-json
+      shell: bash
+      run: |
+        set +e
+        SYNC_FLAG=""
+        if [ "${{ inputs.sync }}" = "true" ] && [ -n "${{ inputs.firmis-token }}" ]; then
+          SYNC_FLAG="--sync"
+        fi
+        firmis scan \
+          --json \
+          --output firmis-results.json \
+          --severity ${{ inputs.severity }} \
+          --fail-on ${{ inputs.fail-on }} \
+          $SYNC_FLAG
+        echo "exit-code=$?" >> $GITHUB_OUTPUT
+
+    - name: Run Scan (HTML report)
+      if: always()
+      shell: bash
+      run: |
+        firmis scan \
+          --html \
+          --output firmis-report.html \
+          --severity ${{ inputs.severity }} \
+          --fail-on none || true
+
+    - name: Parse Results
+      id: parse
+      if: always()
+      shell: bash
+      run: |
+        if [ -f firmis-results.json ]; then
+          GRADE=$(node -e "
+            const r = JSON.parse(require('fs').readFileSync('firmis-results.json', 'utf8'));
+            console.log(r.score || 'N/A');
+          " 2>/dev/null || echo "N/A")
+          THREATS=$(node -e "
+            const r = JSON.parse(require('fs').readFileSync('firmis-results.json', 'utf8'));
+            console.log(r.summary?.threatsFound ?? 0);
+          " 2>/dev/null || echo "0")
+        else
+          GRADE="N/A"
+          THREATS="0"
+        fi
+        echo "grade=$GRADE" >> $GITHUB_OUTPUT
+        echo "threats-found=$THREATS" >> $GITHUB_OUTPUT
+
+    - name: Upload HTML Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmis-security-report
+        path: firmis-report.html
+        if-no-files-found: ignore
+
+    - name: Post PR Comment
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const grade = '${{ steps.parse.outputs.grade }}';
+          const threats = '${{ steps.parse.outputs.threats-found }}';
+          const gradeColors = {
+            A: '22c55e',
+            B: '84cc16',
+            C: 'eab308',
+            D: 'f97316',
+            F: 'ef4444',
+          };
+          const color = gradeColors[grade] || '6b7280';
+          const body = [
+            '## Firmis Security Scan',
+            '',
+            `![Grade](https://img.shields.io/badge/Grade-${grade}-${color})`,
+            `**Threats found:** ${threats}`,
+            '',
+            `[View full HTML report](../actions/runs/${context.runId}) (download artifact)`,
+            '',
+            '---',
+            '*Scanned by [Firmis Scanner](https://firmislabs.com)*',
+          ].join('\n');
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body,
+          });
+
+    - name: Fail on threats
+      if: always() && steps.scan-json.outputs.exit-code != '0'
+      shell: bash
+      run: exit ${{ steps.scan-json.outputs.exit-code }}
