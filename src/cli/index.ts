@@ -26,6 +26,16 @@ async function getVersion(): Promise<string> {
 }
 
 async function main(): Promise<void> {
+  // Launch MCP server if --mcp flag is passed
+  if (process.argv.includes('--mcp')) {
+    const { StdioServerTransport } = await import('@modelcontextprotocol/sdk/server/stdio.js')
+    const { createFirmisServer } = await import('../mcp/server.js')
+    const server = createFirmisServer()
+    const transport = new StdioServerTransport()
+    await server.connect(transport)
+    return
+  }
+
   const version = await getVersion()
 
   const program = new Command()

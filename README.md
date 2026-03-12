@@ -5,7 +5,7 @@
 <h1 align="center">Firmis Scanner</h1>
 
 <p align="center">
-  <strong>Open-source AI agent runtime security scanner</strong>
+  <strong>The security layer for AI agents</strong>
 </p>
 
 <p align="center">
@@ -16,7 +16,11 @@
 </p>
 
 <p align="center">
-  Detect malicious behavior in Claude Skills, MCP Servers, OpenClaw Skills, Nanobot Agents, Supabase projects, and other AI agent frameworks before they compromise your system.
+  Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 13 other threat categories. 212 detection rules. Zero config.
+</p>
+
+<p align="center">
+  <code>npx firmis-scanner scan</code>
 </p>
 
 ---
@@ -50,6 +54,24 @@ firmis scan --json --output report.json
 # Output as SARIF for GitHub Security
 firmis scan --sarif --output results.sarif
 ```
+
+## What is Firmis?
+
+**Firmis is a security scanner purpose-built for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them — detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 12 other threat categories.
+
+**Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
+
+**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 212 rules (not just config checks), and includes runtime monitoring capabilities.
+
+## Features
+
+| Capability | Command | Tier |
+|-----------|---------|------|
+| Scan for threats (212 rules, 16 categories) | `firmis scan` | Free |
+| Discover AI agent platforms | `firmis discover` | Free |
+| Generate Agent BOM (CycloneDX) | `firmis bom` | Free |
+| CI/CD pipeline with fail gates | `firmis ci` | Free |
+| HTML/JSON/SARIF reports | `firmis scan --html` | Free |
 
 ## Supported Platforms
 
@@ -274,6 +296,48 @@ const result = await scanEngine.scan('./my-skills', {
 
 console.log(`Found ${result.summary.threatsFound} threats`)
 ```
+
+## MCP Server
+
+Firmis is available as an MCP server, allowing AI agents to scan code for security threats directly.
+
+### Claude Code / Claude Desktop
+
+Add to your MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "firmis": {
+      "command": "npx",
+      "args": ["-y", "firmis-scanner", "--mcp"]
+    }
+  }
+}
+```
+
+### Cursor
+
+Add to `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "firmis": {
+      "command": "npx",
+      "args": ["-y", "firmis-scanner", "--mcp"]
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `firmis_scan` | Scan a path for AI agent security threats |
+| `firmis_discover` | Discover installed AI agent platforms |
+| `firmis_report` | Generate an HTML security report |
 
 ## Contributing
 

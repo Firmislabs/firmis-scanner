@@ -1,7 +1,7 @@
 {
   "name": "firmis-scanner",
   "version": "1.4.1",
-  "description": "AI agent runtime security scanner - detect malicious behavior in Claude Skills, MCP Servers, Codex Plugins, and more",
+  "description": "Security scanner for AI agents — detect threats in MCP servers, Claude skills, Codex plugins, Cursor extensions, and 5 more platforms. 212 rules across 16 threat categories.",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -13,7 +13,8 @@
     }
   },
   "bin": {
-    "firmis": "dist/cli/index.js"
+    "firmis": "dist/cli/index.js",
+    "firmis-mcp": "dist/mcp/index.js"
   },
   "files": [
     "dist",
@@ -45,9 +46,20 @@
     "autogpt",
     "openclaw",
     "nanobot",
+    "supabase",
     "scanner",
     "threat-detection",
-    "malware"
+    "malware",
+    "mcp-server",
+    "mcp-security",
+    "ai-security",
+    "agent-security",
+    "tool-poisoning",
+    "prompt-injection",
+    "credential-harvesting",
+    "sast",
+    "devsecops",
+    "supply-chain-security"
   ],
   "author": "Firmis Labs",
   "license": "Apache-2.0",
@@ -66,13 +78,15 @@
     "@babel/parser": "^7.24.0",
     "@babel/traverse": "^7.24.0",
     "@babel/types": "^7.24.0",
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "@pgsql/types": "^17.6.2",
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "fast-glob": "^3.3.2",
     "js-yaml": "^4.1.1",
     "ora": "^8.0.1",
-    "pgsql-parser": "^17.9.11"
+    "pgsql-parser": "^17.9.11",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@types/babel__traverse": "^7.20.5",
