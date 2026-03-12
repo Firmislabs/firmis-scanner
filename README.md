@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 13 other threat categories. 212 detection rules. Zero config.
+  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 14 other threat categories. 245 detection rules. Zero config.<!-- /readme-stats -->
 </p>
 
 <p align="center">
@@ -61,13 +61,13 @@ firmis scan --sarif --output results.sarif
 
 **Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
 
-**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 212 rules (not just config checks), and includes runtime monitoring capabilities.
+<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 245 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
 
 ## Features
 
 | Capability | Command | Tier |
 |-----------|---------|------|
-| Scan for threats (212 rules, 16 categories) | `firmis scan` | Free |
+| <!-- readme-features -->Scan for threats (245 rules, 17 categories)<!-- /readme-features --> | `firmis scan` | Free |
 | Discover AI agent platforms | `firmis discover` | Free |
 | Generate Agent BOM (CycloneDX) | `firmis bom` | Free |
 | CI/CD pipeline with fail gates | `firmis ci` | Free |
