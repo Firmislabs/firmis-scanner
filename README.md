@@ -380,5 +380,5 @@ Apache License 2.0 - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  Built by <a href="https://firmislabs.com">Firmis Labs</a> · Security veterans protecting Fortune 500 enterprises since 2018
+  Built by <a href="https://firmislabs.com">Firmis Labs</a> · Purpose-built security for the AI agent ecosystem
 </p>
