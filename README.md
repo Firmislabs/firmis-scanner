@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/firmis-scanner"><img src="https://img.shields.io/npm/v/firmis-scanner.svg" alt="npm version"></a>
   <a href="https://github.com/riteshkew/firmis-scanner/actions"><img src="https://github.com/riteshkew/firmis-scanner/workflows/CI/badge.svg" alt="CI Status"></a>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
+  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
   <a href="https://firmislabs.com"><img src="https://img.shields.io/badge/Firmis-Labs-violet" alt="Firmis Labs"></a>
 </p>
 
@@ -102,7 +102,7 @@ Firmis auto-detects Supabase projects and scans for:
 firmis scan --platform supabase
 
 # Example output
-  Firmis Scanner v1.1.0
+  Firmis Scanner v1.4.1
 
   Detecting platforms...
   ✓ Supabase: 8 migrations found
@@ -123,7 +123,7 @@ firmis scan --platform supabase
 ## Example Output
 
 ```
-  Firmis Scanner v1.0.0
+  Firmis Scanner v1.4.1
 
   Detecting platforms...
   ✓ Claude Skills: 47 skills found
@@ -375,7 +375,7 @@ Found a security vulnerability? Please report it privately to security@firmislab
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+Apache License 2.0 - see [LICENSE](LICENSE) for details.
 
 ---
 
