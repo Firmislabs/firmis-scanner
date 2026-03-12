@@ -46,6 +46,11 @@ ls src/fix src/pentest src/rugpull 2>/dev/null && echo "DANGER: M2 files!" || ec
 - Max 50 lines/function, max 300 lines/file
 - No `any` types, explicit return types on exports
 
+## Git Commit Rules
+
+- **NEVER add `Co-Authored-By` trailers** to commits in this repo. This is a public repo — commit history must show only human authors.
+- Commit messages should be clean conventional commits (feat/fix/docs/chore/test/refactor).
+
 ## What's Here
 
 - 8 platform analyzers (claude, mcp, codex, cursor, crewai, autogpt, openclaw, nanobot)
