@@ -18,7 +18,7 @@ rules:
       - nanobot
     patterns:
       - type: regex
-        pattern: '[?&](?:api_key|apikey|api-key|token|access_token|auth_token|secret|key)=[A-Za-z0-9_\-+/=]{8,}'
+        pattern: '(?:https?://|fetch\s*\(|request\s*\(|url\s*[=:])[^''"\s]*[?&](?:api_key|apikey|api-key|token|access_token|auth_token|secret|key)=[A-Za-z0-9_\-+/=]{8,}'
         weight: 85
         description: "API key or token passed as URL query parameter"
       - type: regex

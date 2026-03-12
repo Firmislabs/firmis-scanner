@@ -1,5 +1,5 @@
 import type { PlatformType, SeverityLevel } from './config.js'
-import type { ThreatCategory } from './scan.js'
+import type { ThreatCategory, ComplianceMapping } from './scan.js'
 
 /**
  * Pattern matching types
@@ -17,7 +17,7 @@ export type PatternType =
 /**
  * Context where a pattern match occurred
  */
-export type MatchContext = 'code_execution' | 'documentation' | 'string_literal' | 'config'
+export type MatchContext = 'code_execution' | 'documentation' | 'test_file' | 'string_literal' | 'config'
 
 /**
  * AST node pattern for matching
@@ -98,6 +98,7 @@ export interface Rule {
   confidenceThreshold: number
   remediation?: string
   references?: string[]
+  compliance?: ComplianceMapping[]
   enabled: boolean
   version: string
 }

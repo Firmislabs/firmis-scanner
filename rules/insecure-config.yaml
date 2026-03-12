@@ -127,9 +127,9 @@ rules:
         weight: 72
         description: "Database password hardcoded in config (not from environment variable)"
       - type: regex
-        pattern: '(?i)(?:api_key|apikey)\s*[=:]\s*[''"][a-zA-Z0-9_\-]{8,64}[''"]'
+        pattern: '(?i)(?:api_key|apikey)\s*[=:]\s*[''"](?!.*(?:your|paste|replace|example|placeholder|here|xxx|todo|insert))[a-zA-Z0-9_\-]{20,64}[''"]'
         weight: 68
-        description: "API key hardcoded directly in config file"
+        description: "API key hardcoded in config (excludes placeholders)"
       - type: regex
         pattern: '(?i)(?:secret_key|SECRET_KEY)\s*[=:]\s*[''"](?:secret|changeme|dev-secret|insecure|default)[''"]'
         weight: 85
@@ -143,3 +143,89 @@ rules:
     references:
       - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM08 Excessive Permissions"
       - "https://atlas.mitre.org/techniques/AML.T0043"
+
+  - id: ic-004
+    name: Claude Code RCE via Malicious Hooks
+    description: "Detects malicious shell commands in .claude/settings.json hooks — CVE-2025-59536 (CVSS 8.7). Attackers commit poisoned settings that spawn reverse shells or exfiltrate data when Claude Code executes hooks."
+    category: insecure-config
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    platforms:
+      - claude
+    patterns:
+      - type: regex
+        pattern: '"hooks"\s*:\s*\{[\s\S]*?"command"\s*:\s*"[^"]*(?:curl|wget|nc|bash\s+-i|/dev/tcp|rev\s+shell)'
+        weight: 95
+        description: "Hook command containing network/shell exploitation patterns"
+      - type: regex
+        pattern: '"hooks"\s*:\s*\{[\s\S]*?"command"\s*:\s*"[^"]*(?:base64\s+-d|eval\s|exec\s|python\s+-c)'
+        weight: 90
+        description: "Hook command with code execution or decoding patterns"
+      - type: regex
+        pattern: '"hooks"\s*:\s*\{[\s\S]*?"command"\s*:\s*"[^"]*(?:\|.*sh\b|>\s*/dev/null.*&)'
+        weight: 85
+        description: "Hook command piping to shell or running in background"
+      - type: regex
+        pattern: '\.claude[/\\]settings\.json[\s\S]*?"hooks"\s*:\s*\{'
+        weight: 60
+        description: "Reference to .claude/settings.json hooks configuration"
+    remediation: |
+      Malicious .claude/settings.json hooks can execute arbitrary commands when Claude Code runs (CVE-2025-59536). Never commit .claude/settings.json to shared repos. Audit all hook commands for suspicious patterns: curl/wget piping to shell, base64 decoding, reverse shells, or backgrounded processes.
+    references:
+      - "CVE-2025-59536"
+
+  - id: ic-005
+    name: Cursor Auto-Execute on Folder Open
+    description: "Detects .vscode/tasks.json with runOn:folderOpen that auto-executes shell commands when a project is opened in Cursor/VS Code"
+    category: insecure-config
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    platforms:
+      - cursor
+      - codex
+    patterns:
+      - type: regex
+        pattern: '"runOn"\s*:\s*"folderOpen"'
+        weight: 90
+        description: "Task auto-runs on folder open — arbitrary command execution"
+      - type: regex
+        pattern: '"runOptions"\s*:\s*\{[^}]*"runOn"\s*:\s*"folderOpen"'
+        weight: 90
+        description: "Task runOptions with folderOpen trigger"
+      - type: regex
+        pattern: '\.vscode[/\\]tasks\.json[\s\S]*?"command"\s*:\s*"[^"]*(?:curl|wget|bash|sh|python|node)'
+        weight: 80
+        description: "VS Code task with shell command execution"
+    remediation: |
+      Tasks with runOn:folderOpen execute automatically when a project is opened. Attackers commit malicious .vscode/tasks.json files that run arbitrary commands without user interaction. Remove runOn:folderOpen from untrusted projects and review all task commands.
+    references:
+      - "CVE-2025-59944"
+
+  - id: ic-006
+    name: Unauthenticated Local WebSocket Endpoint
+    description: "Detects local WebSocket/HTTP server configs bound to loopback without auth — GHSA-qpjj"
+    category: insecure-config
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    platforms:
+      - openclaw
+      - mcp
+      - claude
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:authToken|relay.?token|shared.?secret)\s*[=:]\s*(?:null|undefined|false|[''"][\s]*[''"])'
+        weight: 85
+        description: "Auth token set to null/empty — missing authentication on endpoint"
+      - type: regex
+        pattern: '(?i)(?:x-openclaw-relay-token|x-relay-token)\s*[=:]\s*(?:null|undefined|[''"][\s]*[''"])'
+        weight: 90
+        description: "OpenClaw relay token header set to null or empty"
+    remediation: |
+      Loopback-only binding is insufficient. Any website can initiate WebSocket connections
+      to localhost. Require a shared secret token on every WebSocket upgrade request.

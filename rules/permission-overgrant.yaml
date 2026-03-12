@@ -39,27 +39,27 @@ rules:
 
   - id: perm-002
     name: Maximum Blast Radius Permission Combo
-    description: "Skill requests shell + network + filesystem permissions — maximum attack surface"
+    description: "Skill requests shell + network + filesystem permissions in a permissions block — maximum attack surface"
     category: permission-overgrant
     severity: critical
-    version: "1.0.0"
+    version: "1.1.0"
     enabled: true
-    confidenceThreshold: 60
+    confidenceThreshold: 70
     platforms:
       - openclaw
     patterns:
-      - type: string-literal
-        pattern: "shell"
+      - type: regex
+        pattern: 'permissions:\s*\n(?:\s*-\s*.*\n)*?\s*-\s*shell\b'
         weight: 40
-        description: "Shell access permission"
-      - type: string-literal
-        pattern: "network"
+        description: "Shell access in permissions block"
+      - type: regex
+        pattern: 'permissions:\s*\n(?:\s*-\s*.*\n)*?\s*-\s*network\b'
         weight: 40
-        description: "Network access permission"
-      - type: string-literal
-        pattern: "filesystem"
+        description: "Network access in permissions block"
+      - type: regex
+        pattern: 'permissions:\s*\n(?:\s*-\s*.*\n)*?\s*-\s*filesystem\b'
         weight: 40
-        description: "Filesystem access permission"
+        description: "Filesystem access in permissions block"
     remediation: |
       Skills with shell + network + filesystem access can exfiltrate any data. This combination should be carefully reviewed.
 

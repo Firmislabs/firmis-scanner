@@ -263,13 +263,13 @@ rules:
         weight: 100
         description: "Known C2 server IP from ClawHavoc campaign"
       - type: regex
-        pattern: 'webhook\.site'
+        pattern: '(?:fetch|requests?\.(?:get|post)|axios\.(?:get|post)|http\.request)\s*\([^)]*webhook\.site|(?:curl|wget)\s+[^\n]*webhook\.site'
         weight: 85
-        description: "webhook.site — commonly used for data exfiltration"
+        description: "Network request to webhook.site — data exfiltration endpoint"
       - type: regex
-        pattern: 'glot\.io'
+        pattern: '(?:fetch|requests?\.(?:get|post)|axios\.(?:get|post)|http\.request)\s*\([^)]*glot\.io|(?:curl|wget)\s+[^\n]*glot\.io'
         weight: 80
-        description: "glot.io — used for hosting malicious scripts"
+        description: "Network request to glot.io — malicious script hosting"
       - type: string-literal
         pattern: "aztr0nutzs"
         weight: 95
@@ -298,3 +298,33 @@ rules:
         description: "NET_NiNjA — known malware family targeting AI agents"
     remediation: |
       This references a known malware distribution point. Remove the skill and scan your system for compromise indicators.
+
+  - id: mal-sandworm-001
+    name: SANDWORM MCP Config Injection
+    description: "Detects MCP server injection patterns used by the SANDWORM_MODE worm to persist in Claude, Cursor, and Continue IDE configs"
+    category: known-malicious
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '(?:writeFile|fs\.write|open\()[^)]*~[/\\]\.claude[/\\](?:settings|mcp)\.json'
+        weight: 95
+        description: "Writing to ~/.claude/ config — SANDWORM MCP injection vector"
+      - type: regex
+        pattern: '(?:writeFile|fs\.write|open\()[^)]*~[/\\]\.cursor[/\\]mcp\.json'
+        weight: 95
+        description: "Writing to ~/.cursor/ MCP config — SANDWORM injection vector"
+      - type: regex
+        pattern: '(?:writeFile|fs\.write|open\()[^)]*~[/\\]\.continue[/\\]config\.json'
+        weight: 95
+        description: "Writing to ~/.continue/ config — SANDWORM injection vector"
+      - type: regex
+        pattern: 'mcpServers[\s\S]{0,200}(?:postinstall|preinstall|npm\s+publish)'
+        weight: 90
+        description: "MCP server config combined with npm lifecycle hooks — worm propagation"
+    remediation: |
+      The SANDWORM worm injects malicious MCP servers into IDE configs (~/.claude/, ~/.cursor/, ~/.continue/) to maintain persistence. If you see unexpected MCP server entries, remove them and audit your npm packages for postinstall scripts that modify IDE configs.
+    references:
+      - "https://socket.dev/blog/sandworm-mode-ai-worm"

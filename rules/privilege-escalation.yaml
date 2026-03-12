@@ -9,29 +9,25 @@ rules:
   confidenceThreshold: 85
   patterns:
   - type: regex
-    pattern: sudo\s+(?!-v|--version)
+    pattern: '(?:exec|spawn|execFile|execSync|spawnSync|child_process)\s*\(.*sudo'
     weight: 95
-    description: Sudo command execution
+    description: Subprocess call executing sudo command
   - type: regex
-    pattern: (?:exec|spawn).*(?:sudo|su\s+-|doas)
+    pattern: '(?:subprocess|os\.system|os\.popen|Popen|check_output|check_call)\s*\(.*sudo'
     weight: 90
-    description: Subprocess with privilege escalation
+    description: Python subprocess or os call executing sudo
   - type: regex
     pattern: runAsRoot|asAdmin|elevate
     weight: 80
     description: Elevation function reference
   - type: regex
-    pattern: subprocess\.(run|Popen|call|check_output)\s*\(
-    weight: 70
-    description: Python subprocess execution
-  - type: regex
-    pattern: os\.system\s*\(
+    pattern: 'subprocess\.(run|Popen|call|check_output)\s*\([^)]*(?:sudo|su\s|doas|root)'
     weight: 80
-    description: Python os.system() — shell command execution
+    description: Python subprocess with privilege escalation command
   - type: regex
-    pattern: os\.popen\s*\(
-    weight: 75
-    description: Python os.popen() — shell command with pipe
+    pattern: 'os\.(?:system|popen)\s*\([^)]*(?:sudo|su\s|doas|chmod)'
+    weight: 85
+    description: Python os execution with privilege escalation
   remediation: 'AI agents should never execute commands with elevated privileges.
     Remove sudo/su usage.
 
@@ -273,9 +269,13 @@ rules:
     - nanobot
   patterns:
     - type: regex
-      pattern: '\bsudo\s+(?!-v\b|--version\b)[a-zA-Z]'
+      pattern: '(?:^|[\n;`&|])\s*sudo\s+(?!-v\b|--version\b)[a-zA-Z]'
       weight: 75
-      description: "sudo command execution (excluding version checks)"
+      description: "sudo command at start of line or after shell operator (execution context)"
+    - type: regex
+      pattern: '(?:exec|spawn|execFile|execSync|spawnSync|child_process)\s*\(.*\bsudo\b'
+      weight: 85
+      description: "Node.js subprocess call executing sudo"
     - type: regex
       pattern: '(?i)\brun(?:_?[aA]s)?\s+(?:root|administrator)\b'
       weight: 80
@@ -284,10 +284,8 @@ rules:
       pattern: '\bdoas\s+[a-zA-Z]'
       weight: 75
       description: "doas (OpenBSD privilege escalation) command"
-    - type: regex
-      pattern: '(?i)\bas\s+root\b'
-      weight: 70
-      description: "Explicit 'as root' privilege context"
+    # Removed: \bas root\b — fires on natural language ("don't run as root" in docs)
+    # Covered by run_as/runas patterns above
     - type: regex
       pattern: '(?i)\brunas\s+/user:(?:administrator|system)\b'
       weight: 85
@@ -495,9 +493,9 @@ rules:
     - nanobot
   patterns:
     - type: regex
-      pattern: 'crontab\s+-[eilr]'
+      pattern: 'crontab\s+-[eir]'
       weight: 75
-      description: "crontab modification (edit/install/list/remove flags)"
+      description: "crontab modification (edit/install/remove — excludes -l list)"
     - type: regex
       pattern: '@reboot\s+[^\s]'
       weight: 80
@@ -522,3 +520,51 @@ rules:
   references:
     - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency"
     - "https://atlas.mitre.org/techniques/AML.T0043"
+
+- id: pe-017
+  name: safeBins Trusted Directory in User-Writable Path
+  description: "Detects exec-allowlist configs trusting user-writable package manager directories — GHSA-5gj7"
+  category: privilege-escalation
+  severity: medium
+  version: "1.0.0"
+  enabled: true
+  confidenceThreshold: 55
+  platforms:
+    - openclaw
+  patterns:
+    - type: regex
+      pattern: '(?i)(?:safeBins|safeBinTrustedDirs|trustedDirs|safe_bins)\s*[=:]\s*\[[^\]]*(?:/opt/homebrew/bin|/usr/local/bin|/home/[^/''"\]]+/\.local/bin)'
+      weight: 80
+      description: "safeBins trusted directory includes user-writable package manager path"
+    - type: regex
+      pattern: '(?i)(?:safeBins|exec_?allowlist|trusted_?bins)\s*[=:][^;{]*(?:/opt/homebrew|/usr/local/bin)'
+      weight: 75
+      description: "Exec allowlist references user-writable path — binary hijack risk"
+  remediation: |
+    safeBins must only trust immutable system directories (/bin, /usr/bin, /sbin).
+    Package manager paths like /opt/homebrew/bin are writable and must not be in the default trusted set.
+
+- id: pe-018
+  name: Unvalidated PID Kill Without Ownership Check
+  description: "Detects process termination via pattern matching without verifying process ownership — CVE-2026-27486"
+  category: privilege-escalation
+  severity: medium
+  version: "1.0.0"
+  enabled: true
+  confidenceThreshold: 60
+  platforms:
+    - openclaw
+  patterns:
+    - type: regex
+      pattern: '(?:pkill|killall)\s+-(?:9|SIGKILL|KILL)\s'
+      weight: 80
+      description: "pkill/killall with SIGKILL — system-wide pattern-matched kill"
+    - type: regex
+      pattern: '(?:pgrep|ps\s+aux|ps\s+-ef)\s*[|;][^;]*kill\s+-9'
+      weight: 90
+      description: "Shell pipeline: enumerate processes then kill -9 — missing ownership check"
+  remediation: |
+    Before sending SIGKILL, validate that the process is a direct child (ppid == process.pid).
+    Never use pkill/killall as the sole process selector on shared systems.
+  references:
+    - "CVE-2026-27486"
