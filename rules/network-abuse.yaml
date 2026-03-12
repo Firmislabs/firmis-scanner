@@ -205,9 +205,9 @@ rules:
     confidenceThreshold: 55
     patterns:
       - type: regex
-        pattern: '[a-zA-Z0-9+/]{32,}\.[a-zA-Z0-9-]{3,}\.[a-zA-Z]{2,}'
+        pattern: '[''"][\w+/]{32,}\.[\w-]{3,}\.[a-zA-Z]{2,}[''"]'
         weight: 65
-        description: "Unusually long base64-like subdomain label (32+ chars) — DNS exfiltration pattern"
+        description: "Unusually long base64-like subdomain label (32+ chars) in string literal — DNS exfiltration pattern"
       - type: regex
         pattern: '(?:nslookup|dig|host|resolve)\s+[a-zA-Z0-9+/]{20,}\.'
         weight: 75
@@ -371,3 +371,113 @@ rules:
       connections using non-standard ports to ensure they are documented and authorized.
     references:
       - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM02 Insecure Output"
+
+  - id: na-011
+    name: MCP SSRF — Internal Network Access via Tool Parameters
+    description: "Detects SSRF patterns in MCP tool parameters where URLs point to internal/localhost/metadata ranges. 36.7% of MCP servers are vulnerable."
+    category: network-abuse
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    platforms:
+      - mcp
+      - claude
+      - cursor
+    patterns:
+      - type: regex
+        pattern: '(?:url|uri|endpoint|target|href)\s*[=:"]\s*["\x27]?https?://(?:127\.0\.0\.1|localhost|0\.0\.0\.0|10\.\d+\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)'
+        weight: 90
+        description: "URL parameter pointing to localhost or private IP range (SSRF)"
+      - type: regex
+        pattern: '(?:url|uri|endpoint)\s*[=:"]\s*["\x27]?https?://169\.254\.169\.254'
+        weight: 95
+        description: "URL pointing to cloud metadata endpoint (SSRF for credential theft)"
+      - type: regex
+        pattern: '(?:url|uri|endpoint)\s*[=:"]\s*["\x27]?https?://metadata\.google\.internal'
+        weight: 95
+        description: "URL pointing to GCP metadata endpoint (SSRF)"
+      - type: regex
+        pattern: 'file:///(?:etc/passwd|etc/shadow|proc/self)'
+        weight: 95
+        description: "file:// URI accessing sensitive system files (local file inclusion)"
+    remediation: |
+      MCP tool parameters must not accept URLs pointing to internal networks, localhost, or cloud metadata endpoints. Implement URL validation and allowlisting on the server side. Block private IP ranges (10.x, 172.16-31.x, 192.168.x), localhost, and metadata endpoints (169.254.169.254).
+    references:
+      - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency"
+
+  - id: na-012
+    name: Unrestricted gatewayUrl Override (SSRF)
+    description: "Detects gatewayUrl parameters pointing to private/internal addresses or cloud metadata — CVE-2026-26322"
+    category: network-abuse
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 65
+    platforms:
+      - openclaw
+      - mcp
+    patterns:
+      - type: regex
+        pattern: '(?i)gatewayUrl\s*[=:]\s*[''"]?wss?://(?:127\.0\.0\.1|localhost|0\.0\.0\.0|10\.\d+\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)'
+        weight: 95
+        description: "gatewayUrl pointing to localhost or private IP range — SSRF"
+      - type: regex
+        pattern: '(?i)gatewayUrl\s*[=:]\s*[''"]?wss?://169\.254\.169\.254'
+        weight: 98
+        description: "gatewayUrl pointing to cloud metadata endpoint"
+    remediation: |
+      The gatewayUrl parameter must be validated against an explicit allowlist.
+      Block all private IP ranges, localhost, and cloud metadata IPs.
+    references:
+      - "CVE-2026-26322"
+
+  - id: na-013
+    name: Browser CDP Relay Without Auth
+    description: "Detects /cdp WebSocket endpoints that may lack token validation — GHSA-mr32"
+    category: network-abuse
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    platforms:
+      - openclaw
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:upgrade|ws\.on|WebSocket).*[''"]\/cdp[''"]'
+        weight: 80
+        description: "WebSocket upgrade handler for /cdp route"
+      - type: regex
+        pattern: '(?i)cdp(?:Relay|Proxy|Bridge|Forward)\s*(?:=|:|\()'
+        weight: 75
+        description: "CDP relay/proxy/bridge variable — browser DevTools forwarding"
+    remediation: |
+      CDP relay endpoints must require a shared secret token on every WebSocket upgrade
+      and validate the Origin header. Without both controls, any website can steal session data.
+
+  - id: na-014
+    name: Dangerous URL Scheme in Browser Navigation
+    description: "Detects file://, javascript:, or data: URL schemes in browser navigation — GHSA-45cg"
+    category: network-abuse
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 65
+    platforms:
+      - openclaw
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:navigate|browser_navigate|goto|page\.goto)\s*\(\s*[''"]?file://'
+        weight: 95
+        description: "Browser navigation with file:// URL — local file read"
+      - type: regex
+        pattern: '(?i)(?:navigate|goto|browser_navigate)\s*\(\s*[''"]?javascript:'
+        weight: 95
+        description: "Browser navigation to javascript: URI — code execution"
+      - type: regex
+        pattern: '(?i)(?:url|href|target)\s*[=:]\s*[''"]file:///(?:etc|root|home|proc)'
+        weight: 95
+        description: "file:// URL targeting sensitive system directory"
+    remediation: |
+      Browser navigation guards must reject all URL schemes except http:// and https://.
+      Use a deny-by-default approach for URL scheme validation.

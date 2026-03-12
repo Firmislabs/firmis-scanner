@@ -1,40 +1,35 @@
-import type { APICallPattern, PatternMatch } from '../../types/index.js'
-import type { ParseResult } from '@babel/parser'
-import type * as t from '@babel/types'
+import type { PatternMatch } from '../../types/index.js'
 import { matchRegex } from './regex-matcher.js'
-import { matchAPICall } from './ast-matcher.js'
 
 const NETWORK_APIS = ['fetch', 'axios', 'http.request', 'https.request', 'XMLHttpRequest']
 
 export function matchNetwork(
   pattern: string,
   content: string,
-  ast: ParseResult<t.File> | null,
+  _ast: unknown,
   description: string,
   weight: number
 ): PatternMatch[] {
-  const matches: PatternMatch[] = []
+  // Only match the URL pattern — don't flag every fetch/axios call independently.
+  // The network APIs list is used to NARROW matches: require both a network API
+  // call AND the suspicious pattern (e.g., suspicious TLD) to fire.
+  if (!pattern) return []
 
-  for (const api of NETWORK_APIS) {
-    const [objectName, methodName] = api.split('.')
+  const patternMatches = matchRegex(pattern, content, description, weight)
 
-    if (methodName) {
-      const apiPattern: APICallPattern = {
-        object: objectName,
-        method: methodName,
-      }
-      matches.push(
-        ...matchAPICall(apiPattern, ast || ({} as ParseResult<t.File>), description, weight)
-      )
-    } else {
-      const regexPattern = `\\b${api}\\s*\\(`
-      matches.push(...matchRegex(regexPattern, content, description, weight))
-    }
+  // If no pattern matches, don't fire — a bare fetch() is not exfiltration
+  if (patternMatches.length === 0) return []
+
+  // Check if any network API is present in the file (context confirmation)
+  const hasNetworkAPI = NETWORK_APIS.some((api) => content.includes(api))
+
+  // Return pattern matches, boosting weight if network APIs are also present
+  if (hasNetworkAPI) {
+    return patternMatches.map((m) => ({
+      ...m,
+      weight: Math.min(m.weight + 5, 100),
+    }))
   }
 
-  if (pattern) {
-    matches.push(...matchRegex(pattern, content, description, weight))
-  }
-
-  return matches
+  return patternMatches
 }

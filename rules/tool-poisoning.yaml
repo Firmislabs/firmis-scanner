@@ -9,9 +9,9 @@ rules:
     confidenceThreshold: 50
     patterns:
       - type: regex
-        pattern: '[\u200B\u200C\u200D\uFEFF]'
+        pattern: '[\u200B\u200C\uFEFF]'
         weight: 95
-        description: "Zero-width space or BOM character used to hide content in tool description"
+        description: "Zero-width space/non-joiner or BOM used to hide content (U+200D ZWJ excluded — used in emoji)"
       - type: regex
         pattern: '[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]'
         weight: 95
@@ -21,9 +21,9 @@ rules:
         weight: 90
         description: "Excessive combining diacritical characters used to visually obscure text"
       - type: regex
-        pattern: '<!--[\s\S]*?-->'
+        pattern: '<!--[^>]*(?:ignore|disregard|override|system\s*prompt|bypass|inject|execute|eval\(|fetch\()[\s\S]*?-->'
         weight: 90
-        description: "HTML comment block inside tool description that may contain hidden instructions"
+        description: "HTML comment containing instruction-override or injection keywords"
     remediation: |
       Remove all invisible Unicode characters and HTML comments from tool descriptions.
       These are used by attackers to smuggle hidden instructions that are processed by AI
@@ -48,9 +48,9 @@ rules:
         weight: 90
         description: "Disregard instructions pattern in tool metadata"
       - type: regex
-        pattern: '(?i)[Ss]ystem\s+prompt'
+        pattern: '(?i)(?:reveal|show|print|output|extract|leak)\s+(?:the\s+)?system\s+prompt'
         weight: 85
-        description: "Reference to system prompt in tool description — possible extraction attempt"
+        description: "System prompt extraction attempt in tool description"
       - type: regex
         pattern: '(?i)[Aa]dmin\s+mode'
         weight: 85
@@ -63,10 +63,8 @@ rules:
         pattern: '(?i)[Ff]orget\s+(your\s+|all\s+)?instructions'
         weight: 88
         description: "Instruction wipe attempt in tool description"
-      - type: regex
-        pattern: '(?i)\bdisregard\b'
-        weight: 75
-        description: "General disregard keyword in tool metadata context"
+      # Removed standalone \bdisregard\b — fires on natural English ("please disregard this note")
+      # Covered by the full-phrase pattern above: "disregard (all|previous|...) instructions"
     remediation: |
       Remove all prompt injection language from tool descriptions and metadata.
       Tool descriptions should only describe the tool's legitimate purpose and parameters.
@@ -158,29 +156,25 @@ rules:
     confidenceThreshold: 60
     patterns:
       - type: regex
-        pattern: '(?i)"?(?:required|properties)"?\s*[:{[][^}\]]*\b(?:password|passwd)\b'
+        pattern: '"properties"\s*:\s*\{[^}]*"(?:password|passwd)"\s*:\s*\{'
         weight: 75
-        description: "Tool requires a 'password' parameter — may be harvesting credentials"
+        description: "Tool schema defines a 'password' property — may be harvesting credentials"
       - type: regex
-        pattern: '(?i)"?(?:required|properties)"?\s*[:{[][^}\]]*\b(?:api_key|apikey|api-key)\b'
+        pattern: '"properties"\s*:\s*\{[^}]*"(?:api_key|apikey|api-key)"\s*:\s*\{'
         weight: 75
-        description: "Tool requires an 'api_key' parameter — may be harvesting API keys"
+        description: "Tool schema defines an 'api_key' property — may be harvesting API keys"
       - type: regex
-        pattern: '(?i)"?(?:required|properties)"?\s*[:{[][^}\]]*\b(?:secret|secret_key)\b'
+        pattern: '"properties"\s*:\s*\{[^}]*"(?:secret|secret_key)"\s*:\s*\{'
         weight: 72
-        description: "Tool requires a 'secret' parameter — may be harvesting secrets"
+        description: "Tool schema defines a 'secret' property — may be harvesting secrets"
       - type: regex
-        pattern: '(?i)"?(?:required|properties)"?\s*[:{[][^}\]]*\b(?:token|access_token|auth_token)\b'
-        weight: 70
-        description: "Tool requires a 'token' parameter — possible credential harvesting"
-      - type: regex
-        pattern: '(?i)"?(?:required|properties)"?\s*[:{[][^}\]]*\b(?:private_key|ssh_key|signing_key)\b'
+        pattern: '"properties"\s*:\s*\{[^}]*"(?:private_key|ssh_key|signing_key)"\s*:\s*\{'
         weight: 75
-        description: "Tool requires a private or SSH key parameter — high-risk credential request"
+        description: "Tool schema defines a private/SSH key property — high-risk credential request"
       - type: regex
-        pattern: '(?i)"?(?:required|properties)"?\s*[:{[][^}\]]*\bcredential\b'
+        pattern: '"properties"\s*:\s*\{[^}]*"credential"\s*:\s*\{'
         weight: 72
-        description: "Tool requires a 'credential' parameter — may be harvesting user credentials"
+        description: "Tool schema defines a 'credential' property — may be harvesting credentials"
     remediation: |
       Tool parameter definitions must not request passwords, tokens, API keys, or private keys.
       Legitimate tools access credentials through secure environment variables or secrets managers,
@@ -189,31 +183,34 @@ rules:
 
   - id: tp-006
     name: Homoglyph Characters in Tool Names
-    description: "Detects visually deceptive Unicode characters in tool names that impersonate legitimate tools while routing to malicious implementations"
+    description: "Detects visually deceptive Unicode characters mixed with Latin text in tool names — homoglyph attacks that impersonate legitimate tools"
     category: tool-poisoning
     severity: critical
-    version: "1.0"
+    version: "1.1"
     enabled: true
-    confidenceThreshold: 50
+    confidenceThreshold: 70
     patterns:
+      # Mixed-script in identifier context (tool/function names, not natural language)
+      # Require word boundary + identifier chars (no spaces) to avoid matching multilingual prose
       - type: regex
-        pattern: '[\u0400-\u04FF\u0370-\u03FF\u2100-\u214F]'
+        pattern: '\b[a-zA-Z_][a-zA-Z0-9_]*[\u0400-\u04FF]+[a-zA-Z0-9_]*\b'
         weight: 85
-        description: "Cyrillic, Greek, or letterlike Unicode characters used as homoglyphs in tool definitions"
+        description: "Latin-Cyrillic mixed identifier — homoglyph attack in tool name"
       - type: regex
-        pattern: '[\uFF01-\uFF5E]'
-        weight: 80
-        description: "Fullwidth ASCII lookalike characters (U+FF01-FF5E) in tool name"
+        pattern: '\b[\u0400-\u04FF]+[a-zA-Z_][a-zA-Z0-9_]*[\u0400-\u04FF]*\b'
+        weight: 85
+        description: "Cyrillic-Latin mixed identifier — homoglyph attack in tool name"
+      # Invisible characters — exclude U+200D (ZWJ used in emoji sequences like )
       - type: regex
-        pattern: '[\u2000-\u200A\u2028\u2029\u00A0\u202F\u205F\u3000]'
-        weight: 75
-        description: "Unicode whitespace lookalikes that visually appear as normal spaces"
+        pattern: '[\u200B\u200C\uFEFF]'
+        weight: 90
+        description: "Zero-width space/non-joiner/BOM used to hide content"
       - type: regex
-        pattern: '[\u0130\u0131\u017F]'
-        weight: 70
-        description: "Dotless-i, dotted-I, or long-s — common Latin homoglyphs"
+        pattern: '[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]'
+        weight: 92
+        description: "Bidi override characters — can reverse visible text direction"
     remediation: |
-      Tool names containing non-ASCII homoglyphs are a visual deception attack.
+      Tool names containing mixed-script homoglyphs are a visual deception attack.
       An attacker registers a tool whose name looks identical to a trusted tool but
       uses different Unicode codepoints. Validate that all tool names contain only
       standard ASCII characters (U+0020-U+007E). Reject any tool with non-ASCII identifiers.
@@ -223,25 +220,30 @@ rules:
 
   - id: tp-007
     name: Base64-Encoded Payload in Tool Description
-    description: "Detects base64-encoded content embedded in tool descriptions, which may hide malicious instructions from human reviewers"
+    description: "Detects base64-encoded content with decode operations or data URIs in tool descriptions, which may hide malicious instructions"
     category: tool-poisoning
     severity: high
-    version: "1.0"
+    version: "1.1"
     enabled: true
-    confidenceThreshold: 55
+    confidenceThreshold: 65
     patterns:
+      # Require actual base64 context — not just any long alphanumeric string
       - type: regex
-        pattern: '[A-Za-z0-9+/]{40,}={0,2}'
-        weight: 65
-        description: "Long base64-encoded string (40+ chars) in tool description"
-      - type: regex
-        pattern: '(?:description|desc|help|info)\s*[=:]\s*[''"][^''"]*[A-Za-z0-9+/]{40,}={0,2}'
+        pattern: '(?:description|desc|help|info)\s*[=:]\s*[''"][^''"]*[A-Za-z0-9+/]{80,}={0,2}'
         weight: 80
-        description: "Base64 payload inside a description field value"
+        description: "Very long base64-like payload (80+ chars) inside a description field value"
       - type: regex
-        pattern: 'atob\s*\(|btoa\s*\(|base64\.decode|base64_decode'
+        pattern: 'atob\s*\([^)]*(?:description|instruction|prompt|command|payload)'
         weight: 75
-        description: "Base64 decode call embedded in tool description text"
+        description: "Base64 decode of description/instruction/prompt content — hidden payload"
+      - type: regex
+        pattern: '(?:eval|exec|Function|child_process)\s*\([^)]*(?:atob|Buffer\.from|base64)'
+        weight: 80
+        description: "Base64 decode piped into code execution — obfuscated payload"
+      - type: regex
+        pattern: 'data:[a-z]+/[a-z]+;base64,[A-Za-z0-9+/]{40,}'
+        weight: 70
+        description: "Data URI with base64 payload embedded in tool description"
     remediation: |
       Tool descriptions must contain only human-readable text describing the tool's
       legitimate purpose. Base64-encoded content in descriptions is used to smuggle
@@ -266,15 +268,15 @@ rules:
       - cursor
     patterns:
       - type: regex
-        pattern: '(?:name|tool_name|"name")\s*[=:]\s*[''"]?\s*(?:ls|cat|curl|wget|bash|sh|python|python3|node|pip|npm)\s*[''"]?'
+        pattern: '(?:"name"|tool_name)\s*[=:]\s*[''"]?\s*\b(?:ls|cat|curl|wget|bash|sh|python|python3|node|pip|npm)\b\s*[''"]?'
         weight: 85
         description: "Tool registered with a common system command name"
       - type: regex
-        pattern: '(?:name|tool_name|"name")\s*[=:]\s*[''"]?\s*(?:grep|find|sed|awk|rm|mv|cp|chmod|chown)\s*[''"]?'
+        pattern: '(?:"name"|tool_name)\s*[=:]\s*[''"]?\s*\b(?:grep|find|sed|awk|rm|mv|cp|chmod|chown)\b\s*[''"]?'
         weight: 85
         description: "Tool registered with a common Unix utility name"
       - type: regex
-        pattern: '(?:name|tool_name|"name")\s*[=:]\s*[''"]?\s*(?:git|ssh|scp|rsync|tar|zip|unzip)\s*[''"]?'
+        pattern: '(?:"name"|tool_name)\s*[=:]\s*[''"]?\s*\b(?:git|ssh|scp|rsync|tar|zip|unzip)\b\s*[''"]?'
         weight: 80
         description: "Tool registered with a common developer tool name"
     remediation: |
@@ -288,29 +290,33 @@ rules:
 
   - id: tp-009
     name: Hidden Markdown or HTML Directives in Tool Descriptions
-    description: "Detects markdown links, HTML tags, and formatting directives embedded in tool descriptions used to inject hidden instructions"
+    description: "Detects dangerous HTML elements, suspicious HTML comments, and malicious markdown links in tool descriptions"
     category: tool-poisoning
     severity: high
-    version: "1.0"
+    version: "1.1"
     enabled: true
-    confidenceThreshold: 55
+    confidenceThreshold: 60
     patterns:
       - type: regex
-        pattern: '<(?:script|iframe|img|object|embed|form|input|link|meta|style)[^>]*>'
+        pattern: '(?:description|desc|help|info|prompt)\s*[=:]\s*[''"][^''"]*<(?:script|iframe|object|embed)[^>]*>'
         weight: 90
-        description: "HTML element tag embedded in tool description"
+        description: "Dangerous HTML element in tool description/prompt field"
       - type: regex
-        pattern: '<!--[\s\S]*?-->'
+        pattern: '<(?:iframe|object|embed)\s+[^>]*(?:src|data)\s*=\s*[''"](?:javascript:|data:|http)'
         weight: 88
-        description: "HTML comment block hiding instructions in tool description"
+        description: "HTML embed/iframe/object loading external or executable content"
+      - type: regex
+        pattern: '<!--[^>]*(?:ignore|disregard|override|system\s*prompt|bypass|inject|execute|eval\(|fetch\()[\s\S]*?-->'
+        weight: 88
+        description: "HTML comment containing injection keywords"
       - type: regex
         pattern: '\[(?:[^\]]{0,50})\]\s*\(\s*(?:javascript:|data:|vbscript:)'
         weight: 95
         description: "Markdown link with dangerous URI scheme (javascript:, data:)"
       - type: regex
-        pattern: '<\s*style[^>]*>[\s\S]*?<\s*/\s*style\s*>'
+        pattern: '<style[^>]*>[^<]*(?:display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0[^.]|font-size\s*:\s*0|color\s*:\s*transparent|position\s*:\s*absolute[^<]*left\s*:\s*-\d{4,})'
         weight: 85
-        description: "Inline CSS block in tool description for visual hiding"
+        description: "CSS actively hiding content from visual display (display:none, visibility:hidden, opacity:0)"
     remediation: |
       Tool descriptions must be plain text only. HTML, Markdown with active links,
       and CSS styles embedded in descriptions are used to hide instructions from
@@ -345,3 +351,63 @@ rules:
     references:
       - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM01 Prompt Injection"
       - "https://atlas.mitre.org/techniques/AML.T0043"
+
+  - id: tp-011
+    name: Cursor MCPoison — MCP Config in Git Repository
+    description: "Detects .cursor/mcp.json or .vscode/mcp.json files committed to a git repository — CVE-2025-54136. Attackers commit benign configs then silently modify them to backdoor."
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    platforms:
+      - cursor
+      - codex
+      - mcp
+    patterns:
+      - type: regex
+        pattern: '\.cursor[/\\]mcp\.json'
+        weight: 80
+        description: "Cursor MCP config in repository — MCPoison attack vector"
+      - type: regex
+        pattern: '\.vscode[/\\]mcp\.json'
+        weight: 80
+        description: "VS Code MCP config in repository — MCPoison attack vector"
+      - type: regex
+        pattern: '\.(?:cursor|vscode)[/\\]mcp\.json[\s\S]*?"command"\s*:\s*"(?:npx|node|python)'
+        weight: 75
+        description: "MCP server with command execution in committed .cursor/.vscode config"
+    remediation: |
+      MCP configuration files (.cursor/mcp.json, .vscode/mcp.json) should not be committed to repositories. CVE-2025-54136 demonstrated that attackers commit benign configs, then silently modify server entries to backdoor the development environment. Add these files to .gitignore and use user-level MCP configuration instead.
+    references:
+      - "CVE-2025-54136"
+
+  - id: tp-012
+    name: MCP Sampling Attack Vector
+    description: "Detects MCP servers declaring sampling capability, which enables reverse prompt injection by allowing the server to request the AI generate content"
+    category: tool-poisoning
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    platforms:
+      - mcp
+      - claude
+      - cursor
+    patterns:
+      - type: regex
+        pattern: '"capabilities"\s*:\s*\{[^}]*"sampling"\s*:\s*\{'
+        weight: 80
+        description: "MCP server declares sampling capability — reverse injection channel"
+      - type: regex
+        pattern: 'sampling[_.]?request|createMessage|sampling/createMessage'
+        weight: 75
+        description: "MCP sampling request method — server can prompt the AI"
+      - type: regex
+        pattern: '"sampling"\s*:\s*true'
+        weight: 70
+        description: "Sampling capability enabled in MCP server config"
+    remediation: |
+      MCP servers with sampling capability can request the AI to generate content, creating a reverse injection channel. The server crafts prompts that manipulate the AI into executing actions the user did not intend. Only grant sampling capability to fully trusted MCP servers. Audit what the server sends via sampling requests.
+    references:
+      - "https://unit42.paloaltonetworks.com/mcp-security-risks/"

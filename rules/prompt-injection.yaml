@@ -109,9 +109,9 @@ rules:
         weight: 85
         description: Fake message delimiter
       - type: regex
-        pattern: "</?(?:system|assistant|user)>"
+        pattern: "</?(?:system|assistant)>"
         weight: 80
-        description: XML-style role tags
+        description: XML-style system/assistant role injection tags
       - type: regex
         pattern: "\\[(?:SYSTEM|INST|/INST)\\]"
         weight: 85
@@ -141,25 +141,25 @@ rules:
 
   - id: prompt-007
     name: Context Manipulation
-    description: Detects attempts to manipulate conversation context
+    description: Detects false authorization claims and fake privilege escalation in tool descriptions
     category: prompt-injection
     severity: medium
-    version: "1.0.0"
+    version: "1.1.0"
     enabled: true
-    confidenceThreshold: 70
+    confidenceThreshold: 75
     patterns:
       - type: regex
-        pattern: "(?i)the (user|human) (actually |really )?(wants|needs|asked)"
-        weight: 75
-        description: False user intent claim
+        pattern: "(?i)the (?:user|human) (?:actually |really )?(?:wants|needs|asked) (?:you |me )?to (?:ignore|bypass|skip|disable)"
+        weight: 80
+        description: False user intent claim to bypass safety
       - type: regex
-        pattern: "(?i)this is (a |an )?(test|authorized|approved)"
+        pattern: "(?i)this is (?:a |an )?(?:authorized|approved) (?:penetration |security )?test"
         weight: 70
         description: False authorization claim
       - type: regex
-        pattern: "(?i)(?:admin|developer|owner) mode"
+        pattern: "(?i)(?:enter|activate|enable|switch to) (?:admin|developer|owner|debug|god) mode"
         weight: 80
-        description: Fake privilege escalation
+        description: Fake privilege escalation command
     remediation: |
       Remove context manipulation attempts. These try to mislead the AI about user intent.
 
@@ -290,3 +290,83 @@ rules:
         description: Unicode tag character (surrogate pair for U+E0001-U+E007F)
     remediation: |
       Remove Unicode tag characters. These are invisible characters that can hide malicious instructions.
+
+  - id: prompt-014
+    name: Hypothetical Framing Prompt Injection
+    description: "Detects hypothetical/imaginative framing used to bypass safety guardrails by asking the AI to imagine having access to restricted resources"
+    category: prompt-injection
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    patterns:
+      - type: regex
+        pattern: "(?i)imagine\\s+(?:you\\s+(?:are|have|were)|that\\s+you|a\\s+(?:developer|admin|hacker))\\s+(?:who\\s+has|with)\\s+(?:access|permission|root)"
+        weight: 85
+        description: "Hypothetical framing — imagine you have access to..."
+      - type: regex
+        pattern: "(?i)(?:let's|let us)\\s+(?:say|pretend|assume|suppose)\\s+(?:you|I|we)\\s+(?:have|had|were|are)\\s+(?:access|permission|admin|root)"
+        weight: 80
+        description: "Hypothetical scenario to bypass access controls"
+      - type: regex
+        pattern: "(?i)in\\s+(?:a|this)\\s+(?:hypothetical|theoretical|imaginary)\\s+(?:scenario|situation|world)"
+        weight: 70
+        description: "Explicit hypothetical framing preamble"
+      - type: regex
+        pattern: "(?i)(?:description|prompt|message|content|instruction)\\s*[=:]\\s*['\"][^'\"]*(?:for\\s+(?:educational|research|testing)\\s+purposes|just\\s+(?:for|as\\s+a)\\s+(?:fun|thought)\\s+experiment)"
+        weight: 65
+        description: "Educational/research framing in a prompt/message assignment — used to justify restricted actions"
+    remediation: |
+      Hypothetical framing is a prompt injection technique where the attacker asks the AI to imagine having elevated access. The AI may then act on the hypothetical scenario as if it were real. Tool descriptions should never contain hypothetical prompts or imaginative framing of access to restricted resources.
+
+  - id: prompt-015
+    name: Unsafe Markdown HTML Rendering (XSS via innerHTML)
+    description: "Detects markdown parsers rendering directly to innerHTML without sanitization — GHSA-r294"
+    category: prompt-injection
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    platforms:
+      - openclaw
+      - claude
+      - mcp
+    patterns:
+      - type: regex
+        pattern: '(?:innerHTML|outerHTML)\s*=\s*(?:marked\.parse|marked\(|markdownToHtml|renderMarkdown)\s*\('
+        weight: 90
+        description: "Markdown rendered directly to innerHTML — XSS via unsanitized HTML"
+      - type: regex
+        pattern: 'innerHTML\s*\+=?\s*[^;]*(?:message|content|body|text|description|metadata)'
+        weight: 70
+        description: "Dynamic content interpolated into innerHTML — potential XSS"
+    remediation: |
+      Never render user-controlled markdown directly to innerHTML without HTML sanitization.
+      Use DOMPurify or override the HTML token renderer in marked.js.
+    references:
+      - "GHSA-r294-2894-92j3"
+
+  - id: prompt-016
+    name: External Metadata Injected into System Prompt
+    description: "Detects Slack/channel metadata interpolated into system prompts — CVE-2026-24764"
+    category: prompt-injection
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    platforms:
+      - openclaw
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:systemPrompt|system_prompt|systemMessage|basePrompt)\s*[+=:]\s*[^;{]*(?:channel\.topic|channel\.description|channelTopic|channelDescription)'
+        weight: 90
+        description: "Channel topic/description directly interpolated into system prompt"
+      - type: regex
+        pattern: '(?i)\$\{?channel\.(?:topic|description|purpose)\}?'
+        weight: 75
+        description: "Template interpolation of channel topic/description"
+    remediation: |
+      External metadata from third-party platforms must never be interpolated into system prompts.
+      This creates a prompt injection channel for anyone with channel edit permissions.
+    references:
+      - "CVE-2026-24764"

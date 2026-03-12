@@ -69,11 +69,11 @@ rules:
     confidenceThreshold: 50
     patterns:
       - type: regex
-        pattern: '"[^"]+"\s*:\s*"\*"'
+        pattern: '"(?:dependencies|devDependencies)"\s*:\s*\{[^}]*"[^"]+"\s*:\s*"\*"'
         weight: 90
-        description: "Wildcard version (*) — accepts any version including malicious"
+        description: "Wildcard version (*) in package.json dependencies"
       - type: regex
-        pattern: '"(dependencies|devDependencies)"[\s\S]*?"[^"]+"\s*:\s*">='
+        pattern: '"(?:dependencies|devDependencies)"\s*:\s*\{[^}]*"[^"]+"\s*:\s*">='
         weight: 60
         description: "Open-ended version range (>=) in dependencies — no upper bound"
       - type: regex
@@ -386,3 +386,91 @@ rules:
         description: "Typosquats of flask"
     remediation: |
       Verify the package name is correct. This appears to be a typosquat of a popular package.
+
+  - id: supply-009
+    name: SANDWORM_MODE NPM Worm Packages
+    description: "Detects typosquatted npm packages from the SANDWORM_MODE worm campaign (Feb 2026) targeting AI coding tools"
+    category: supply-chain
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: string-literal
+        pattern: '"claude-codee"'
+        weight: 95
+        description: "claude-codee — SANDWORM typosquat of claude-code"
+      - type: string-literal
+        pattern: '"claude--code"'
+        weight: 95
+        description: "claude--code — SANDWORM typosquat of claude-code"
+      - type: string-literal
+        pattern: '"claudecode"'
+        weight: 90
+        description: "claudecode — SANDWORM typosquat of claude-code"
+      - type: string-literal
+        pattern: '"supports-colours"'
+        weight: 95
+        description: "supports-colours — SANDWORM typosquat of supports-color"
+      - type: string-literal
+        pattern: '"supports-colour"'
+        weight: 95
+        description: "supports-colour — SANDWORM typosquat of supports-color"
+      - type: string-literal
+        pattern: '"suppports-color"'
+        weight: 95
+        description: "suppports-color — SANDWORM typosquat with triple p"
+    remediation: |
+      This package is part of the SANDWORM_MODE npm worm campaign (Feb 2026) that targets AI coding tools. It performs multi-stage attacks: credential harvest, MCP injection, git hook persistence, and self-propagation via npm publish. Remove immediately and audit your system.
+    references:
+      - "https://socket.dev/blog/sandworm-mode-ai-worm"
+
+  - id: supply-010
+    name: SANDWORM Git Hook Persistence
+    description: "Detects git template directory manipulation used by the SANDWORM_MODE worm for persistence across new git repos"
+    category: supply-chain
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'git\s+config\s+--global\s+init\.templateDir'
+        weight: 95
+        description: "Global git template directory modification — SANDWORM persistence mechanism"
+      - type: regex
+        pattern: 'git\s+config\s+--global\s+core\.hooksPath'
+        weight: 90
+        description: "Global git hooks path override — persistence via git hooks"
+      - type: regex
+        pattern: '"postinstall"\s*:\s*"[^"]*npm\s+publish'
+        weight: 95
+        description: "Postinstall script that runs npm publish — worm self-propagation"
+    remediation: |
+      Modifying global git template directories or hooks paths is a persistence technique. The SANDWORM worm uses this to inject malicious hooks into every new git repo. Inspect and restore your git config: git config --global --unset init.templateDir
+
+  - id: supply-011
+    name: Vulnerable mcp-remote Package (CVE-2025-6514)
+    description: "Detects mcp-remote versions 0.0.5-0.1.15 with critical RCE vulnerability (CVSS 9.6)"
+    category: supply-chain
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    platforms:
+      - mcp
+      - claude
+      - cursor
+    patterns:
+      - type: regex
+        pattern: '"mcp-remote"\s*:\s*"[~^]?0\.(?:0\.[5-9]|1\.[0-9]|1\.1[0-5])'
+        weight: 95
+        description: "mcp-remote 0.0.5-0.1.15 — RCE via arbitrary OS command execution"
+      - type: string-literal
+        pattern: '"mcp-remote"'
+        weight: 60
+        description: "mcp-remote dependency present — verify version is >= 0.1.16"
+    remediation: |
+      mcp-remote versions 0.0.5 through 0.1.15 have a critical RCE vulnerability (CVE-2025-6514, CVSS 9.6) allowing arbitrary OS command execution. Upgrade immediately to >= 0.1.16.
+    references:
+      - "CVE-2025-6514"

@@ -99,21 +99,21 @@ rules:
     confidenceThreshold: 60
     patterns:
       - type: regex
-        pattern: 'setTimeout\s*\([^,]+,\s*(3[0-9]{4,}|[4-9][0-9]{4,}|[0-9]{6,})'
+        pattern: 'setTimeout\s*\(\s*(?:async\s+)?(?:function|\(\))\s*(?:=>)?\s*\{[^}]*(?:fetch|exec|spawn|request|http|child_process)[^}]*\}\s*,\s*(?:3[0-9]{4,}|[4-9][0-9]{4,}|[0-9]{6,})'
         weight: 75
-        description: "setTimeout with delay > 30 seconds — potential deferred malicious action"
+        description: "setTimeout with delay > 30s containing network/exec call — potential deferred malicious action"
       - type: regex
-        pattern: 'setInterval\s*\([^,]+,\s*(3[0-9]{4,}|[4-9][0-9]{4,}|[0-9]{6,})'
+        pattern: 'setInterval\s*\(\s*(?:async\s+)?(?:function|\(\))\s*(?:=>)?\s*\{[^}]*(?:fetch|exec|spawn|request|http|child_process)[^}]*\}\s*,\s*(?:3[0-9]{4,}|[4-9][0-9]{4,}|[0-9]{6,})'
         weight: 70
-        description: "setInterval with long delay — potential persistent polling"
+        description: "setInterval with long delay containing network/exec — potential persistent polling"
       - type: regex
         pattern: 'time\.sleep\s*\(\s*(3[0-9]|[4-9][0-9]|[0-9]{3,})'
         weight: 75
         description: "Python time.sleep > 30 seconds — potential deferred action"
       - type: regex
-        pattern: '["''](0|\*)\s+(0|\*)\s+(\*)\s+(\*)\s+(\*)["\x27]'
+        pattern: '(?:exec|spawn|child_process|system|eval)\s*\([^)]*["\x27](?:0|\*)\s+(?:0|\*)\s+\*\s+\*\s+\*["\x27]'
         weight: 70
-        description: "Cron-style pattern in string literal — scheduled execution"
+        description: "Cron expression combined with command execution — scheduled malicious action"
     remediation: |
       Long time delays in AI agent skills are suspicious. Legitimate skills should execute promptly, not schedule deferred actions.
 
@@ -180,3 +180,59 @@ rules:
         description: "Writing to .aiderignore file"
     remediation: |
       Skills should not modify Aider AI agent configuration. This could inject malicious instructions or change security settings.
+
+  - id: mem-008
+    name: Memory Injection via Instruction-Like Content (MINJA)
+    description: "Detects instruction-like content injected into agent memory files — MINJA attack (NeurIPS 2025) achieves 95%+ success rate via query-only interaction"
+    category: agent-memory-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:MEMORY|\.memories|\.claude/memory)[\s\S]{0,200}(?:ignore|disregard|override|forget)\s+(?:all\s+)?(?:previous\s+)?instructions'
+        weight: 90
+        description: "Instruction override injected into memory file context"
+      - type: regex
+        pattern: '(?i)(?:MEMORY|\.memories)[\s\S]{0,200}(?:you\s+(?:are|must|should|will)\s+(?:now|always|never))'
+        weight: 85
+        description: "Behavioral directive injected into memory file"
+      - type: regex
+        pattern: '(?i)(?:MEMORY|\.memories)[\s\S]{0,200}(?:system\s*:\s*|<system>|role:\s*system)'
+        weight: 90
+        description: "Fake system prompt injected into memory file"
+      - type: regex
+        pattern: '(?i)(?:when\s+(?:the\s+)?user\s+asks|if\s+(?:the\s+)?user\s+(?:requests|asks|wants))[\s\S]{0,100}(?:instead|actually|really|always)'
+        weight: 80
+        description: "Conditional override instruction in memory — classic MINJA pattern"
+    remediation: |
+      Memory injection (MINJA, NeurIPS 2025) poisons agent persistent memory with instruction-like content that overrides the agent's behavior on future queries. Memory files should contain only factual data, never behavioral directives. Sanitize memory content by stripping instruction patterns before persisting.
+    references:
+      - "https://arxiv.org/abs/2406.11850"
+
+  - id: mem-009
+    name: Inter-Session Message Without Provenance
+    description: "Detects sessions_send patterns where messages lack provenance markers — GHSA-w5c7"
+    category: agent-memory-poisoning
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    platforms:
+      - openclaw
+    patterns:
+      - type: regex
+        pattern: '(?i)sessions_send\s*\([^)]*role\s*[=:]\s*[''"]user[''"]'
+        weight: 80
+        description: "sessions_send with role: user — may inject as trusted user instruction"
+      - type: regex
+        pattern: '(?i)inputProvenance\s*[=:]\s*(?:null|undefined|false|[''"][\s]*[''"])'
+        weight: 90
+        description: "inputProvenance explicitly null or empty — missing source attribution"
+    remediation: |
+      Inter-session messages must carry explicit provenance metadata.
+      Add inputProvenance: { kind: "inter_session", sessionId: ... } to all messages
+      delivered via sessions_send. Without this, a compromised session can inject instructions.
+    references:
+      - "GHSA-w5c7-9qqw-6645"

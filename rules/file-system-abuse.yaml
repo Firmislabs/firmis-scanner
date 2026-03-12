@@ -393,3 +393,57 @@ rules:
     references:
       - "https://owasp.org/www-project-top-10-for-large-language-model-applications/ LLM06 Excessive Agency"
       - "https://atlas.mitre.org/techniques/AML.T0049"
+
+  - id: fs-011
+    name: Config Include Path Traversal
+    description: "Detects $include directives referencing absolute paths or directory traversal — CVE-2026-32061"
+    category: file-system-abuse
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    platforms:
+      - openclaw
+    patterns:
+      - type: regex
+        pattern: '\$include\s*[=:]\s*[''"]?(?:/(?:etc|root|home|proc|usr|var)|~)'
+        weight: 95
+        description: "$include directive referencing an absolute system path"
+      - type: regex
+        pattern: '\$include\s*[=:]\s*[''"]?(?:\.\./){2,}'
+        weight: 90
+        description: "$include directive with directory traversal sequences"
+      - type: regex
+        pattern: '\$include\s*[=:]\s*[''"]?[^''"]*(?:passwd|shadow|sudoers|credentials|\.env|id_rsa)'
+        weight: 95
+        description: "$include targeting a known sensitive file"
+    remediation: |
+      Validate that all $include paths resolve within the config root after symlink resolution.
+      Reject absolute paths and sequences containing '../'.
+    references:
+      - "CVE-2026-32061"
+
+  - id: fs-012
+    name: Local File Path in Media URL Parameter
+    description: "Detects media URL parameters set to local filesystem paths — CVE-2026-26321"
+    category: file-system-abuse
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    platforms:
+      - openclaw
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:mediaUrl|media_url|mediaPath|media_path)\s*[=:]\s*[''"]?(?:/(?:etc|home|root|proc|usr|var|tmp)|~[/\\])'
+        weight: 90
+        description: "media URL/path parameter set to an absolute system path"
+      - type: regex
+        pattern: '(?i)(?:mediaUrl|media_path)\s*[=:]\s*[''"]?file://'
+        weight: 90
+        description: "media parameter using file:// scheme — local file access"
+    remediation: |
+      Media URL parameters must be validated against approved schemes (https:// only).
+      Local filesystem paths must never be accepted as media sources.
+    references:
+      - "CVE-2026-26321"

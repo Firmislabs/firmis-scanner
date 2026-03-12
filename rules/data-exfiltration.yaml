@@ -1,49 +1,51 @@
 rules:
   - id: exfil-001
     name: Suspicious External HTTP Request
-    description: Detects HTTP requests to suspicious or unknown domains
+    description: Detects HTTP requests to suspicious TLDs or tunneling services
     category: data-exfiltration
     severity: high
-    version: "1.0.0"
+    version: "1.1.0"
     enabled: true
     confidenceThreshold: 70
     patterns:
       - type: network
-        pattern: "https?://[^/]*\\.(tk|ml|ga|cf|gq|xyz|top|work|click)/"
+        pattern: "https?://[^/]*\\.(tk|ml|ga|cf|gq)/"
         weight: 85
-        description: Request to suspicious TLD
+        description: Request to known-malicious TLD (.tk/.ml/.ga/.cf/.gq)
       - type: regex
         pattern: "fetch\\([\"'][^\"']*\\.(tk|ml|ga|cf|gq)[\"']"
         weight: 80
-        description: Fetch to suspicious domain
+        description: Fetch to known-malicious TLD
       - type: regex
-        pattern: "ngrok\\.io|localtunnel\\.me|serveo\\.net"
+        pattern: '(?:fetch|request|connect|http\.get|axios|url\s*[=:])\s*[^;]*(?:ngrok\.io|localtunnel\.me|serveo\.net)'
         weight: 75
         description: Request to tunneling service
       - type: regex
-        pattern: 'requests\.(post|put)\s*\('
-        weight: 60
-        description: Python requests library POST/PUT (potential exfiltration)
-      - type: regex
-        pattern: 'urllib\.(request\.urlopen|parse)'
-        weight: 50
-        description: Python urllib network access
+        pattern: 'requests\.(post|put)\s*\([^)]*(?:env|secret|token|password|credential|api_key)'
+        weight: 75
+        description: Python HTTP POST/PUT sending sensitive data
     remediation: |
       Review all external HTTP requests. Ensure they go to legitimate, expected endpoints.
 
   - id: exfil-002
     name: Base64 Encoded Data Transmission
-    description: Detects base64 encoding before network transmission
+    description: Detects base64 encoding combined with network transmission in the same file
     category: data-exfiltration
     severity: medium
-    version: "1.0.0"
+    version: "1.1.0"
     enabled: true
-    confidenceThreshold: 65
+    confidenceThreshold: 55
     patterns:
+      # YARA rule: detect btoa/base64 encoding piped into network body
+      # Requires encode→variable→body flow, not just co-occurrence in same file
       - type: regex
-        pattern: "btoa\\(.*\\).*fetch|Buffer\\.from\\(.*\\)\\.toString\\(['\"]base64['\"]\\).*(?:fetch|axios|http)"
         weight: 80
-        description: Base64 encode before HTTP request
+        description: "Base64 encoding result sent in HTTP body (excludes LLM API media patterns)"
+        pattern: '(?:btoa|Buffer\.from\([^)]*\)\.toString\([''"]base64[''"\)]|base64\.b64encode)\s*\([^)]*\)[\s\S]{0,200}(?:body|data|payload)\s*[=:](?![\s\S]{0,50}(?:inline_data|image_url|content_type|media_type|mime))'
+      - type: regex
+        weight: 75
+        description: "Base64-encoded data assigned to POST body (excludes LLM API media patterns)"
+        pattern: '(?:body|data|payload)\s*[=:]\s*(?![\s\S]{0,50}(?:inline_data|image_url|content_type|media_type|mime))[^;]*(?:btoa|\.toString\([''"]base64[''"\)]|b64encode)'
       - type: regex
         pattern: "encodeURIComponent\\(.*btoa"
         weight: 70
@@ -109,7 +111,7 @@ rules:
     confidenceThreshold: 70
     patterns:
       - type: regex
-        pattern: "clipboard\\.(read|write)Text|pbcopy|pbpaste|xclip|xsel"
+        pattern: 'clipboard\.readText|pbpaste|xclip\s+-o|xsel\s+-o'
         weight: 75
         description: Clipboard access API or command
       - type: import
@@ -121,25 +123,25 @@ rules:
 
   - id: exfil-006
     name: Screenshot Capture
-    description: Detects screenshot capture functionality
+    description: Detects screenshot capture API calls or library imports
     category: data-exfiltration
     severity: high
-    version: "1.0.0"
+    version: "1.1.0"
     enabled: true
     confidenceThreshold: 80
     patterns:
       - type: regex
-        pattern: "screenshot|screencapture|screen\\.capture"
+        pattern: "screencapture\\s|screen\\.capture\\(|captureScreen\\("
         weight: 80
-        description: Screenshot function or command
+        description: Screenshot capture API call
       - type: import
         pattern: "screenshot-desktop"
         weight: 85
-        description: Screenshot capture library
+        description: Screenshot capture library import
       - type: regex
-        pattern: "puppeteer.*screenshot|playwright.*screenshot"
-        weight: 60
-        description: Browser automation screenshot
+        pattern: "puppeteer.*\\.screenshot\\(|playwright.*\\.screenshot\\("
+        weight: 40
+        description: Browser automation screenshot API call
     remediation: |
       Screenshot capture is highly sensitive. Ensure this is explicitly requested by the user.
 
@@ -153,13 +155,13 @@ rules:
     confidenceThreshold: 65
     patterns:
       - type: regex
-        pattern: "glob\\(.*\\).*readFile|readdir.*readFile"
+        pattern: 'glob\(.*\).*readFile[\s\S]{0,300}(?:fetch|request|http|axios|post|upload|send)'
         weight: 70
-        description: Glob then read pattern
+        description: "Glob then read then network transmission"
       - type: regex
-        pattern: "walk.*readFileSync|recursive.*fs\\.read"
+        pattern: 'walk.*readFileSync[\s\S]{0,300}(?:fetch|request|http|axios|post|upload|send)'
         weight: 75
-        description: Recursive file reading
+        description: "Recursive file reading then network transmission"
     remediation: |
       Bulk file reading should be scoped to specific directories. Review the access pattern.
 
