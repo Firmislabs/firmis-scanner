@@ -6,6 +6,7 @@ import type { FirmisConfig, ScanResult } from '../../src/types/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixturesPath = path.join(__dirname, '../fixtures')
+const samplesPath = path.join(__dirname, '../../samples')
 
 describe('Integration: Must-Catch - Critical Malicious Patterns', () => {
   describe('OpenClaw Malicious Fixture', () => {
@@ -14,7 +15,7 @@ describe('Integration: Must-Catch - Critical Malicious Patterns', () => {
     beforeAll(async () => {
       const config: FirmisConfig = {
         platforms: ['openclaw'],
-        targetPath: path.join(fixturesPath, 'openclaw-malicious'),
+        targetPath: path.join(samplesPath, 'openclaw-malicious'),
         severity: 'low',
         output: 'terminal',
         verbose: false,
@@ -136,7 +137,7 @@ describe('Integration: Must-Catch - Critical Malicious Patterns', () => {
     beforeAll(async () => {
       const config: FirmisConfig = {
         platforms: ['openclaw'],
-        targetPath: path.join(fixturesPath, 'malware-patterns'),
+        targetPath: path.join(samplesPath, 'malware-patterns'),
         severity: 'low',
         output: 'terminal',
         verbose: false,
@@ -164,7 +165,7 @@ describe('Integration: Must-Catch - Critical Malicious Patterns', () => {
     beforeAll(async () => {
       const config: FirmisConfig = {
         platforms: ['openclaw'],
-        targetPath: path.join(fixturesPath, 'memory-poisoning'),
+        targetPath: path.join(samplesPath, 'memory-poisoning'),
         severity: 'low',
         output: 'terminal',
         verbose: false,

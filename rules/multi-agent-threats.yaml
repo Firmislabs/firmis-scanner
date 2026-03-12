@@ -1,0 +1,88 @@
+rules:
+  - id: mat-001
+    name: Cross-Agent Trust Without Verification
+    description: "Multi-agent configs where agents can modify each other''s state without mutual authentication or identity verification"
+    category: cross-agent-propagation
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    platforms:
+      - claude
+      - mcp
+      - codex
+      - cursor
+      - crewai
+      - autogpt
+      - openclaw
+      - nanobot
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:agent_to_agent|inter_agent|cross_agent).*(?:write|modify|invoke|call)'
+        weight: 80
+        description: "Agent-to-agent write or invoke without verification"
+      - type: regex
+        pattern: '(?i)(?:shared|common).*(?:directory|folder|workspace).*(?:writable|write|rw)'
+        weight: 75
+        description: "Shared directory or workspace configured as writable across agents"
+      - type: regex
+        pattern: '(?i)(?:delegate|forward|relay).*(?:tool|action|task).*(?:without|no).?(?:auth|verify|check)'
+        weight: 85
+        description: "Delegate or relay action to another agent without authentication"
+      - type: regex
+        pattern: '(?i)(?:broadcast|multicast|fanout).*(?:agent|tool|message)'
+        weight: 70
+        description: "Broadcast or fanout message to multiple agents without targeting"
+    remediation: |
+      Multi-agent systems must implement mutual authentication between agents.
+      Never allow one agent to modify another agent''s state, memory, or configuration.
+      Use signed messages for inter-agent communication and verify sender identity.
+    references:
+      - "Agents of Chaos (arXiv:2602.20021) — CS10: Corrupted agent removed server members"
+      - "Agents of Chaos — CS11: Agent broadcast false accusations to 52+ agents"
+      - "MITRE ATLAS AML.T0048"
+
+  - id: mat-002
+    name: Missing Authority Verification
+    description: "Agent configurations with no owner or authority verification, allowing any caller to invoke tools or access agent state"
+    category: cross-agent-propagation
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    platforms:
+      - claude
+      - mcp
+      - codex
+      - cursor
+      - crewai
+      - autogpt
+      - openclaw
+      - nanobot
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:auth|authentication|authorization)\s*[=:]\s*(?:none|false|disabled|null)'
+        weight: 88
+        description: "Authentication explicitly disabled or set to none/null"
+      - type: regex
+        pattern: '(?i)(?:verify_caller|check_identity|validate_source)\s*[=:]\s*(?:false|disabled|off)'
+        weight: 85
+        description: "Caller identity verification disabled"
+      - type: regex
+        pattern: '(?i)(?:allow_anonymous|anonymous_access|no_auth)\s*[=:]\s*(?:true|enabled|yes)'
+        weight: 82
+        description: "Anonymous access explicitly allowed"
+      - type: regex
+        pattern: '(?i)(?:role_check|permission_check|access_control)\s*[=:]\s*(?:false|disabled|none|skip)'
+        weight: 80
+        description: "Role or permission check disabled or skipped"
+    remediation: |
+      Every agent must verify the identity and authority of input sources.
+      Implement role-based access control (RBAC) for all agent interactions.
+      Define and enforce an owner/authority hierarchy in agent configuration.
+      MCP servers must require authentication tokens for all tool invocations.
+    references:
+      - "Agents of Chaos (arXiv:2602.20021) — CS2: Agent returned confidential data to non-owner"
+      - "Agents of Chaos — CS8: Attacker impersonated owner with username change"
+      - "OWASP LLM01 (Prompt Injection)"
+      - "MITRE ATLAS AML.T0051"

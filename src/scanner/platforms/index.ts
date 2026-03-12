@@ -8,6 +8,7 @@ import { CrewAIAnalyzer } from './crewai.js'
 import { AutoGPTAnalyzer } from './autogpt.js'
 import { OpenClawAnalyzer } from './openclaw.js'
 import { NanobotAnalyzer } from './nanobot.js'
+import { SupabaseAnalyzer } from './supabase.js'
 
 export { BasePlatformAnalyzer } from './base.js'
 export { ClaudeSkillsAnalyzer } from './claude.js'
@@ -18,6 +19,7 @@ export { CrewAIAnalyzer } from './crewai.js'
 export { AutoGPTAnalyzer } from './autogpt.js'
 export { OpenClawAnalyzer } from './openclaw.js'
 export { NanobotAnalyzer } from './nanobot.js'
+export { SupabaseAnalyzer } from './supabase.js'
 
 const PLATFORM_ANALYZERS: Record<PlatformType, new () => BasePlatformAnalyzer> = {
   claude: ClaudeSkillsAnalyzer,
@@ -28,6 +30,7 @@ const PLATFORM_ANALYZERS: Record<PlatformType, new () => BasePlatformAnalyzer> =
   autogpt: AutoGPTAnalyzer,
   openclaw: OpenClawAnalyzer,
   nanobot: NanobotAnalyzer,
+  supabase: SupabaseAnalyzer,
 }
 
 export function getPlatformAnalyzer(platform: PlatformType): BasePlatformAnalyzer {

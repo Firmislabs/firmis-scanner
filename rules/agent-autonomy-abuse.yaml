@@ -1,0 +1,85 @@
+rules:
+  - id: aaa-001
+    name: Scheduled Task Injection
+    description: "Detects cron jobs, heartbeat configs, or scheduled tasks that can be created or modified by agent tools, enabling persistent autonomous loops"
+    category: suspicious-behavior
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    platforms:
+      - claude
+      - mcp
+      - codex
+      - cursor
+      - crewai
+      - autogpt
+      - openclaw
+      - nanobot
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:crontab|cron_schedule|scheduled_task).*(?:create|add|modify|register)'
+        weight: 82
+        description: "Cron or scheduled task creation/modification via agent tool"
+      - type: regex
+        pattern: '(?i)HEARTBEAT\.md.*(?:action|execute|run|command)'
+        weight: 78
+        description: "HEARTBEAT.md heartbeat config with executable action directive"
+      - type: regex
+        pattern: '(?i)(?:setInterval|setTimeout|schedule)\s*\(.*(?:tool|execute|invoke|call)'
+        weight: 75
+        description: "Timer-based invocation of agent tool or executor"
+      - type: regex
+        pattern: '(?i)(?:recurring|periodic|heartbeat).*(?:task|job|action)\s*[=:]'
+        weight: 72
+        description: "Recurring or periodic task assignment in agent config"
+    remediation: |
+      Scheduled tasks and heartbeat configurations must not be modifiable by agent tools or external inputs.
+      Implement rate limits and maximum execution counts for recurring tasks.
+      Require owner approval for any new scheduled task registration.
+    references:
+      - "Agents of Chaos (arXiv:2602.20021) — CS4: Heartbeat/cron injection enabled 9-day infinite resource loop"
+      - "MITRE ATLAS AML.T0040"
+
+  - id: aaa-002
+    name: Unrestricted Resource Consumption
+    description: "Detects agent configurations missing rate limits, token limits, or execution timeouts, enabling denial-of-service and runaway cost attacks"
+    category: suspicious-behavior
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    platforms:
+      - claude
+      - mcp
+      - codex
+      - cursor
+      - crewai
+      - autogpt
+      - openclaw
+      - nanobot
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:maxTokens|max_tokens|token_limit)\s*[=:]\s*(?:null|undefined|Infinity|-1|0\b)'
+        weight: 80
+        description: "Token limit set to null, undefined, Infinity, -1, or 0 (effectively disabled)"
+      - type: regex
+        pattern: '(?i)(?:timeout|max_execution_time)\s*[=:]\s*(?:null|undefined|Infinity|-1|0\b|false)'
+        weight: 78
+        description: "Execution timeout disabled or set to unlimited value"
+      - type: regex
+        pattern: '(?i)(?:rate_limit|rateLimit)\s*[=:]\s*(?:null|undefined|false|0\b|disabled)'
+        weight: 82
+        description: "Rate limit explicitly disabled in agent or relay configuration"
+      - type: regex
+        pattern: '(?i)(?:relay|forward|delegate).*(?:agent|tool).*(?:no.?limit|unlimited|unbounded)'
+        weight: 76
+        description: "Agent-to-agent relay declared with no-limit or unlimited flag"
+    remediation: |
+      All agent tool invocations must have explicit rate limits, token budgets, and execution timeouts.
+      Implement circuit breakers for agent-to-agent relay patterns.
+      Set maximum iteration counts for loops and recursive tool calls.
+    references:
+      - "Agents of Chaos (arXiv:2602.20021) — CS4: Mutual relay loop lasting ~1 hour"
+      - "Agents of Chaos — CS5: Mass email flooding"
+      - "OWASP LLM04 (Denial of Service)"

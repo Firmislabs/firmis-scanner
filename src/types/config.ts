@@ -30,6 +30,7 @@ export type PlatformType =
   | 'autogpt'
   | 'openclaw'
   | 'nanobot'
+  | 'supabase'
 
 /**
  * Severity levels for threats and rules

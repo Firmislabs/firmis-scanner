@@ -19,6 +19,7 @@ import { FileAnalyzer } from './analyzer.js'
 import { FirmisIgnore } from './ignore.js'
 import { runOsvCheck } from './osv.js'
 import { deduplicateCrossPlatformThreats } from './dedup.js'
+import { MAX_FILES_PER_COMPONENT } from './constants.js'
 
 export class ScanEngine {
   private ruleEngine: RuleEngine
@@ -199,7 +200,7 @@ export class ScanEngine {
     analyzer: ReturnType<typeof PlatformRegistry.getAnalyzer>,
     platformType: string
   ): Promise<ComponentResult> {
-    const MAX_FILES_PER_COMPONENT = 500
+
     const allFiles = await analyzer.analyze(component)
     const filePaths =
       allFiles.length > MAX_FILES_PER_COMPONENT

@@ -200,7 +200,7 @@ rules:
         pattern: '\b[\u0400-\u04FF]+[a-zA-Z_][a-zA-Z0-9_]*[\u0400-\u04FF]*\b'
         weight: 85
         description: "Cyrillic-Latin mixed identifier — homoglyph attack in tool name"
-      # Invisible characters — exclude U+200D (ZWJ used in emoji sequences like )
+      # Invisible characters — exclude U+200D (ZWJ used in emoji sequences like 👨‍💻)
       - type: regex
         pattern: '[\u200B\u200C\uFEFF]'
         weight: 90
