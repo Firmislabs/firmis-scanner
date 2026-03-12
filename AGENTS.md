@@ -4,7 +4,7 @@ This file describes Firmis Scanner for LLM and AI agent consumption. Use it to d
 
 ## What This Tool Does
 
-Firmis Scanner is a security scanner for AI agent components. It performs static analysis across 9 AI platforms (Claude Skills, MCP Servers, Codex Plugins, Cursor Extensions, CrewAI, AutoGPT, OpenClaw, Nanobot, Supabase), applying 212 detection rules across 16 threat categories. It outputs a security grade (A–F), a list of threats with file locations and confidence scores, and optionally generates JSON, SARIF, or HTML reports. Free commands work without a license key. Pro commands (monitor, pentest, fix, compliance) require a license key.
+Firmis Scanner is a security scanner for AI agent components. It performs static analysis across 9 AI platforms (Claude Skills, MCP Servers, Codex Plugins, Cursor Extensions, CrewAI, AutoGPT, OpenClaw, Nanobot, Supabase), applying 227 detection rules across 17 threat categories. It outputs a security grade (A–F), a list of threats with file locations and confidence scores, and optionally generates JSON, SARIF, or HTML reports. Free commands work without a license key. Pro commands (monitor, pentest, fix, compliance) require a license key.
 
 ## When to Use Firmis
 
@@ -57,6 +57,17 @@ npx firmis-scanner scan --quiet
 npx firmis-scanner scan --deep
 ```
 
+### Generic Scanning (Any Framework)
+
+When scanning a directory path without `--platform`, firmis auto-detects the framework and runs all rules:
+
+```bash
+npx firmis scan ./path/to/agent/code
+```
+
+Supported frameworks: LangChain, CrewAI, AutoGen, MetaGPT, AutoGPT, LangFlow, MCP Servers, n8n.
+Framework detection uses package.json, pyproject.toml, requirements.txt.
+
 ### discover — List detected AI platforms (free)
 
 ```bash
@@ -79,7 +90,7 @@ npx firmis-scanner ci
 npx firmis-scanner ci --fail-on high --sarif --output results.sarif
 ```
 
-### list — List all 212 detection rules (free)
+### list — List all 227 detection rules (free)
 
 ```bash
 npx firmis-scanner list
@@ -99,29 +110,35 @@ npx firmis-scanner validate rules/my-rule.yaml
 npx firmis-scanner init
 ```
 
-### monitor — Runtime behavioral monitoring (pro, license key required)
+### fix — Remediate findings (free: guided, pro: auto-fix)
 
 ```bash
-npx firmis-scanner monitor --wrap "node my-agent.js"
-npx firmis-scanner monitor --start-daemon
-npx firmis-scanner monitor --stop-daemon
-npx firmis-scanner monitor --status
+npx firmis-scanner fix                    # Free: guided, approve each fix
+npx firmis-scanner fix --yes              # Pro: auto-apply all fixes
+npx firmis-scanner fix --dry-run          # Preview fixes without applying
 ```
 
-### pentest — Active security probing of MCP servers (pro, license key required)
+Free users get one-time guided fix (manual approval per finding). Pro users get continuous auto-fix.
+
+### monitor — Runtime behavioral monitoring (free: passive, pro: active blocking)
+
+```bash
+npx firmis-scanner monitor --passive      # Free: observe tool calls (read-only)
+npx firmis-scanner monitor --start-daemon # Pro: active blocking daemon
+npx firmis-scanner monitor --stop-daemon
+npx firmis-scanner monitor --status
+npx firmis-scanner monitor --wrap "node my-agent.js"  # Pro: wrap and block
+```
+
+Free users get passive monitoring (observe tool calls in cloud dashboard). Pro users get active blocking.
+
+### pentest — Active security probing of MCP servers (business, license key required)
 
 ```bash
 npx firmis-scanner pentest --server my-mcp-server
 ```
 
-### fix — Auto-remediate findings (pro, license key required)
-
-```bash
-npx firmis-scanner fix
-npx firmis-scanner fix --dry-run
-```
-
-### compliance — Map findings to compliance frameworks (pro, license key required)
+### compliance — Map findings to compliance frameworks (business, license key required)
 
 ```bash
 npx firmis-scanner compliance --framework soc2
@@ -263,7 +280,7 @@ A scan result contains the following structure (JSON mode):
 
 ## Supported Threat Categories
 
-All 16 threat categories detected across 212 rules:
+All 17 threat categories detected across 227 rules:
 
 1. `credential-harvesting` — Reading credential files, env vars containing secrets, AWS/SSH/API key access
 2. `data-exfiltration` — Sending data to external servers, clipboard theft, covert channels
@@ -281,6 +298,7 @@ All 16 threat categories detected across 212 rules:
 14. `permission-overgrant` — Requesting excessive permissions beyond declared scope
 15. `secret-detection` — API keys, tokens, passwords, private keys in source code (60 rules)
 16. `tool-poisoning` — MCP tool descriptions or metadata crafted to manipulate agent behavior
+17. `cross-agent-propagation` — Threats that spread across agent boundaries via shared context or tools
 
 ## Supported Platforms
 
@@ -316,9 +334,9 @@ All 16 threat categories detected across 212 rules:
 
 ## Rule Count
 
-- Total rules: 212
+- Total rules: 227
 - Rule files: 17 YAML files
-- Threat categories: 16
+- Threat categories: 17
 - Secret detection patterns: 60 (within secret-detection category)
 
 ## Package

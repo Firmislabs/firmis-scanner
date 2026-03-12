@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 14 other threat categories. 245 detection rules. Zero config.<!-- /readme-stats -->
+  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 13 other threat categories. 227 detection rules. Zero config.<!-- /readme-stats -->
 </p>
 
 <p align="center">
@@ -55,19 +55,33 @@ firmis scan --json --output report.json
 firmis scan --sarif --output results.sarif
 ```
 
+## Scan Any Agent Framework
+
+Firmis works with any AI agent codebase — auto-detects the framework:
+
+```bash
+npx firmis scan ./my-crewai-project
+npx firmis scan ./path/to/langchain-app
+npx firmis scan ./any-agent-code
+```
+
+**Auto-detected frameworks:** LangChain, CrewAI, AutoGen, MetaGPT, AutoGPT, LangFlow, MCP Servers, n8n
+
+No `--platform` flag needed. Firmis detects the framework from `package.json`, `pyproject.toml`, or `requirements.txt` and runs all 227 rules against it.
+
 ## What is Firmis?
 
 **Firmis is a security scanner purpose-built for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them — detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 12 other threat categories.
 
 **Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
 
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 245 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
+<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 227 rules (not just config checks), and includes fix, monitor, and runtime monitoring capabilities.<!-- /readme-diff -->
 
 ## Features
 
 | Capability | Command | Tier |
 |-----------|---------|------|
-| <!-- readme-features -->Scan for threats (245 rules, 17 categories)<!-- /readme-features --> | `firmis scan` | Free |
+| <!-- readme-features -->Scan for threats (227 rules, 17 categories)<!-- /readme-features --> | `firmis scan` | Free |
 | Discover AI agent platforms | `firmis discover` | Free |
 | Generate Agent BOM (CycloneDX) | `firmis bom` | Free |
 | CI/CD pipeline with fail gates | `firmis ci` | Free |
