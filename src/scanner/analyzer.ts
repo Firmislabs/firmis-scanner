@@ -2,6 +2,7 @@ import { readFile, stat } from 'node:fs/promises'
 import { parse, type ParseResult } from '@babel/parser'
 import type * as t from '@babel/types'
 import { ParseError } from '../types/index.js'
+import { MAX_CONTENT_SIZE } from './constants.js'
 
 /** Maximum file size to analyze (10MB) - prevents memory exhaustion */
 const MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -11,6 +12,7 @@ export interface FileAnalysis {
   content: string
   ast: ParseResult<t.File> | null
   parseError?: string
+  contentTruncated?: boolean
 }
 
 export class FileAnalyzer {
@@ -27,14 +29,22 @@ export class FileAnalyzer {
         )
       }
 
-      const content = await readFile(filePath, 'utf-8')
-      const ast = this.parseFile(filePath, content)
+      const rawContent = await readFile(filePath, 'utf-8')
+      const ast = this.parseFile(filePath, rawContent)
 
-      return {
-        filePath,
-        content,
-        ast,
+      // Cap content for rule matching — attack patterns are in first few KB
+      let content = rawContent
+      let contentTruncated = false
+      if (rawContent.length > MAX_CONTENT_SIZE) {
+        const lastNewline = rawContent.lastIndexOf('\n', MAX_CONTENT_SIZE)
+        content =
+          lastNewline > 0
+            ? rawContent.slice(0, lastNewline + 1)
+            : rawContent.slice(0, MAX_CONTENT_SIZE)
+        contentTruncated = true
       }
+
+      return { filePath, content, ast, contentTruncated }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       throw new ParseError(`Failed to read file ${filePath}: ${message}`, filePath)

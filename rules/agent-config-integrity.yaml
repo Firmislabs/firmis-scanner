@@ -1,0 +1,91 @@
+rules:
+  # =============================================================================
+  # Agent Config Integrity Rules
+  # Detects tampering with agent identity/config files and memory injection
+  # via write operations or tool definitions with write access.
+  # Based on: Agents of Chaos (arXiv:2602.20021)
+  # =============================================================================
+
+  - id: aci-001
+    name: Agent Identity File Tampering
+    description: "Detects write or modify operations targeting agent identity and configuration files (SOUL.md, IDENTITY.md, AGENTS.md, BOOTSTRAP.md, USER.md). Attackers overwrite these files to perform identity spoofing or inject constitutional rules."
+    category: insecure-config
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    platforms:
+      - claude
+      - mcp
+      - codex
+      - cursor
+      - crewai
+      - autogpt
+      - openclaw
+      - nanobot
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:write|append|modify|overwrite|update).*(?:SOUL|IDENTITY|AGENTS|BOOTSTRAP|USER)\.md'
+        weight: 85
+        description: "Write or modify operation targeting an agent identity file"
+      - type: regex
+        pattern: '(?i)(?:file_write|writeFile|fs\.write).*(?:SOUL|IDENTITY|AGENTS|BOOTSTRAP|USER)'
+        weight: 88
+        description: "Tool or API call with write access to an agent identity path"
+      - type: regex
+        pattern: '(?i)"?(?:inputSchema|parameters)"?\s*:.*(?:config|identity|soul|bootstrap).*"?(?:write|modify|update)"?'
+        weight: 80
+        description: "MCP tool schema exposing config modification capability"
+      - type: string-literal
+        pattern: write_config
+        weight: 75
+        description: "Tool named write_config — direct config write access"
+    remediation: |
+      Agent identity and configuration files (SOUL.md, IDENTITY.md, etc.) must be read-only.
+      Never grant write access to these files via tool definitions or external input channels.
+      Use file system permissions (chmod 444) and validate file integrity with checksums.
+    references:
+      - "Agents of Chaos (arXiv:2602.20021) — CS8: Identity spoofing via IDENTITY.md overwrite"
+      - "Agents of Chaos — CS10: Constitutional injection via memory file modification"
+
+  - id: aci-002
+    name: Agent Memory Injection via External Write
+    description: "Detects write operations targeting agent memory files (MEMORY.md, memory/ directories, long-term memory stores, conversation history) from external or untrusted input sources. Attackers inject persistent malicious instructions that survive across sessions."
+    category: agent-memory-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    platforms:
+      - claude
+      - mcp
+      - codex
+      - cursor
+      - crewai
+      - autogpt
+      - openclaw
+      - nanobot
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:write|append|inject|insert).*(?:MEMORY\.md|memory/|long.term.memory|conversation.history)'
+        weight: 80
+        description: "Write or append operation targeting an agent memory file or store"
+      - type: regex
+        pattern: '(?i)(?:file_write|write_access|writable).*(?:memory|context|history)'
+        weight: 78
+        description: "Tool with write permissions referencing memory, context, or history paths"
+      - type: regex
+        pattern: '(?i)(?:user_input|external|webhook|api).*(?:memory|context).*(?:append|write|store)'
+        weight: 82
+        description: "External or user-supplied input written directly into agent memory"
+      - type: string-literal
+        pattern: inject_memory
+        weight: 85
+        description: "Tool named inject_memory — explicit memory injection capability"
+    remediation: |
+      Agent memory stores must validate the source of all write operations.
+      Implement write-ahead logging for memory modifications.
+      Never allow external inputs to directly modify agent memory without owner verification.
+    references:
+      - "Agents of Chaos (arXiv:2602.20021) — CS10: Non-owner injected constitutional rules into agent memory"
+      - "OWASP LLM05 (Supply Chain Vulnerabilities)"

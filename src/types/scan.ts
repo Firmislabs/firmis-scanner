@@ -44,6 +44,7 @@ export type ThreatCategory =
   | 'permission-overgrant'
   | 'secret-detection'
   | 'tool-poisoning'
+  | 'cross-agent-propagation'
 
 /**
  * Confidence tiers for threat classification
@@ -173,6 +174,7 @@ export function createEmptySummary(): ScanSummary {
       'permission-overgrant': 0,
       'secret-detection': 0,
       'tool-poisoning': 0,
+      'cross-agent-propagation': 0,
     },
     bySeverity: {
       low: 0,

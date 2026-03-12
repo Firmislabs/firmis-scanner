@@ -28,6 +28,35 @@ export function detectMatchContext(filePath: string): MatchContext {
     return 'config'
   }
 
+  // Test/spec files contain adversarial patterns by design — reduce confidence
+  if (
+    lower.includes('.test.') ||
+    lower.includes('.spec.') ||
+    lower.includes('.suite.') ||
+    lower.includes('.mock.') ||
+    lower.includes('.mocks.') ||
+    lower.includes('.stub.') ||
+    lower.includes('.stubs.') ||
+    lower.includes('.fake.') ||
+    lower.includes('.fakes.') ||
+    lower.includes('.e2e.') ||
+    lower.includes('.fuzz.') ||
+    lower.includes('__tests__/') ||
+    lower.includes('/test/') ||
+    lower.startsWith('test/') ||
+    lower.includes('/tests/') ||
+    lower.startsWith('tests/') ||
+    lower.includes('/fixtures/') ||
+    lower.startsWith('fixtures/') ||
+    lower.includes('/test-fixtures/') ||
+    lower.startsWith('test-fixtures/') ||
+    lower.includes('/test-helpers/') ||
+    lower.includes('/test-utils/') ||
+    lower.includes('/test_utils/')
+  ) {
+    return 'test_file'
+  }
+
   if (!lower.endsWith('/skill.md') && basename !== 'skill.md') {
     if (
       lower.endsWith('.md') ||

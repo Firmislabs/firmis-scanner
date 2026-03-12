@@ -171,14 +171,73 @@ function matchRegexString(
  *   "any of ($prefix*)"    - at least 1 string starting with $prefix matched
  *   "all of ($prefix*)"    - every string starting with $prefix matched
  *   "N of ($prefix*)"      - at least N strings starting with $prefix matched
+ *   "(clause) and (clause)" - both clauses must be true
+ *   "(clause) or (clause)"  - at least one clause must be true
  */
 function evaluateCondition(
   condition: string,
   results: StringMatchResult[]
 ): boolean {
-  const trimmed = condition.trim().toLowerCase()
+  const trimmed = condition.trim()
 
-  const ofMatch = trimmed.match(/^(\d+|any|all)\s+of\s+(.+)$/)
+  // Compound: "(clause) and (clause)" or "(clause) or (clause)"
+  const andParts = splitCompound(trimmed, 'and')
+  if (andParts.length > 1) {
+    return andParts.every((part) => evaluateCondition(part, results))
+  }
+
+  const orParts = splitCompound(trimmed, 'or')
+  if (orParts.length > 1) {
+    return orParts.some((part) => evaluateCondition(part, results))
+  }
+
+  // Strip wrapping parens: "(N of ($prefix*))" → "N of ($prefix*)"
+  const unwrapped = trimmed.replace(/^\((.+)\)$/, '$1').trim()
+  return evaluateSimpleCondition(unwrapped.toLowerCase(), results)
+}
+
+function splitCompound(condition: string, operator: string): string[] {
+  const parts: string[] = []
+  let depth = 0
+  let current = ''
+  const tokens = condition.split(/\s+/)
+
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i]!
+    if (token === '(') depth++
+    if (token === ')') depth--
+
+    // Count parens within tokens too
+    for (const ch of token) {
+      if (ch === '(') depth++
+      if (ch === ')') depth--
+    }
+    // Reset depth counting — do character-level
+    depth = 0
+    for (let j = 0; j <= i; j++) {
+      for (const ch of tokens[j]!) {
+        if (ch === '(') depth++
+        if (ch === ')') depth--
+      }
+    }
+
+    if (depth === 0 && token.toLowerCase() === operator && current.trim()) {
+      parts.push(current.trim())
+      current = ''
+    } else {
+      current += (current ? ' ' : '') + token
+    }
+  }
+
+  if (current.trim()) parts.push(current.trim())
+  return parts.length > 1 ? parts : [condition]
+}
+
+function evaluateSimpleCondition(
+  condition: string,
+  results: StringMatchResult[]
+): boolean {
+  const ofMatch = condition.match(/^(\d+|any|all)\s+of\s+(.+)$/)
   if (!ofMatch) return false
 
   const quantifierStr = ofMatch[1]!

@@ -29,25 +29,29 @@ rules:
 
   - id: sus-002
     name: Dynamic Code Execution
-    description: Detects dynamic code execution patterns
+    description: Detects dynamic code execution with user-controlled or variable input
     category: suspicious-behavior
     severity: medium
-    version: "1.0.0"
+    version: "1.1.0"
     enabled: true
-    confidenceThreshold: 65
+    confidenceThreshold: 70
     patterns:
       - type: regex
-        pattern: "eval\\(|vm\\.runInContext"
-        weight: 70
-        description: Direct code evaluation
-      - type: regex
-        pattern: "require\\(.*\\$|import\\(.*\\$|__import__\\("
-        weight: 75
-        description: Dynamic module loading
-      - type: regex
-        pattern: "exec\\(.*\\$|subprocess.*shell=True"
+        pattern: 'eval\(\s*(?:request|user|input|param|arg|data|body|query|header)'
         weight: 80
-        description: Dynamic shell execution
+        description: Eval with user-controlled input
+      - type: regex
+        pattern: "vm\\.runInContext|vm\\.runInNewContext"
+        weight: 70
+        description: Node.js VM code execution
+      - type: regex
+        pattern: "require\\(.*\\$|import\\(.*\\$"
+        weight: 75
+        description: Dynamic module loading with variable input
+      - type: regex
+        pattern: "subprocess.*shell=True"
+        weight: 80
+        description: Python subprocess with shell=True
     remediation: |
       Dynamic code execution can hide malicious behavior. Review the executed code carefully.
 
@@ -85,13 +89,13 @@ rules:
     confidenceThreshold: 75
     patterns:
       - type: regex
-        pattern: "net\\.createConnection.*for.*|Socket.*connect.*\\d{1,5}"
+        pattern: 'net\.createConnection\s*\(\s*\{[^}]*port\s*:\s*\w+\s*\}[^)]*\)\s*[^;]*(?:for|while|forEach|map)\s*\('
         weight: 75
-        description: Port scanning pattern
+        description: "Port scanning pattern — net.createConnection inside loop"
       - type: regex
-        pattern: "192\\.168\\.|10\\.|172\\.(?:1[6-9]|2[0-9]|3[0-1])\\."
+        pattern: '(?:connect|fetch|request|http\.get|net\.create)\s*\([^)]*(?:192\.168\.|10\.\d+\.\d+\.\d+|172\.(?:1[6-9]|2[0-9]|3[01])\.\d)'
         weight: 60
-        description: Private IP range reference
+        description: "Network connection to private IP range"
       - type: import
         pattern: "nmap|masscan"
         weight: 90
@@ -213,9 +217,9 @@ rules:
         weight: 95
         description: Recursive delete from home/root
       - type: regex
-        pattern: "shred|wipe|secure-delete"
+        pattern: '\bshred\b|\bwipe\b|\bsecure-delete\b'
         weight: 90
-        description: Secure deletion tools
+        description: Secure deletion tools (word-bounded to avoid matching "swipe" etc)
       - type: regex
         pattern: "format\\s+[A-Z]:|diskpart.*clean"
         weight: 100
@@ -345,37 +349,41 @@ rules:
     confidenceThreshold: 60
     patterns:
       - type: regex
-        pattern: "crypto\\.createCipher(?!iv)|DES|RC4"
+        pattern: "crypto\\.createCipher(?!iv)|\\bDES\\b|\\bRC4\\b|\\b3DES\\b"
         weight: 65
-        description: Weak or deprecated encryption
+        description: Weak or deprecated encryption algorithms
       - type: regex
-        pattern: "xor.*[0-9]{2,}|\\^=.*0x[0-9a-f]"
+        pattern: '(?:for|while|forEach|map)\s*\([^)]*\)\s*\{[^}]*\^=\s*0x[0-9a-f]'
         weight: 60
-        description: XOR encoding pattern
+        description: "XOR encoding in loop — likely obfuscation (excludes single XOR in crypto/UUID)"
     remediation: |
       Unnecessary encoding or weak encryption may be used to obfuscate malicious code.
 
   - id: sus-016
-    name: Python Dangerous Execution
-    description: Detects dangerous Python execution functions that can run arbitrary code
+    name: Python Dangerous Execution with Dynamic Input
+    description: Detects dangerous Python execution with user-controlled or dynamic input
     category: suspicious-behavior
     severity: high
-    version: "1.0.0"
+    version: "1.1.0"
     enabled: true
-    confidenceThreshold: 60
+    confidenceThreshold: 65
+    platforms:
+      - crewai
+      - autogpt
+      - mcp
     patterns:
       - type: regex
-        pattern: '\bexec\s*\('
-        weight: 75
-        description: Python function for arbitrary code execution
-      - type: regex
-        pattern: '\beval\s*\('
-        weight: 75
-        description: Python function for arbitrary expression evaluation
-      - type: regex
-        pattern: 'pickle\.loads?\s*\('
+        pattern: '\bexec\s*\(\s*(?:f[''"]|[a-zA-Z_]+\s*[+%]|request|input|user)'
         weight: 80
-        description: Python pickle deserialization (arbitrary code execution)
+        description: Python exec with dynamic or user-controlled input
+      - type: regex
+        pattern: '\beval\s*\(\s*(?:f[''"]|[a-zA-Z_]+\s*[+%]|request|input|user)'
+        weight: 80
+        description: Python eval with dynamic or user-controlled input
+      - type: regex
+        pattern: 'pickle\.load\b'
+        weight: 80
+        description: Pickle deserialization — arbitrary code execution risk
       - type: regex
         pattern: 'yaml\.unsafe_load\s*\('
         weight: 85
