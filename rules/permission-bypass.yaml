@@ -1,0 +1,88 @@
+rules:
+  # =============================================================================
+  # Permission & Safety Bypass Patterns
+  # Detects skills that explicitly bypass safety controls, sandboxes,
+  # or permission systems
+  # =============================================================================
+
+  - id: pbp-001
+    name: YOLO Mode / No-Approval Execution
+    description: "Skill uses --yolo, --full-auto, or similar flags that disable safety confirmations"
+    category: permission-bypass
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)--yolo'
+        weight: 95
+        description: "YOLO flag — disables all safety confirmations"
+      - type: regex
+        pattern: '(?i)--full-auto'
+        weight: 90
+        description: "Full-auto mode — auto-approves all actions"
+      - type: regex
+        pattern: '(?i)(bypassPermissions|bypass.permissions|permission.mode\s*bypass)'
+        weight: 95
+        description: "Permission bypass mode"
+      - type: regex
+        pattern: '(?i)--permission-mode\s+(bypass|none|off)'
+        weight: 95
+        description: "Explicit permission mode override"
+      - type: regex
+        pattern: '(?i)--no-verify|--no-confirm|--force-yes'
+        weight: 75
+        description: "Confirmation bypass flags"
+    remediation: |
+      Disabling safety confirmations removes the human-in-the-loop barrier. If the agent is compromised via prompt injection,
+      bypassed permissions allow arbitrary execution without operator approval.
+
+  - id: pbp-002
+    name: Full Disk Access Request
+    description: "Skill requires or requests macOS Full Disk Access — overly broad system permission"
+    category: permission-bypass
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)Full\s+Disk\s+Access'
+        weight: 85
+        description: "macOS Full Disk Access requirement"
+      - type: regex
+        pattern: '(?i)(Screen\s+Recording|Accessibility)\s+(permission|access)'
+        weight: 75
+        description: "macOS screen/accessibility permission requirements"
+      - type: regex
+        pattern: '(?i)elevated\s*[=:]\s*true'
+        weight: 85
+        description: "Elevated execution mode"
+    remediation: |
+      Full Disk Access grants read access to all files on disk, far exceeding what most tools need.
+      Request only the minimum permissions required for the tool's function.
+
+  - id: pbp-003
+    name: Sandbox Escape
+    description: "Skill explicitly escapes or disables sandboxing"
+    category: permission-bypass
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)(NO\s+sandbox|sandbox.*disabled|disable.*sandbox|escape.*sandbox)'
+        weight: 90
+        description: "Sandbox disable/escape"
+      - type: regex
+        pattern: '(?i)--dangerously'
+        weight: 85
+        description: "Dangerous override flag"
+      - type: regex
+        pattern: '(?i)(run.on.host|host.level.execution|outside.sandbox)'
+        weight: 85
+        description: "Host-level execution outside sandbox"
+    remediation: |
+      Escaping the sandbox removes containment boundaries. A compromised agent with host-level access can affect the entire system.

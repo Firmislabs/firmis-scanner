@@ -5,7 +5,9 @@ import type { PlatformScanResult } from '../types/index.js'
  * Remove duplicate threats that appear across multiple platforms for the
  * same (ruleId, file, line) triple. Platforms are processed in array order;
  * the first occurrence wins and subsequent duplicates are dropped.
- * Threats within a single platform are never filtered.
+ *
+ * Also deduplicates within each component: only one finding per ruleId
+ * per component is kept (the first match, which typically has the highest weight).
  */
 export function deduplicateCrossPlatformThreats(
   results: PlatformScanResult[]
@@ -14,7 +16,17 @@ export function deduplicateCrossPlatformThreats(
 
   return results.map(platformResult => {
     const dedupedComponents = platformResult.components.map(component => {
-      const dedupedThreats = component.threats.filter(threat => {
+      // First: deduplicate within component — one finding per ruleId
+      const seenRulesInComponent = new Set<string>()
+      const componentDeduped = component.threats.filter(threat => {
+        const ruleKey = threat.ruleId
+        if (seenRulesInComponent.has(ruleKey)) return false
+        seenRulesInComponent.add(ruleKey)
+        return true
+      })
+
+      // Then: cross-platform dedup by (ruleId, file, line)
+      const dedupedThreats = componentDeduped.filter(threat => {
         const key = `${threat.ruleId}::${threat.location.file}::${threat.location.line}`
         if (seen.has(key)) return false
         seen.add(key)
