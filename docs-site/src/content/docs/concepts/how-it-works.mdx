@@ -72,7 +72,7 @@ The discovery stage finds AI agent components in your project without requiring 
 
 ## Stage 2: Rule Engine
 
-This is where the security analysis happens. Every collected file is passed through the rule engine, which applies 209 YAML rules across 16 threat categories.
+This is where the security analysis happens. Every collected file is passed through the rule engine, which applies 209 YAML rules across 17 threat categories.
 
 Traditional security scanners look for known CVEs and malware hashes. Agent threats are different — they hide in tool descriptions, YAML configs, and natural language instructions. Firmis's rule engine is designed specifically for this.
 
@@ -124,7 +124,7 @@ Understanding the scope of static analysis helps you plan a complete security po
 | Firmis does NOT... | Why it matters |
 |---|---|
 | Modify your code | Firmis is read-only. Running a scan changes nothing in your repository. |
-| Require network access | All 209 rules are bundled locally. Scanning works fully offline. |
+| Require network access | All 227 rules are bundled locally. Scanning works fully offline. |
 | Upload telemetry by default | No code, paths, findings, or metadata leave your machine unless you explicitly opt in to telemetry in config. |
 | Detect runtime behavioral attacks | Firmis is a static scanner. It cannot observe live prompt injection via user input, real-time exfiltration, or session hijacking. |
 | Execute code | No code in scanned files is run. Pattern matching operates on raw file content and AST nodes. |
@@ -138,6 +138,6 @@ Understanding the scope of static analysis helps you plan a complete security po
 ## What to read next
 
 - [Detection Engine](/concepts/detection-engine) — how the rule engine evaluates patterns, scores confidence, and avoids false positives
-- [Threat Model](/concepts/threat-model) — all 16 threat categories with real attack examples
+- [Threat Model](/concepts/threat-model) — all 17 threat categories with real attack examples
 - [Platforms](/concepts/platforms) — how each of the 8 platforms is auto-detected and what files get scanned
 - [firmis scan](/cli/scan) — CLI reference and all available flags

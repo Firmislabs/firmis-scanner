@@ -7,7 +7,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 Traditional security scanners look for known CVEs and malware hashes. Agent threats are different — they hide in natural language, YAML configs, and tool metadata. A malicious tool description is valid JSON. A prompt injection is a plain text string. A credential path reference is just a string literal. None of these trigger conventional scanners.
 
-Firmis uses a YARA-inspired pattern engine designed specifically for this. 209 rules. 7 matcher types. Confidence scoring that suppresses noise without missing real threats.
+Firmis uses a YARA-inspired pattern engine designed specifically for this. 227 rules. 7 matcher types. Confidence scoring that suppresses noise without missing real threats.
 
 ## Rule structure
 
@@ -41,7 +41,7 @@ rules:
 | Field | Type | Description |
 |---|---|---|
 | `id` | string | Unique rule identifier (e.g., `tp-001`, `sec-045`) |
-| `category` | string | One of 16 threat categories |
+| `category` | string | One of 17 threat categories |
 | `severity` | enum | `critical`, `high`, `medium`, `low` |
 | `confidenceThreshold` | number (0–100) | Minimum confidence required to emit a finding |
 | `patterns` | array | One or more pattern objects, each with `type`, `pattern`, and `weight` |
@@ -225,6 +225,6 @@ rule:sec-045
 ## What to read next
 
 - [How It Works](/concepts/how-it-works) — the three-stage pipeline and what happens at each step
-- [Threat Model](/concepts/threat-model) — all 16 threat categories with real attack examples
+- [Threat Model](/concepts/threat-model) — all 17 threat categories with real attack examples
 - [Built-in Rules](/rules/built-in-rules) — full rule listing with IDs, weights, and descriptions
 - [Ignoring Findings](/rules/ignoring-findings) — how to suppress false positives without weakening your scan coverage

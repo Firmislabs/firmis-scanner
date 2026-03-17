@@ -1,11 +1,11 @@
 ---
 title: Rules Overview
-description: 209 rules. 16 categories. All open-source YAML you can read, extend, or override. Here's how they work.
+description: 227 rules. 17 categories. All open-source YAML you can read, extend, or override. Here's how they work.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-209 rules. 16 categories. All open-source YAML you can read, extend, or override. Built-in rules ship with the npm package and run on every scan automatically. Custom rules load from your project and run alongside them.
+227 rules. 17 categories. All open-source YAML you can read, extend, or override. Built-in rules ship with the npm package and run on every scan automatically. Custom rules load from your project and run alongside them.
 
 ## What rules are
 
@@ -43,7 +43,7 @@ rules:
 | `id` | string | Yes | Unique rule identifier (e.g., `tp-001`, `cred-042`) |
 | `name` | string | Yes | Short human-readable name shown in scan output |
 | `description` | string | Yes | What the rule detects and why it matters |
-| `category` | string | Yes | One of the 16 threat categories (e.g., `tool-poisoning`, `secret-detection`) |
+| `category` | string | Yes | One of the 17 threat categories (e.g., `tool-poisoning`, `secret-detection`) |
 | `severity` | enum | Yes | `critical`, `high`, `medium`, or `low` |
 | `version` | string | No | Rule version for change tracking (e.g., `"1.0.0"`) |
 | `enabled` | boolean | No | Set to `false` to disable a rule globally. Defaults to `true` |
@@ -205,7 +205,7 @@ Custom rules are merged with built-in rules. Custom rule IDs that collide with b
 
 ## What to do next
 
-- [Built-in Rules →](/rules/built-in-rules) — complete listing of all 209 rules with IDs and descriptions
+- [Built-in Rules →](/rules/built-in-rules) — complete listing of all 227 rules with IDs and descriptions
 - [Custom Rules →](/rules/custom-rules) — full YAML schema and working examples for writing your own
 - [Ignoring Findings →](/rules/ignoring-findings) — suppress false positives without disabling rules
 - [Detection Engine →](/concepts/detection-engine) — confidence scoring and deduplication internals

@@ -1,11 +1,11 @@
 ---
 title: Threat Model
-description: AI agents face 16 categories of threats. Most are invisible to traditional security tools because they hide in tool descriptions, config files, and prompt instructions — not executable code.
+description: AI agents face 17 categories of threats. Most are invisible to traditional security tools because they hide in tool descriptions, config files, and prompt instructions — not executable code.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-AI agents face 16 categories of threats. Most are invisible to traditional security tools because they hide in tool descriptions, config files, and prompt instructions — not executable code.
+AI agents face 17 categories of threats. Most are invisible to traditional security tools because they hide in tool descriptions, config files, and prompt instructions — not executable code.
 
 A study of MCP servers found that 72.8% of tool poisoning attacks succeed against unaudited agent stacks. 341 malicious tools have been found on agent marketplaces. 82% of MCP servers have path traversal vulnerabilities. Firmis detects all of these statically, before your agent runs a single tool.
 
@@ -30,7 +30,7 @@ A study of MCP servers found that 72.8% of tool poisoning attacks succeed agains
 | 15 | [Insecure Configuration](#insecure-config) | 3 | Medium–Low | Disabled security controls, open CORS, weak defaults |
 | 16 | [Access Control](#access-control) | 3 | High–Medium | Missing authentication or authorization checks |
 
-**Total: 209 rules across 16 categories.**
+**Total: 227 rules across 17 categories.**
 
 ---
 
@@ -203,6 +203,6 @@ Access control rules detect missing authentication checks on tool endpoints, una
 ## What to read next
 
 - [Detection Engine](/concepts/detection-engine) — how rules are evaluated, scored, and why Firmis keeps false positive rates low
-- [Built-in Rules](/rules/built-in-rules) — full list of all 209 rules with IDs and descriptions
+- [Built-in Rules](/rules/built-in-rules) — full list of all 227 rules with IDs and descriptions
 - [Ignoring Findings](/rules/ignoring-findings) — suppress false positives per file or rule without disabling the entire category
 - [firmis scan](/cli/scan) — CLI reference and severity filtering flags

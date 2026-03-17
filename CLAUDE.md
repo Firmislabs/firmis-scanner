@@ -6,8 +6,8 @@ This is the **PUBLIC open-source** repo. It contains M0 + M1 code only.
 
 | Folder | Remote | Repo | Visibility | Content |
 |--------|--------|------|------------|---------|
-| `~/github/firmis-scanner/` (this) | `origin` → `riteshkew/firmis-scanner` | **PUBLIC** | M0 + M1 only |
-| `~/github/firmis-engine/` | `origin` → `riteshkew/firmis-engine` | **PRIVATE** | All code (M0–M5) |
+| `~/github/firmis-scanner/` (this) | `origin` → `firmislabs/firmis-scanner` | **PUBLIC** | M0 + M1 only |
+| `~/github/firmis-engine/` | `origin` → `firmislabs/firmis-engine` | **PRIVATE** | All code (M0–M5) |
 
 ### Rules (MANDATORY, NO EXCEPTIONS)
 

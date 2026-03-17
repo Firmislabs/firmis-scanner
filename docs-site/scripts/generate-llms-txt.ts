@@ -11,7 +11,7 @@ const BASE_URL = 'https://docs.firmislabs.com'
 
 const LLMS_TXT_HEADER = `# Firmis
 
-> AI agent security scanner. Static analysis only — does not modify code or require network access. Detects threats in Claude Skills, MCP Servers, Codex Plugins, Cursor Rules, CrewAI, AutoGPT, OpenClaw, and Nanobot. 199 YAML detection rules across 16 threat categories. Zero install: \`npx firmis scan\`. Fully offline. MIT licensed.
+> AI agent security scanner. Static analysis only — does not modify code or require network access. Detects threats in Claude Skills, MCP Servers, Codex Plugins, Cursor Rules, CrewAI, AutoGPT, OpenClaw, and Nanobot. 227 YAML detection rules across 17 threat categories. Zero install: \`npx firmis scan\`. Fully offline. MIT licensed.
 
 `
 

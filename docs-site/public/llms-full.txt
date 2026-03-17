@@ -10,7 +10,7 @@ URL: https://docs.firmislabs.com/changelog
 - **`firmis init`** — one-command project setup: detects AI tools, runs first scan, generates `.firmisrc.json`, shows next steps with contextual upgrade path
 - **GitHub Action** (`riteshkew/firmis-scanner@v1`) — composite action with PR grade badge comments, HTML report artifacts, and optional dashboard sync
 - 8 new detection rules across agent-memory-poisoning, credential-harvesting, insecure-config, known-malicious, network-abuse, prompt-injection, supply-chain, and tool-poisoning categories
-- Total rules: 212 across 16 categories
+- Total rules: 212 across 17 categories
 - Behavioral scoring wired into runtime monitor decision engine
 - Training data pipeline: auto-export labeled sessions, synthetic data generation, weight calibration via grid search
 
@@ -33,7 +33,7 @@ URL: https://docs.firmislabs.com/changelog
 ### Added
 - 34 new detection rules: access-control (3 rules), insecure-config (3 rules), expanded credential-harvesting, prompt-injection, supply-chain, and suspicious-behavior categories
 - Nanobot platform analyzer
-- Total rules: 209 across 16 categories
+- Total rules: 209 across 17 categories
 
 ### Fixed
 - False positive reduction in secret detection for test fixtures
@@ -123,9 +123,9 @@ npx firmis scan .
 ┌─────────────┐    ┌──────────────┐    ┌─────────────┐
 │  Discovery   │───▶│  Rule Engine  │───▶│   Reporter   │
 │              │    │              │    │              │
-│ Auto-detect  │    │ 209 YAML     │    │ Terminal     │
-│ 8 platforms  │    │ rules across │    │ JSON / SARIF │
-│ components   │    │ 16 threat    │    │ HTML report  │
+│ Auto-detect  │    │ 227 YAML     │    │ Terminal     │
+│ 9 platforms  │    │ rules across │    │ JSON / SARIF │
+│ components   │    │ 17 threat    │    │ HTML report  │
 │ dependencies │    │ categories   │    │              │
 └─────────────┘    └──────────────┘    └─────────────┘
 ```
@@ -134,7 +134,7 @@ No account. No telemetry. Nothing leaves your machine.
 
 [How the detection engine works →](/concepts/how-it-works)
 
-## 16 threat categories
+## 17 threat categories
 
 Every finding comes with a severity rating, a plain English explanation of what it means, and what to do about it.
 
@@ -167,7 +167,7 @@ Yes. Every agent you install — Cursor, Claude, MCP servers, OpenClaw skills �
 
 **What exactly does Firmis check for?**
 
-209 rules across 16 threat categories: prompt injection, credential harvesting, data exfiltration, tool poisoning, supply chain attacks, hardcoded secrets, malware signatures, and more. Every finding is explained in plain English — not cryptic error codes. "This skill is reading your AWS credentials and sending them to an unknown server" is the kind of message you get.
+227 rules across 17 threat categories: prompt injection, credential harvesting, data exfiltration, tool poisoning, supply chain attacks, hardcoded secrets, malware signatures, and more. Every finding is explained in plain English — not cryptic error codes. "This skill is reading your AWS credentials and sending them to an unknown server" is the kind of message you get.
 
 **Is my code uploaded anywhere?**
 
@@ -179,7 +179,7 @@ That's exactly who we built it for. You don't need to understand regex patterns 
 
 **How is this different from Snyk or Semgrep?**
 
-Snyk and Semgrep are built for traditional application code. They don't know what an MCP server is, what tool poisoning looks like, or how to read a CLAUDE.md file for hidden instructions. Firmis is purpose-built for the AI agent threat surface: 8 platforms, 209 rules written specifically for how agents get compromised.
+Snyk and Semgrep are built for traditional application code. They don't know what an MCP server is, what tool poisoning looks like, or how to read a CLAUDE.md file for hidden instructions. Firmis is purpose-built for the AI agent threat surface: 8 platforms, 227 rules written specifically for how agents get compromised.
 
 **Is it really free?**
 
@@ -256,7 +256,7 @@ You should see a platform detection line and a rule count of 209. If the scanner
 | npm | >= 9.0.0 (ships with Node 20) |
 | OS | macOS, Linux, Windows |
 | Network | Not required (fully offline) |
-| Disk space | ~15 MB (including all 209 rules) |
+| Disk space | ~15 MB (including all 227 rules) |
 
 ---
 
@@ -425,7 +425,7 @@ This is what a real finding looks like:
  Found 3 threats (2 critical, 1 high) in 1.2s
 ```
 
-212 rules. 16 threat categories. Results in under two seconds.
+227 rules. 17 threat categories. Results in under two seconds.
 
 <details>
 <summary>No findings? Here's why that might happen.</summary>
@@ -613,7 +613,7 @@ The `ci` command runs four stages sequentially. Each stage feeds the next:
 ```text
 1. Discover  →  Auto-detect platforms and components in the project
 2. BOM       →  Generate Agent Bill of Materials (CycloneDX 1.7)
-3. Scan      →  Run all 209 rules against every discovered component
+3. Scan      →  Run all 227 rules against every discovered component
 4. Report    →  Output findings in your chosen format
 ```
 
@@ -730,7 +730,7 @@ AI agents are a new category of software with a new regulatory surface. SOC 2 au
 
 ## What it does
 
-Runs a full security scan across your agent stack using all 209 rules, then maps every finding to the compliance frameworks you're working against:
+Runs a full security scan across your agent stack using all 227 rules, then maps every finding to the compliance frameworks you're working against:
 
 - **SOC 2** — maps findings to security control categories (CC6, CC7, CC8, CC9). Shows which controls have gaps and which have evidence of enforcement.
 - **EU AI Act** — maps to Articles 9, 10, 13, 14, 15 (risk management, data governance, transparency, human oversight, accuracy). Flags requirements that AI agent usage triggers.
@@ -805,7 +805,7 @@ firmis compliance [path] [options]
 ## Related
 
 - [scan](/cli/scan) — generate the findings that compliance maps to
-- [Threat Categories](/reference/threat-categories) — all 16 categories, each mapped to compliance frameworks
+- [Threat Categories](/reference/threat-categories) — all 17 categories, each mapped to compliance frameworks
 - [Compliance Reporting guide](/guides/compliance-reporting) — step-by-step walkthrough for preparing an audit submission
 
 ---
@@ -1670,7 +1670,7 @@ npx firmis scan --severity high
 
 ## Related
 
-- [Threat Categories](/reference/threat-categories) — all 16 categories Firmis detects across 209 rules
+- [Threat Categories](/reference/threat-categories) — all 17 categories Firmis detects across 227 rules
 - [Ignoring Findings](/rules/ignoring-findings) — suppress specific rules or files without deleting them
 - [CI Pipeline](/cli/ci) — full discover → BOM → scan → report in one command
 
@@ -2538,7 +2538,7 @@ URL: https://docs.firmislabs.com/rules/built-in-rules
 
 {/* This file is auto-generated by scripts/generate-rules.ts. Do not edit manually. */}
 
-Firmis ships with **215 built-in detection rules** across **16 threat categories**, covering prompt injection, credential harvesting, supply chain attacks, and more.
+Firmis ships with **215 built-in detection rules** across **17 threat categories**, covering prompt injection, credential harvesting, supply chain attacks, and more.
 
 ## Summary
 
@@ -6303,7 +6303,7 @@ npx firmis scan --ignore cred-001,sus-006,exfil-003
 
 URL: https://docs.firmislabs.com/rules/overview
 
-209 rules. 16 categories. All open-source YAML you can read, extend, or override. Built-in rules ship with the npm package and run on every scan automatically. Custom rules load from your project and run alongside them.
+227 rules. 17 categories. All open-source YAML you can read, extend, or override. Built-in rules ship with the npm package and run on every scan automatically. Custom rules load from your project and run alongside them.
 
 ## What rules are
 
@@ -6341,7 +6341,7 @@ rules:
 | `id` | string | Yes | Unique rule identifier (e.g., `tp-001`, `cred-042`) |
 | `name` | string | Yes | Short human-readable name shown in scan output |
 | `description` | string | Yes | What the rule detects and why it matters |
-| `category` | string | Yes | One of the 16 threat categories (e.g., `tool-poisoning`, `secret-detection`) |
+| `category` | string | Yes | One of the 17 threat categories (e.g., `tool-poisoning`, `secret-detection`) |
 | `severity` | enum | Yes | `critical`, `high`, `medium`, or `low` |
 | `version` | string | No | Rule version for change tracking (e.g., `"1.0.0"`) |
 | `enabled` | boolean | No | Set to `false` to disable a rule globally. Defaults to `true` |
@@ -6495,7 +6495,7 @@ Custom rules are merged with built-in rules. Custom rule IDs that collide with b
 
 ## What to do next
 
-- [Built-in Rules →](/rules/built-in-rules) — complete listing of all 209 rules with IDs and descriptions
+- [Built-in Rules →](/rules/built-in-rules) — complete listing of all 227 rules with IDs and descriptions
 - [Custom Rules →](/rules/custom-rules) — full YAML schema and working examples for writing your own
 - [Ignoring Findings →](/rules/ignoring-findings) — suppress false positives without disabling rules
 - [Detection Engine →](/concepts/detection-engine) — confidence scoring and deduplication internals
@@ -7259,7 +7259,7 @@ This produces `results.sarif` alongside `agent-bom.json`. Both can be archived a
 - [firmis ci →](/cli/ci) — CI pipeline command
 - [GitHub Actions integration →](/integrations/github-actions) — full workflow example with SARIF upload
 - [CycloneDX BOM →](/reference/cyclonedx-bom) — the agent inventory output format
-- [Threat Categories →](/reference/threat-categories) — what each ruleId maps to across 16 categories
+- [Threat Categories →](/reference/threat-categories) — what each ruleId maps to across 17 categories
 
 ---
 
@@ -7423,14 +7423,14 @@ What we don't do is as important as what we do.
 | **No telemetry by default** | Firmis collects no usage telemetry unless explicitly configured. |
 | **Read-only scanning** | Firmis never modifies scanned files. Running a scan changes nothing in your repository. |
 | **No code execution** | No code in scanned files is run. Pattern matching operates on raw file content. |
-| **Offline operation** | All 209 rules are bundled locally. Scanning works fully offline. |
+| **Offline operation** | All 227 rules are bundled locally. Scanning works fully offline. |
 
 ---
 
 ## What to do next
 
 - [Detection Engine →](/concepts/detection-engine) — matcher types, confidence scoring, and deduplication
-- [Threat Categories →](/reference/threat-categories) — all 16 categories with OWASP and MITRE mappings
+- [Threat Categories →](/reference/threat-categories) — all 17 categories with OWASP and MITRE mappings
 - [Ignoring Findings →](/rules/ignoring-findings) — suppress false positives with `.firmisignore`
 - [How It Works →](/concepts/how-it-works) — the three-stage scan pipeline
 
@@ -7440,7 +7440,7 @@ What we don't do is as important as what we do.
 
 URL: https://docs.firmislabs.com/reference/threat-categories
 
-209 rules. 16 categories. Every rule is open-source YAML you can read, extend, or override. This page is the authoritative reference for what each category detects, how findings are identified, and how they map to OWASP LLM Top 10 and MITRE ATT&CK for ML.
+227 rules. 17 categories. Every rule is open-source YAML you can read, extend, or override. This page is the authoritative reference for what each category detects, how findings are identified, and how they map to OWASP LLM Top 10 and MITRE ATT&CK for ML.
 
 ## Master table
 
@@ -7465,7 +7465,7 @@ Sorted by severity range — the most dangerous categories first.
 | 15 | [insecure-config](#insecure-config) | `ic-` | 3 | Medium–Low | LLM09 | AML.T0054 |
 | 16 | [access-control](#access-control) | `ac-` | 3 | High–Medium | LLM10 | AML.T0012 |
 
-**Total: 209 rules across 16 categories.**
+**Total: 227 rules across 17 categories.**
 
 ---
 
@@ -7889,7 +7889,7 @@ HIGH  ac-001  Unauthenticated tool handler
 ## What to do next
 
 - [Security Model →](/reference/security-model) — what Firmis detects, what it doesn't, and why
-- [Built-in Rules →](/rules/built-in-rules) — full listing of all 209 rules with IDs and descriptions
+- [Built-in Rules →](/rules/built-in-rules) — full listing of all 227 rules with IDs and descriptions
 - [Custom Rules →](/rules/custom-rules) — write your own detection rules in the same YAML schema
 - [Detection Engine →](/concepts/detection-engine) — how rules are scored and thresholds applied
 - [firmis scan →](/cli/scan) — CLI reference
@@ -8622,7 +8622,7 @@ Firmis is written in TypeScript and ships its own types. No `@types/firmis-scann
 - [GitLab CI integration →](/integrations/gitlab-ci) — same for GitLab pipelines
 - [Configuration reference →](/reference/config-schema) — every `FirmisConfig` field documented
 - [SARIF output reference →](/reference/sarif-output) — what the SARIF reporter produces
-- [Threat categories reference →](/reference/threat-categories) — all 209 rules across 16 categories
+- [Threat categories reference →](/reference/threat-categories) — all 227 rules across 17 categories
 
 ---
 
@@ -8804,7 +8804,7 @@ URL: https://docs.firmislabs.com/concepts/detection-engine
 
 Traditional security scanners look for known CVEs and malware hashes. Agent threats are different — they hide in natural language, YAML configs, and tool metadata. A malicious tool description is valid JSON. A prompt injection is a plain text string. A credential path reference is just a string literal. None of these trigger conventional scanners.
 
-Firmis uses a YARA-inspired pattern engine designed specifically for this. 209 rules. 7 matcher types. Confidence scoring that suppresses noise without missing real threats.
+Firmis uses a YARA-inspired pattern engine designed specifically for this. 227 rules. 7 matcher types. Confidence scoring that suppresses noise without missing real threats.
 
 ## Rule structure
 
@@ -8838,7 +8838,7 @@ rules:
 | Field | Type | Description |
 |---|---|---|
 | `id` | string | Unique rule identifier (e.g., `tp-001`, `sec-045`) |
-| `category` | string | One of 16 threat categories |
+| `category` | string | One of 17 threat categories |
 | `severity` | enum | `critical`, `high`, `medium`, `low` |
 | `confidenceThreshold` | number (0–100) | Minimum confidence required to emit a finding |
 | `patterns` | array | One or more pattern objects, each with `type`, `pattern`, and `weight` |
@@ -9018,7 +9018,7 @@ rule:sec-045
 ## What to read next
 
 - [How It Works](/concepts/how-it-works) — the three-stage pipeline and what happens at each step
-- [Threat Model](/concepts/threat-model) — all 16 threat categories with real attack examples
+- [Threat Model](/concepts/threat-model) — all 17 threat categories with real attack examples
 - [Built-in Rules](/rules/built-in-rules) — full rule listing with IDs, weights, and descriptions
 - [Ignoring Findings](/rules/ignoring-findings) — how to suppress false positives without weakening your scan coverage
 
@@ -9091,7 +9091,7 @@ The discovery stage finds AI agent components in your project without requiring 
 
 ## Stage 2: Rule Engine
 
-This is where the security analysis happens. Every collected file is passed through the rule engine, which applies 209 YAML rules across 16 threat categories.
+This is where the security analysis happens. Every collected file is passed through the rule engine, which applies 209 YAML rules across 17 threat categories.
 
 Traditional security scanners look for known CVEs and malware hashes. Agent threats are different — they hide in tool descriptions, YAML configs, and natural language instructions. Firmis's rule engine is designed specifically for this.
 
@@ -9143,7 +9143,7 @@ Understanding the scope of static analysis helps you plan a complete security po
 | Firmis does NOT... | Why it matters |
 |---|---|
 | Modify your code | Firmis is read-only. Running a scan changes nothing in your repository. |
-| Require network access | All 209 rules are bundled locally. Scanning works fully offline. |
+| Require network access | All 227 rules are bundled locally. Scanning works fully offline. |
 | Upload telemetry by default | No code, paths, findings, or metadata leave your machine unless you explicitly opt in to telemetry in config. |
 | Detect runtime behavioral attacks | Firmis is a static scanner. It cannot observe live prompt injection via user input, real-time exfiltration, or session hijacking. |
 | Execute code | No code in scanned files is run. Pattern matching operates on raw file content and AST nodes. |
@@ -9153,7 +9153,7 @@ Understanding the scope of static analysis helps you plan a complete security po
 ## What to read next
 
 - [Detection Engine](/concepts/detection-engine) — how the rule engine evaluates patterns, scores confidence, and avoids false positives
-- [Threat Model](/concepts/threat-model) — all 16 threat categories with real attack examples
+- [Threat Model](/concepts/threat-model) — all 17 threat categories with real attack examples
 - [Platforms](/concepts/platforms) — how each of the 8 platforms is auto-detected and what files get scanned
 - [firmis scan](/cli/scan) — CLI reference and all available flags
 
@@ -9342,7 +9342,7 @@ Valid platform values: `claude`, `mcp`, `codex`, `cursor`, `crewai`, `autogpt`, 
 
 URL: https://docs.firmislabs.com/concepts/threat-model
 
-AI agents face 16 categories of threats. Most are invisible to traditional security tools because they hide in tool descriptions, config files, and prompt instructions — not executable code.
+AI agents face 17 categories of threats. Most are invisible to traditional security tools because they hide in tool descriptions, config files, and prompt instructions — not executable code.
 
 A study of MCP servers found that 72.8% of tool poisoning attacks succeed against unaudited agent stacks. 341 malicious tools have been found on agent marketplaces. 82% of MCP servers have path traversal vulnerabilities. Firmis detects all of these statically, before your agent runs a single tool.
 
@@ -9367,7 +9367,7 @@ A study of MCP servers found that 72.8% of tool poisoning attacks succeed agains
 | 15 | [Insecure Configuration](#insecure-config) | 3 | Medium–Low | Disabled security controls, open CORS, weak defaults |
 | 16 | [Access Control](#access-control) | 3 | High–Medium | Missing authentication or authorization checks |
 
-**Total: 209 rules across 16 categories.**
+**Total: 227 rules across 17 categories.**
 
 ---
 
@@ -9528,7 +9528,7 @@ Access control rules detect missing authentication checks on tool endpoints, una
 ## What to read next
 
 - [Detection Engine](/concepts/detection-engine) — how rules are evaluated, scored, and why Firmis keeps false positive rates low
-- [Built-in Rules](/rules/built-in-rules) — full list of all 209 rules with IDs and descriptions
+- [Built-in Rules](/rules/built-in-rules) — full list of all 227 rules with IDs and descriptions
 - [Ignoring Findings](/rules/ignoring-findings) — suppress false positives per file or rule without disabling the entire category
 - [firmis scan](/cli/scan) — CLI reference and severity filtering flags
 
@@ -9890,7 +9890,7 @@ The EU AI Act applies to AI systems deployed in the EU. For high-risk AI systems
 
 ## What to do next
 
-- [Threat Categories →](/reference/threat-categories) — all 209 rules across 16 categories with OWASP and MITRE mappings
+- [Threat Categories →](/reference/threat-categories) — all 227 rules across 17 categories with OWASP and MITRE mappings
 - [Agent Supply Chain Security →](/guides/agent-supply-chain-security) — the supply chain risks that feed into compliance gaps
 - [CI command reference →](/cli/ci) — embed compliance reporting in your pipeline
 - [Firmis Engine private beta →](https://firmislabs.com) — join the waitlist for compliance report access
@@ -10388,4 +10388,4 @@ The `--quiet` flag suppresses output when no findings are present.
 - [Agent Supply Chain Security →](/guides/agent-supply-chain-security) — the threat that arrives through your dependencies
 - [Ignoring Findings →](/rules/ignoring-findings) — suppress false positives without disabling rules
 - [CI command reference →](/cli/ci) — full pipeline: discover, BOM, scan, report
-- [Threat Categories →](/reference/threat-categories) — all 16 categories with OWASP and MITRE mappings
+- [Threat Categories →](/reference/threat-categories) — all 17 categories with OWASP and MITRE mappings
