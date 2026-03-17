@@ -1,11 +1,11 @@
 ---
 title: Ignoring Findings
-description: Not every finding is a real threat. Here's how to tell Firmis what's safe — without disabling rules or bypassing scans.
+description: Not every finding is a real threat. Here's how to tell Firmis what's safe - without disabling rules or bypassing scans.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-Not every finding is a real threat. Test fixtures with realistic-looking tokens. Example API keys in documentation. Crypto operations in a legitimate wallet module. Firmis finds all of these — and `.firmisignore` is where you tell it which ones are intentional.
+Not every finding is a real threat. Test fixtures with realistic-looking tokens. Example API keys in documentation. Crypto operations in a legitimate wallet module. Firmis finds all of these - and `.firmisignore` is where you tell it which ones are intentional.
 
 Create a `.firmisignore` file in your project root to suppress false positives. Three rule types let you ignore by rule ID, by file path, or by a combination of both.
 
@@ -13,8 +13,8 @@ Create a `.firmisignore` file in your project root to suppress false positives. 
 
 Firmis looks for `.firmisignore` files in two locations, checked in this order:
 
-1. **Project root** — `<project>/.firmisignore`
-2. **Home directory** — `~/.firmis/.firmisignore`
+1. **Project root** - `<project>/.firmisignore`
+2. **Home directory** - `~/.firmis/.firmisignore`
 
 Both files are loaded and merged when present. Project-level rules take precedence over home-directory rules for the same rule/path combination.
 
@@ -26,7 +26,7 @@ Both files are loaded and merged when present. Project-level rules take preceden
 
 ## Syntax
 
-- Lines starting with `#` are comments — use them liberally to explain why each entry exists
+- Lines starting with `#` are comments - use them liberally to explain why each entry exists
 - Blank lines are ignored
 - Each non-blank, non-comment line is a single ignore rule
 
@@ -42,7 +42,7 @@ There are three rule types:
 
 ## Rule ID only
 
-Suppress a specific rule everywhere in the project. Use this sparingly — it silences the rule even in files where it would be a genuine finding.
+Suppress a specific rule everywhere in the project. Use this sparingly - it silences the rule even in files where it would be a genuine finding.
 
 ```text title=".firmisignore"
 # Suppress credential rules globally (migrate to rule:file combos when possible)
@@ -90,7 +90,7 @@ Suppress all findings in files matching a glob pattern. Useful for muting entire
 
 ## Rule and file combo
 
-Suppress a specific rule only in specific files. This is the most precise form and the recommended default — it avoids silencing a rule where it would be a genuine finding.
+Suppress a specific rule only in specific files. This is the most precise form and the recommended default - it avoids silencing a rule where it would be a genuine finding.
 
 ```text title=".firmisignore"
 # Allow crypto operations in wallet skills only
@@ -131,7 +131,7 @@ A typical `.firmisignore` for a project with tests, documentation, and legitimat
 
 ```text title=".firmisignore"
 # ============================================================
-# .firmisignore — Firmis Scanner Ignore Rules
+# .firmisignore - Firmis Scanner Ignore Rules
 # ============================================================
 
 # Test Files
@@ -142,7 +142,7 @@ cred-002:**/test/fixtures/**
 cred-003:**/test/mocks/**
 cred-004:**/test/**
 
-# Test spec files — pattern matches in test assertions are false positives
+# Test spec files - pattern matches in test assertions are false positives
 **/*.test.ts
 **/*.spec.ts
 **/__tests__/**
@@ -200,25 +200,25 @@ npx firmis scan --ignore cred-001,sus-006,exfil-003
 
 ## Best practices
 
-1. **Prefer rule:file combos** over global rule-ID suppression — be as specific as possible
-2. **Document why** — add a comment to every entry explaining the reason for suppression
-3. **Review regularly** — a quarterly `.firmisignore` audit prevents suppressions from outliving the code that needed them
-4. **Version-control the file** — commit `.firmisignore` so the whole team sees the same findings
-5. **Avoid broad globs** — suppressing `**/*.ts` is almost never correct; prefer a narrower path like `**/test/**`
+1. **Prefer rule:file combos** over global rule-ID suppression - be as specific as possible
+2. **Document why** - add a comment to every entry explaining the reason for suppression
+3. **Review regularly** - a quarterly `.firmisignore` audit prevents suppressions from outliving the code that needed them
+4. **Version-control the file** - commit `.firmisignore` so the whole team sees the same findings
+5. **Avoid broad globs** - suppressing `**/*.ts` is almost never correct; prefer a narrower path like `**/test/**`
 
 ---
 
 ## Limitations
 
-- `.firmisignore` is loaded once at scan initialisation — changes take effect on the next scan invocation
+- `.firmisignore` is loaded once at scan initialisation - changes take effect on the next scan invocation
 - Patterns are matched against paths relative to the project root
-- Invalid glob patterns are silently skipped — run `npx firmis validate` if a suppression does not seem to be working
+- Invalid glob patterns are silently skipped - run `npx firmis validate` if a suppression does not seem to be working
 
 ---
 
 ## What to do next
 
-- [Rules Overview →](/rules/overview) — how rules load and how severity levels work
-- [Custom Rules →](/rules/custom-rules) — writing YAML rules to extend detection beyond the 209 built-in ones
-- [firmis scan →](/cli/scan) — full CLI reference including `--ignore` and `--severity`
-- [Detection Engine →](/concepts/detection-engine) — how confidence scoring and deduplication work internally
+- [Rules Overview →](/rules/overview) - how rules load and how severity levels work
+- [Custom Rules →](/rules/custom-rules) - writing YAML rules to extend detection beyond the 227 built-in ones
+- [firmis scan →](/cli/scan) - full CLI reference including `--ignore` and `--severity`
+- [Detection Engine →](/concepts/detection-engine) - how confidence scoring and deduplication work internally

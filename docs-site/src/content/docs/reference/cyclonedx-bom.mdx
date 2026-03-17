@@ -1,11 +1,11 @@
 ---
 title: CycloneDX BOM Reference
-description: Know what you're running before you secure it. Firmis generates Agent Bills of Materials in CycloneDX 1.7 — the supply chain compliance standard. Field reference, complete example, and downstream tool integration.
+description: Know what you're running before you secure it. Firmis generates Agent Bills of Materials in CycloneDX 1.7 - the supply chain compliance standard. Field reference, complete example, and downstream tool integration.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-You can't secure what you haven't inventoried. Firmis generates Agent Bills of Materials in CycloneDX 1.7 format — the same standard used for software supply chain compliance under SOC 2, the EU AI Act, and Executive Order 14028. This page is the output format field reference. For the concept and motivation, see [Agent BOM](/concepts/agent-bom).
+You can't secure what you haven't inventoried. Firmis generates Agent Bills of Materials in CycloneDX 1.7 format - the same standard used for software supply chain compliance under SOC 2, the EU AI Act, and Executive Order 14028. This page is the output format field reference. For the concept and motivation, see [Agent BOM](/concepts/agent-bom).
 
 ## What is CycloneDX?
 
@@ -237,9 +237,9 @@ Firmis adds custom properties to each component using the `firmis:` namespace. T
 
 ### OWASP Dependency-Track
 
-Upload the BOM via the Dependency-Track API or web UI. Dependency-Track continuously checks your component list against the NVD, GitHub Advisory Database, and OSV — alerting you when a new vulnerability affects a component in your inventory.
+Upload the BOM via the Dependency-Track API or web UI. Dependency-Track continuously checks your component list against the NVD, GitHub Advisory Database, and OSV - alerting you when a new vulnerability affects a component in your inventory.
 
-```bash title="Terminal — upload via curl"
+```bash title="Terminal - upload via curl"
 curl -X "PUT" "https://your-dtrack-instance/api/v1/bom" \
   -H "X-Api-Key: your-api-key" \
   -H "Content-Type: multipart/form-data" \
@@ -274,7 +274,7 @@ gh api --method POST /repos/:owner/:repo/dependency-graph/snapshots \
 
 ## What to do next
 
-- [Agent BOM concept →](/concepts/agent-bom) — what Agent BOMs are and why they matter for supply chain security
-- [firmis bom →](/cli/bom) — CLI reference for BOM generation
-- [firmis ci →](/cli/ci) — full discover → BOM → scan → report pipeline
-- [SARIF Output →](/reference/sarif-output) — the scan findings output format
+- [Agent BOM concept →](/concepts/agent-bom) - what Agent BOMs are and why they matter for supply chain security
+- [firmis bom →](/cli/bom) - CLI reference for BOM generation
+- [firmis ci →](/cli/ci) - full discover → BOM → scan → report pipeline
+- [SARIF Output →](/reference/sarif-output) - the scan findings output format

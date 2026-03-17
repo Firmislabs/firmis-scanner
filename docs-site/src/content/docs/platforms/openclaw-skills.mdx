@@ -1,17 +1,17 @@
 ---
-title: "OpenClaw Skills — Security Guide"
-description: "Detect tool poisoning, wildcard permissions, data exfiltration, and supply chain risks in OpenClaw skill definitions. 209 detection rules."
+title: "OpenClaw Skills - Security Guide"
+description: "Detect tool poisoning, wildcard permissions, data exfiltration, and supply chain risks in OpenClaw skill definitions. 227 detection rules."
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ClawHub is the npm of AI skills. And like early npm, nobody's auditing what gets published.
 
-The parallel runs deeper than it looks. Security researchers found **341 malicious tools on agent marketplaces** in a single survey — tools that requested wildcard shell permissions, embedded hidden instructions in their descriptions, and combined filesystem plus network access in ways that had no legitimate justification. OpenClaw's ClawHub is no exception: **22% of enterprises already have employees using it** without any centralized visibility into which skills have been installed or what permissions they hold.
+The parallel runs deeper than it looks. Security researchers found **341 malicious tools on agent marketplaces** in a single survey - tools that requested wildcard shell permissions, embedded hidden instructions in their descriptions, and combined filesystem plus network access in ways that had no legitimate justification. OpenClaw's ClawHub is no exception: **22% of enterprises already have employees using it** without any centralized visibility into which skills have been installed or what permissions they hold.
 
-OpenClaw's permission model was designed to enable fine-grained access control. `shell:read`, `filesystem:write:/home/user/data`, `network:post:api.example.com` — each permission is intended to be scoped and explicit. But the model only works when skill authors use it correctly. A skill that requests `shell:*` gets unrestricted command execution. A skill that requests `shell:*` plus `filesystem:*` plus `network:*` simultaneously has the maximum possible attack surface: it can read any file, execute any command, and exfiltrate the results to any server.
+OpenClaw's permission model was designed to enable fine-grained access control. `shell:read`, `filesystem:write:/home/user/data`, `network:post:api.example.com` - each permission is intended to be scoped and explicit. But the model only works when skill authors use it correctly. A skill that requests `shell:*` gets unrestricted command execution. A skill that requests `shell:*` plus `filesystem:*` plus `network:*` simultaneously has the maximum possible attack surface: it can read any file, execute any command, and exfiltrate the results to any server.
 
-Firmis scans OpenClaw skill manifests, handler code, and ClawHub-installed skill dependencies across 209 detection rules covering wildcard permissions, maximum blast-radius permission combinations, bulk exfiltration patterns, and supply chain risks.
+Firmis scans OpenClaw skill manifests, handler code, and ClawHub-installed skill dependencies across 227 detection rules covering wildcard permissions, maximum blast-radius permission combinations, bulk exfiltration patterns, and supply chain risks.
 
 <Aside type="caution">
   OpenClaw skill support is **Experimental**. Detection rules are functional but coverage is still expanding. Validate findings in context before acting on them.
@@ -57,9 +57,9 @@ HIGH  perm-001  Wildcard Permission
       Pattern: "shell:*"
 ```
 
-**What it means.** The skill requests `shell:*` — unrestricted command execution. OpenClaw's permission model is designed around least-privilege: a skill that only needs to read the output of one command should declare exactly that, scoped to that command. A wildcard permission bypasses the entire model. The skill can execute any command the current user can run, escalate privileges through local exploits, and persist itself by writing startup scripts or cron jobs.
+**What it means.** The skill requests `shell:*` - unrestricted command execution. OpenClaw's permission model is designed around least-privilege: a skill that only needs to read the output of one command should declare exactly that, scoped to that command. A wildcard permission bypasses the entire model. The skill can execute any command the current user can run, escalate privileges through local exploits, and persist itself by writing startup scripts or cron jobs.
 
-This is one of the 341 malicious tool patterns documented in agent marketplace security research. Wildcard shell permissions are the clearest signal that a skill was not designed with security in mind — or was designed with the opposite intent.
+This is one of the 341 malicious tool patterns documented in agent marketplace security research. Wildcard shell permissions are the clearest signal that a skill was not designed with security in mind - or was designed with the opposite intent.
 
 **How to fix.** Replace wildcard permissions with the minimum specific permission required. If the skill reads command output, use `shell:read`. If it runs a single known command, scope it to that command explicitly. If no shell permission is genuinely required, remove it entirely. Establish a policy of rejecting any ClawHub skill that requests wildcard permissions without a documented, reviewed justification.
 
@@ -73,7 +73,7 @@ CRITICAL  perm-002  Maximum Blast Radius Permission Combo
           Pattern: shell + network + filesystem permissions present
 ```
 
-**What it means.** The skill simultaneously requests shell execution, network access, and filesystem access. This is the maximum possible attack surface for any OpenClaw skill. With these three permissions, a skill can read any file on the system, execute arbitrary commands on the host, and transmit both to any external server — all within a single invocation.
+**What it means.** The skill simultaneously requests shell execution, network access, and filesystem access. This is the maximum possible attack surface for any OpenClaw skill. With these three permissions, a skill can read any file on the system, execute arbitrary commands on the host, and transmit both to any external server - all within a single invocation.
 
 Each individual permission might appear to have a legitimate justification when read in isolation. But the combination should trigger a mandatory security review: the set of legitimate use cases that genuinely requires all three simultaneously is very small. The set of malicious use cases that benefits from all three is not.
 
@@ -89,7 +89,7 @@ HIGH  exfil-008  Archive Creation Before Upload
       Pattern: createWriteStream('.zip') with axios upload
 ```
 
-**What it means.** The skill handler creates a ZIP archive and uploads it via HTTP. This is the bulk exfiltration pattern: rather than leaking one file at a time, the skill packages a large collection of files into an archive and transmits the entire thing in one request. In an OpenClaw environment with filesystem permissions, a single skill invocation can exfiltrate an entire project directory — source code, configuration files, secrets, and all.
+**What it means.** The skill handler creates a ZIP archive and uploads it via HTTP. This is the bulk exfiltration pattern: rather than leaking one file at a time, the skill packages a large collection of files into an archive and transmits the entire thing in one request. In an OpenClaw environment with filesystem permissions, a single skill invocation can exfiltrate an entire project directory - source code, configuration files, secrets, and all.
 
 The upload happens in the background while the skill appears to complete its stated function. The user sees normal skill output. The archive has already left the network.
 

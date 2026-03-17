@@ -1,9 +1,9 @@
 ---
-title: "firmis discover — Discover AI Platforms and Components"
+title: "firmis discover - Discover AI Platforms and Components"
 description: "Before you scan, find out what you're dealing with. Discovery maps every AI component in your project: platforms, tools, dependencies, and model references."
 ---
 
-You can't secure what you don't know exists. Before scanning, `firmis discover` maps every AI component in your project — platforms, tool definitions, dependencies, and model references.
+You can't secure what you don't know exists. Before scanning, `firmis discover` maps every AI component in your project - platforms, tool definitions, dependencies, and model references.
 
 Run this first on any new project. The output tells you exactly what `scan` is about to look at.
 
@@ -14,7 +14,7 @@ Run this first on any new project. The output tells you exactly what `scan` is a
 - **Inventory for ops**: Get a quick human-readable map of your agent stack without generating a full BOM
 - **Debugging a missed detection**: If `scan` seems to be missing something, `discover --verbose` shows you exactly what was found and why
 
-For a machine-readable, audit-grade inventory, use [`firmis bom`](/cli/bom) instead. For immediate security findings, use [`firmis scan`](/cli/scan) — it runs discovery automatically.
+For a machine-readable, audit-grade inventory, use [`firmis bom`](/cli/bom) instead. For immediate security findings, use [`firmis scan`](/cli/scan) - it runs discovery automatically.
 
 ## Usage
 
@@ -26,11 +26,11 @@ firmis discover [path] [options]
 
 For each detected platform, Firmis reports:
 
-- **Platforms** — Claude, MCP, Codex, Cursor, CrewAI, AutoGPT, OpenClaw, Nanobot
-- **Components** — individual tools, skills, plugins, or agents within each platform
-- **Dependencies** — npm/pip packages related to AI functionality, with version numbers
-- **Models** — detected model files or model references in config files
-- **File paths** — exact locations of every detected file
+- **Platforms** - Claude, MCP, Codex, Cursor, CrewAI, AutoGPT, OpenClaw, Nanobot
+- **Components** - individual tools, skills, plugins, or agents within each platform
+- **Dependencies** - npm/pip packages related to AI functionality, with version numbers
+- **Models** - detected model files or model references in config files
+- **File paths** - exact locations of every detected file
 
 ## Example output
 
@@ -68,7 +68,7 @@ Models referenced: 1
 
 | Flag | Type | Default | Description |
 |---|---|---|---|
-| `--platform <name>` | string | auto-detect | Discover a specific platform only — useful when you know exactly what you're looking for |
+| `--platform <name>` | string | auto-detect | Discover a specific platform only - useful when you know exactly what you're looking for |
 | `--json` | boolean | `false` | JSON output for piping into scripts or other tools |
 | `--output <file>` | string | stdout | Save discovery results to a file |
 | `--verbose` | boolean | `false` | Show detailed component metadata including file sizes, parse results, and detection confidence |
@@ -95,7 +95,7 @@ npx firmis discover --platform mcp --json
 npx firmis discover --output discovery.json --json
 ```
 
-### Verbose discovery — see exactly what Firmis found and why
+### Verbose discovery - see exactly what Firmis found and why
 
 ```bash title="Terminal"
 npx firmis discover --verbose
@@ -103,6 +103,6 @@ npx firmis discover --verbose
 
 ## Related
 
-- [Platforms](/concepts/platforms) — what each detected platform means for your security posture
-- [BOM](/cli/bom) — turn discovery results into a CycloneDX 1.7 inventory for compliance audits
-- [scan](/cli/scan) — scan everything discovery finds for actual threats
+- [Platforms](/concepts/platforms) - what each detected platform means for your security posture
+- [BOM](/cli/bom) - turn discovery results into a CycloneDX 1.7 inventory for compliance audits
+- [scan](/cli/scan) - scan everything discovery finds for actual threats

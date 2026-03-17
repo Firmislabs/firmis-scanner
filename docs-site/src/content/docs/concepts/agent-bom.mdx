@@ -26,8 +26,8 @@ Traditional software supply chain tooling accounts for code dependencies. AI age
 | Problem | How an Agent BOM helps |
 |---|---|
 | **Audit trail** | SOC 2 Type II and AI Act Article 13 compliance reviews require knowing exactly which tools were installed and when. A BOM gives you a dated record at every deployment. |
-| **Supply chain visibility** | When a new malicious tool advisory drops, a BOM tells you in seconds whether you're affected — without grepping through deployment configs. |
-| **Drift detection** | Comparing BOMs across deployments reveals which components were added, removed, or updated between releases — the kind of change that introduces supply chain risk. |
+| **Supply chain visibility** | When a new malicious tool advisory drops, a BOM tells you in seconds whether you're affected - without grepping through deployment configs. |
+| **Drift detection** | Comparing BOMs across deployments reveals which components were added, removed, or updated between releases - the kind of change that introduces supply chain risk. |
 | **CI/CD gating** | Automated pipelines can reject deployments if a new component lacks a known-good BOM entry or introduces an untrusted source. |
 | **Incident response** | When a tool is flagged as malicious, a BOM tells you exactly which agent deployments are affected and which version was running at the time. |
 
@@ -52,7 +52,7 @@ Each AI agent tool, skill, or plugin discovered during the scan is listed as a C
 
 ### Dependencies
 
-npm and pip packages referenced in `package.json`, `requirements.txt`, and `pyproject.toml` are enumerated and listed as dependency components. These are the packages the agent's tools depend on at runtime — the ones most likely to carry supply chain risk.
+npm and pip packages referenced in `package.json`, `requirements.txt`, and `pyproject.toml` are enumerated and listed as dependency components. These are the packages the agent's tools depend on at runtime - the ones most likely to carry supply chain risk.
 
 ### Models
 
@@ -145,7 +145,7 @@ This generates a BOM as an artifact alongside the SARIF scan results. You can ar
 
 ## Consuming the BOM
 
-Because the output is standard CycloneDX 1.7 JSON, it integrates with any tool that supports the format. You're not locked into Firmis's reporting — the BOM is yours to use.
+Because the output is standard CycloneDX 1.7 JSON, it integrates with any tool that supports the format. You're not locked into Firmis's reporting - the BOM is yours to use.
 
 | Tool | Use case |
 |---|---|
@@ -170,7 +170,7 @@ For complete runtime visibility, combine the Agent BOM with runtime monitoring.
 
 ## What to read next
 
-- [firmis bom](/cli/bom) — CLI reference for all BOM generation options
-- [firmis ci](/cli/ci) — the full discover → BOM → scan → report pipeline in one command
-- [CycloneDX BOM format](/reference/cyclonedx-bom) — output format field reference
-- [How It Works](/concepts/how-it-works) — the three-stage detection pipeline that feeds BOM generation
+- [firmis bom](/cli/bom) - CLI reference for all BOM generation options
+- [firmis ci](/cli/ci) - the full discover → BOM → scan → report pipeline in one command
+- [CycloneDX BOM format](/reference/cyclonedx-bom) - output format field reference
+- [How It Works](/concepts/how-it-works) - the three-stage detection pipeline that feeds BOM generation

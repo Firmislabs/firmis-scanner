@@ -5,13 +5,13 @@ description: "Release history for Firmis Scanner. All notable changes documented
 
 > All notable changes to Firmis Scanner are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [1.7.0] — 2026-03-11
+## [1.7.0] - 2026-03-11
 
 ### Added
-- **`firmis init`** — one-command project setup: detects AI tools, runs first scan, generates `.firmisrc.json`, shows next steps with contextual upgrade path
-- **GitHub Action** (`riteshkew/firmis-scanner@v1`) — composite action with PR grade badge comments, HTML report artifacts, and optional dashboard sync
+- **`firmis init`** - one-command project setup: detects AI tools, runs first scan, generates `.firmisrc.json`, shows next steps with contextual upgrade path
+- **GitHub Action** (`firmislabs/firmis-scanner@v1`) - composite action with PR grade badge comments, HTML report artifacts, and optional dashboard sync
 - 8 new detection rules across agent-memory-poisoning, credential-harvesting, insecure-config, known-malicious, network-abuse, prompt-injection, supply-chain, and tool-poisoning categories
-- Total rules: 212 across 17 categories
+- Total rules: 227 across 17 categories
 - Behavioral scoring wired into runtime monitor decision engine
 - Training data pipeline: auto-export labeled sessions, synthetic data generation, weight calibration via grid search
 
@@ -19,7 +19,7 @@ description: "Release history for Firmis Scanner. All notable changes documented
 - Behavioral scoring was not triggering decisions (score scale mismatch: 0-1 vs 0-100)
 - Slowdrip attack template missing exfiltration phase (100% false negative rate)
 
-## [1.6.1] — 2026-03-10
+## [1.6.1] - 2026-03-10
 
 ### Added
 - Cloud dashboard Phase 1 MVP (Cloudflare Pages deployment)
@@ -29,7 +29,7 @@ description: "Release history for Firmis Scanner. All notable changes documented
 - Post-scan CTA for lead generation
 - Scan history with local storage
 
-## [1.3.0] — 2026-03-01
+## [1.3.0] - 2026-03-01
 
 ### Added
 - 34 new detection rules: access-control (3 rules), insecure-config (3 rules), expanded credential-harvesting, prompt-injection, supply-chain, and suspicious-behavior categories
@@ -45,7 +45,7 @@ description: "Release history for Firmis Scanner. All notable changes documented
 - Input validation on component names (path traversal prevention)
 - MAX_FILES_PER_COMPONENT=500 limit (DoS prevention)
 
-## [1.2.0] — 2026-02-18
+## [1.2.0] - 2026-02-18
 
 ### Added
 - Credential harvesting and prompt injection rule hardening (Sprint B)
@@ -60,7 +60,7 @@ description: "Release history for Firmis Scanner. All notable changes documented
 ### Security
 - Component name validation against path traversal and XSS
 
-## [1.1.0] — 2026-02-16
+## [1.1.0] - 2026-02-16
 
 ### Added
 - 8 platform analyzers: Claude, MCP, Codex, Cursor, CrewAI, AutoGPT, OpenClaw, Nanobot
@@ -72,7 +72,7 @@ description: "Release history for Firmis Scanner. All notable changes documented
 - CI pipeline command (`firmis ci`)
 - SARIF 2.1.0 and HTML report output
 
-## [1.0.0] — 2026-02-12
+## [1.0.0] - 2026-02-12
 
 ### Added
 - Initial release

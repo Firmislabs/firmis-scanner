@@ -1,11 +1,11 @@
 ---
 title: Pre-commit Hooks
-description: Catch threats at commit time — before they ever reach CI or your teammates' machines. Pre-commit hooks are the fastest feedback loop in your security pipeline.
+description: Catch threats at commit time - before they ever reach CI or your teammates' machines. Pre-commit hooks are the fastest feedback loop in your security pipeline.
 ---
 
 import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components'
 
-CI pipelines catch threats after a push. By then the code is in git history, visible to collaborators, and potentially already deployed. A pre-commit hook stops the commit entirely — keeping your repository clean from the start, before anything leaves your machine.
+CI pipelines catch threats after a push. By then the code is in git history, visible to collaborators, and potentially already deployed. A pre-commit hook stops the commit entirely - keeping your repository clean from the start, before anything leaves your machine.
 
 ## Why pre-commit scanning matters
 
@@ -13,9 +13,9 @@ CI catches issues after a push, which means threats travel through git history a
 
 Firmis is well-suited for pre-commit use because it is:
 
-- **Fast** — most projects scan in under 3 seconds
-- **Zero-install** — runs via `npx` with no prior setup
-- **Offline** — no network requests for the core scan (OSV check is optional)
+- **Fast** - most projects scan in under 3 seconds
+- **Zero-install** - runs via `npx` with no prior setup
+- **Offline** - no network requests for the core scan (OSV check is optional)
 
 ## Setup options
 
@@ -37,7 +37,7 @@ Husky is the standard pre-commit hook manager for Node.js projects.
    #!/usr/bin/env sh
    . "$(dirname -- "$0")/_/husky.sh"
 
-   # Run Firmis on staged files — fail commit if high/critical threats found
+   # Run Firmis on staged files - fail commit if high/critical threats found
    npx firmis scan . --severity high --quiet
    ```
 
@@ -144,7 +144,7 @@ repos:
   - repo: local
     hooks:
       - id: firmis-scan
-        name: Firmis — AI Agent Security Scan
+        name: Firmis - AI Agent Security Scan
         language: node
         entry: npx firmis scan . --severity high --quiet
         pass_filenames: false
@@ -248,7 +248,7 @@ See [Ignoring Findings](/rules/ignoring-findings) for full `.firmisignore` synta
 
 ## What to do next
 
-- [GitHub Actions integration →](/integrations/github-actions) — enforce the same gate in CI after commit
-- [GitLab CI integration →](/integrations/gitlab-ci) — CI enforcement for GitLab pipelines
-- [Ignoring Findings →](/rules/ignoring-findings) — suppress false positives without disabling rules
-- [`firmis scan` command →](/cli/scan) — full CLI reference for the command powering this hook
+- [GitHub Actions integration →](/integrations/github-actions) - enforce the same gate in CI after commit
+- [GitLab CI integration →](/integrations/gitlab-ci) - CI enforcement for GitLab pipelines
+- [Ignoring Findings →](/rules/ignoring-findings) - suppress false positives without disabling rules
+- [`firmis scan` command →](/cli/scan) - full CLI reference for the command powering this hook

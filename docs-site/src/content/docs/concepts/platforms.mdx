@@ -7,7 +7,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 Claude, Cursor, MCP, Codex, CrewAI, AutoGPT, OpenClaw, Nanobot. Eight platforms, eight different config formats, eight different attack surfaces. One command scans them all.
 
-Most developers only think about the platforms they actively built against. But an MCP server installed months ago, a Cursor extension installed from a marketplace, a CrewAI agent scaffolded from a template — these all run on your machine, with access to your files and credentials, and most of them have never been audited.
+Most developers only think about the platforms they actively built against. But an MCP server installed months ago, a Cursor extension installed from a marketplace, a CrewAI agent scaffolded from a template - these all run on your machine, with access to your files and credentials, and most of them have never been audited.
 
 Firmis detects all of them automatically.
 
@@ -15,10 +15,10 @@ Firmis detects all of them automatically.
 
 In Firmis, a **platform** is a supported AI agent framework. Each platform has:
 
-- A set of **detection signals** — file paths or glob patterns that indicate the platform is present
-- A set of **component types** — the unit of scanning (skill, server, plugin, agent, extension)
-- A set of **file patterns** — the source files, configs, and manifests collected for rule evaluation
-- A **maturity level** — GA, Beta, or Experimental (see table below)
+- A set of **detection signals** - file paths or glob patterns that indicate the platform is present
+- A set of **component types** - the unit of scanning (skill, server, plugin, agent, extension)
+- A set of **file patterns** - the source files, configs, and manifests collected for rule evaluation
+- A **maturity level** - GA, Beta, or Experimental (see table below)
 
 When you run `npx firmis scan`, Firmis checks each platform's detection signals against the current directory and any well-known installation paths. Detected platforms are scanned; undetected platforms are skipped. No configuration required.
 
@@ -32,7 +32,7 @@ When you run `npx firmis scan`, Firmis checks each platform's detection signals 
 | **Beta** | Supported with minor limitations. Some component types or metadata may not be fully detected. Feedback welcome. |
 | **Experimental** | Early support. Detection works but may miss edge cases. Breaking changes possible in future releases. |
 
-The maturity label reflects the reliability of detection and component enumeration — not the quality of the security analysis. All 8 platforms apply the full 209-rule catalog regardless of maturity level. An Experimental platform gets the same depth of analysis as a GA platform.
+The maturity label reflects the reliability of detection and component enumeration - not the quality of the security analysis. All platforms apply the full 227-rule catalog regardless of maturity level. An Experimental platform gets the same depth of analysis as a GA platform.
 
 ---
 
@@ -77,7 +77,7 @@ npx firmis discover
 
 ## Platform details
 
-### Claude Skills — GA
+### Claude Skills - GA
 
 Claude Skills are extensions to the Claude AI assistant stored in `~/.claude/skills/`. Each skill is a directory containing a `skill.json` manifest and one or more Markdown or JavaScript files.
 
@@ -87,11 +87,11 @@ Claude Skills have direct access to the agent's context window and can influence
 **Files analyzed:** `**/*.md`, `**/skill.json`, `**/package.json`
 **Config file:** `skill.json`
 
-### MCP Servers — GA
+### MCP Servers - GA
 
 Model Context Protocol (MCP) servers expose tools to AI agents via a standardized JSON-RPC protocol. Firmis detects MCP servers from config files in Claude Desktop, VS Code, and standard config paths. Individual server directories under `~/.mcp/servers/` are also detected.
 
-MCP is the most actively targeted attack surface in the current threat landscape. 72.8% of tool poisoning attacks target MCP tool descriptions. 341 malicious tools have been found on MCP marketplaces. The protocol's power — giving agents access to arbitrary tools — is exactly what makes it dangerous when those tools are unaudited.
+MCP is the most actively targeted attack surface in the current threat landscape. 72.8% of tool poisoning attacks target MCP tool descriptions. 341 malicious tools have been found on MCP marketplaces. The protocol's power - giving agents access to arbitrary tools - is exactly what makes it dangerous when those tools are unaudited.
 
 **Components detected:** servers listed in `mcpServers` config, or server subdirectories
 **Files analyzed:** `**/*.{js,ts,py,go,rs}`, `**/package.json`, `**/pyproject.toml`, `**/Cargo.toml`, `**/go.mod`
@@ -101,17 +101,17 @@ MCP is the most actively targeted attack surface in the current threat landscape
   MCP config files (which contain environment variables and server commands) are always included in the scan for secret detection, even if the server source code is not present locally.
 </Aside>
 
-### Cursor Extensions — GA
+### Cursor Extensions - GA
 
 Cursor is an AI-powered code editor built on VS Code. Extensions for Cursor are installed in `~/.cursor/extensions/` and follow the VS Code extension manifest format (`package.json` with `contributes.commands`).
 
-Extensions run inside the editor with access to the filesystem and network. A malicious extension can read any file the editor can access — including credentials, SSH keys, and source code.
+Extensions run inside the editor with access to the filesystem and network. A malicious extension can read any file the editor can access - including credentials, SSH keys, and source code.
 
 **Components detected:** extension directories
 **Files analyzed:** `**/*.{js,ts}`, `**/package.json`
 **Config file:** `package.json` (VS Code extension manifest)
 
-### Codex Plugins — Beta
+### Codex Plugins - Beta
 
 OpenAI Codex plugins extend the Codex CLI agent with additional capabilities. Plugins are stored in `~/.codex/plugins/` and use a JSON manifest format.
 
@@ -119,7 +119,7 @@ OpenAI Codex plugins extend the Codex CLI agent with additional capabilities. Pl
 **Files analyzed:** `**/*.{js,ts,py}`, `**/manifest.json`, `**/plugin.json`
 **Config file:** `manifest.json` or `plugin.json`
 
-### CrewAI Agents — Beta
+### CrewAI Agents - Beta
 
 CrewAI is a Python framework for building multi-agent systems. A CrewAI project is detected by the presence of `crew.yaml` or `crew.yml` in the project tree. Each crew config defines agents, tasks, and tools.
 
@@ -129,7 +129,7 @@ Multi-agent systems introduce a new attack surface: agent-to-agent communication
 **Files analyzed:** `**/*.{py,yaml,yml}`, `**/crew.yaml`, `**/agents.yaml`
 **Config file:** `crew.yaml`
 
-### AutoGPT Plugins — Experimental
+### AutoGPT Plugins - Experimental
 
 AutoGPT is an autonomous agent platform. Plugins extend AutoGPT with new commands and are stored in `~/.autogpt/plugins/` or `~/AutoGPT/plugins/`.
 
@@ -137,7 +137,7 @@ AutoGPT is an autonomous agent platform. Plugins extend AutoGPT with new command
 **Files analyzed:** `**/*.py`, `**/plugin.json`, `**/manifest.json`
 **Config file:** `plugin.json` or `manifest.json`
 
-### OpenClaw Skills — Experimental
+### OpenClaw Skills - Experimental
 
 OpenClaw is an open-source agent framework. Skills are stored in `~/.openclaw/skills/` and are defined by Markdown files with YAML frontmatter describing the skill's tools and permissions.
 
@@ -145,7 +145,7 @@ OpenClaw is an open-source agent framework. Skills are stored in `~/.openclaw/sk
 **Files analyzed:** `**/*.md`, `**/*.js`, `**/*.ts`, `**/*.py`, `**/SKILL.md`
 **Config file:** `SKILL.md` (frontmatter)
 
-### Nanobot Agents — Experimental
+### Nanobot Agents - Experimental
 
 Nanobot is a lightweight agent runtime. Agent configurations are defined in `nanobot.yaml` files, which specify agent behavior, tool access, and MCP server connections.
 
@@ -176,8 +176,8 @@ Valid platform values: `claude`, `mcp`, `codex`, `cursor`, `crewai`, `autogpt`, 
 
 ## What to read next
 
-- [How It Works](/concepts/how-it-works) — the full discovery → rule engine → reporter pipeline
-- [Claude Skills](/platforms/claude-skills) — Claude-specific scanning guide with common findings
-- [MCP Servers](/platforms/mcp-servers) — MCP-specific scanning guide and tool poisoning detection
-- [firmis scan](/cli/scan) — `--platform` flag and all other scan options
-- [firmis discover](/cli/discover) — list detected platforms without running a full scan
+- [How It Works](/concepts/how-it-works) - the full discovery → rule engine → reporter pipeline
+- [Claude Skills](/platforms/claude-skills) - Claude-specific scanning guide with common findings
+- [MCP Servers](/platforms/mcp-servers) - MCP-specific scanning guide and tool poisoning detection
+- [firmis scan](/cli/scan) - `--platform` flag and all other scan options
+- [firmis discover](/cli/discover) - list detected platforms without running a full scan

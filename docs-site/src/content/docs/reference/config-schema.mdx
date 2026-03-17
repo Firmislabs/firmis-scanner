@@ -11,15 +11,15 @@ You don't need a config file. Most projects need exactly:
 npx firmis scan .
 ```
 
-When you need to tune behavior — filter severity, target a specific platform, exclude test fixtures, or add custom rules — this page documents every available option.
+When you need to tune behavior - filter severity, target a specific platform, exclude test fixtures, or add custom rules - this page documents every available option.
 
 ## Configuration methods
 
 Firmis reads configuration from three sources, in order of precedence (highest to lowest):
 
-1. **CLI flags** — highest precedence, override everything
-2. **Config file** (`firmis.config.ts` or `firmis.config.json`) — project-level defaults
-3. **Built-in defaults** — lowest precedence, applied when nothing is specified
+1. **CLI flags** - highest precedence, override everything
+2. **Config file** (`firmis.config.ts` or `firmis.config.json`) - project-level defaults
+3. **Built-in defaults** - lowest precedence, applied when nothing is specified
 
 ---
 
@@ -34,13 +34,13 @@ The most common way to configure Firmis. Passed directly to any command.
 | `--platform <name>` | string | auto-detect | Scan a specific platform: `claude`, `mcp`, `codex`, `cursor`, `crewai`, `autogpt`, `openclaw`, `nanobot` |
 | `--all` | boolean | `true` | Scan all detected platforms |
 | `--severity <level>` | enum | `low` | Minimum severity to report: `low`, `medium`, `high`, `critical` |
-| `--fail-on <level>` | enum | — | Exit non-zero if findings at this severity or above exist |
+| `--fail-on <level>` | enum | - | Exit non-zero if findings at this severity or above exist |
 | `--json` | boolean | `false` | Output findings as JSON |
 | `--sarif` | boolean | `false` | Output findings as SARIF 2.1.0 |
 | `--html` | boolean | `false` | Output findings as HTML report |
 | `--output <file>` | string | stdout | Write output to file instead of stdout |
-| `--config <file>` | string | — | Path to a custom config file |
-| `--ignore <rules>` | string | — | Skip specific rule IDs, comma-separated (e.g., `sd-045,sd-046`) |
+| `--config <file>` | string | - | Path to a custom config file |
+| `--ignore <rules>` | string | - | Skip specific rule IDs, comma-separated (e.g., `sd-045,sd-046`) |
 | `--concurrency <n>` | number | `4` | Number of parallel file workers |
 | `--verbose` | boolean | `false` | Show detailed scan progress per file |
 | `--quiet` | boolean | `false` | Suppress terminal output; only emit exit code |
@@ -90,7 +90,7 @@ const config: Partial<FirmisConfig> = {
   // Output format (terminal | json | sarif | html)
   output: 'terminal',
 
-  // Platforms to scan — omit to auto-detect all
+  // Platforms to scan - omit to auto-detect all
   platforms: ['claude', 'mcp'],
 
   // Custom rule directories to load in addition to built-in rules
@@ -143,7 +143,7 @@ export default config
 
 ## Full configuration schema
 
-All fields in the `FirmisConfig` interface. All fields are optional — omit any field to use the built-in default.
+All fields in the `FirmisConfig` interface. All fields are optional - omit any field to use the built-in default.
 
 | Field | Type | Default | Description |
 |---|---|---|---|
@@ -155,12 +155,12 @@ All fields in the `FirmisConfig` interface. All fields are optional — omit any
 | `customRules` | string[] | `[]` | Additional rule directories to load alongside built-in rules |
 | `exclude` | string[] | `[]` | Glob patterns or paths to exclude from scanning |
 | `ignoreRules` | string[] | `[]` | Rule IDs to skip (same as `--ignore` flag) |
-| `failOnSeverity` | `SeverityLevel` | — | Exit with code 1 if findings at this severity or above |
+| `failOnSeverity` | `SeverityLevel` | - | Exit with code 1 if findings at this severity or above |
 | `failFast` | boolean | `false` | Stop on first critical finding |
 | `concurrency` | number | `4` | Number of parallel file analysis workers |
 | `verbose` | boolean | `false` | Enable detailed per-file scan progress output |
 | `quiet` | boolean | `false` | Suppress all terminal output; only emit exit code |
-| `onProgress` | function | — | Callback fired at scan milestones (TypeScript API only) |
+| `onProgress` | function | - | Callback fired at scan milestones (TypeScript API only) |
 
 ### Platform type values
 
@@ -227,7 +227,7 @@ The CLI flag `--severity low` wins. You see all findings including low severity.
 
 ## What to do next
 
-- [firmis scan →](/cli/scan) — full scan command reference
-- [firmis ci →](/cli/ci) — CI pipeline command reference
-- [Ignoring Findings →](/rules/ignoring-findings) — `.firmisignore` syntax for suppressing false positives
-- [Custom Rules →](/rules/custom-rules) — writing your own detection rules alongside the 209 built-in ones
+- [firmis scan →](/cli/scan) - full scan command reference
+- [firmis ci →](/cli/ci) - CI pipeline command reference
+- [Ignoring Findings →](/rules/ignoring-findings) - `.firmisignore` syntax for suppressing false positives
+- [Custom Rules →](/rules/custom-rules) - writing your own detection rules alongside the 227 built-in ones

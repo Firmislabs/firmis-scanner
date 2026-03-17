@@ -9,18 +9,18 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/firmis-scanner"><img src="https://img.shields.io/npm/v/firmis-scanner.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/firmis-cli"><img src="https://img.shields.io/npm/v/firmis-cli.svg" alt="npm version"></a>
   <a href="https://github.com/firmislabs/firmis-scanner/actions"><img src="https://github.com/firmislabs/firmis-scanner/workflows/CI/badge.svg" alt="CI Status"></a>
   <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
-  <a href="https://firmislabs.com"><img src="https://img.shields.io/badge/Firmis-Labs-violet" alt="Firmis Labs"></a>
+  <a href="https://firmislabs.com"><img src="https://img.shields.io/badge/Firmis-Labs-059669" alt="Firmis Labs"></a>
 </p>
 
 <p align="center">
-  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 14 other threat categories. 245 detection rules. Zero config.<!-- /readme-stats -->
+  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 14 other threat categories. 227 detection rules. Zero config.<!-- /readme-stats -->
 </p>
 
 <p align="center">
-  <code>npx firmis-scanner scan</code>
+  <code>npx firmis-cli scan</code>
 </p>
 
 ---
@@ -40,7 +40,7 @@ Static analysis catches only ~30% of these threats. The rest manifest at runtime
 
 ```bash
 # Install globally
-npm install -g firmis-scanner
+npm install -g firmis-cli
 
 # Scan all detected AI platforms
 firmis scan
@@ -57,7 +57,7 @@ firmis scan --sarif --output results.sarif
 
 ## Scan Any Agent Framework
 
-Firmis works with any AI agent codebase — auto-detects the framework:
+Firmis works with any AI agent codebase - auto-detects the framework:
 
 ```bash
 npx firmis scan ./my-crewai-project
@@ -71,17 +71,17 @@ No `--platform` flag needed. Firmis detects the framework from `package.json`, `
 
 ## What is Firmis?
 
-**Firmis is a security scanner purpose-built for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them — detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 12 other threat categories.
+**Firmis is a security scanner purpose-built for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them - detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 14 other threat categories.
 
 **Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
 
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 245 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
+<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 227 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
 
 ## Features
 
 | Capability | Command | Tier |
 |-----------|---------|------|
-| <!-- readme-features -->Scan for threats (245 rules, 17 categories)<!-- /readme-features --> | `firmis scan` | Free |
+| <!-- readme-features -->Scan for threats (227 rules, 17 categories)<!-- /readme-features --> | `firmis scan` | Free |
 | Discover AI agent platforms | `firmis discover` | Free |
 | Generate Agent BOM (CycloneDX) | `firmis bom` | Free |
 | CI/CD pipeline with fail gates | `firmis ci` | Free |
@@ -230,8 +230,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Firmis Scanner
-        run: npm install -g firmis-scanner
+      - name: Install Firmis
+        run: npm install -g firmis-cli
 
       - name: Run Security Scan
         run: firmis scan --sarif --output results.sarif
@@ -297,7 +297,7 @@ severity: medium
 ## Programmatic API
 
 ```typescript
-import { ScanEngine, RuleEngine } from 'firmis-scanner'
+import { ScanEngine, RuleEngine } from 'firmis-cli'
 
 const ruleEngine = new RuleEngine()
 await ruleEngine.load()
@@ -324,7 +324,7 @@ Add to your MCP settings:
   "mcpServers": {
     "firmis": {
       "command": "npx",
-      "args": ["-y", "firmis-scanner", "--mcp"]
+      "args": ["-y", "firmis-cli", "--mcp"]
     }
   }
 }
@@ -339,7 +339,7 @@ Add to `.cursor/mcp.json`:
   "mcpServers": {
     "firmis": {
       "command": "npx",
-      "args": ["-y", "firmis-scanner", "--mcp"]
+      "args": ["-y", "firmis-cli", "--mcp"]
     }
   }
 }

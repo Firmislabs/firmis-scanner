@@ -1,4 +1,4 @@
-# AGENTS.md — Firmis Scanner Tool Capabilities
+# AGENTS.md - Firmis Scanner Tool Capabilities
 
 This file describes Firmis Scanner for LLM and AI agent consumption. Use it to determine when and how to invoke Firmis.
 
@@ -19,42 +19,42 @@ Firmis Scanner is a security scanner for AI agent components. It performs static
 
 ## Available Commands
 
-All commands can be run without a global install using `npx firmis-scanner`.
+All commands can be run without a global install using `npx firmis-cli`.
 
-### scan — Detect security threats (free)
+### scan - Detect security threats (free)
 
 ```bash
 # Auto-detect all AI platforms in the current directory and home directory
-npx firmis-scanner scan
+npx firmis-cli scan
 
 # Scan a specific path
-npx firmis-scanner scan /path/to/project
+npx firmis-cli scan /path/to/project
 
 # Scan a specific platform
-npx firmis-scanner scan --platform claude
-npx firmis-scanner scan --platform mcp
-npx firmis-scanner scan --platform supabase
+npx firmis-cli scan --platform claude
+npx firmis-cli scan --platform mcp
+npx firmis-cli scan --platform supabase
 
 # Output as JSON (machine-readable)
-npx firmis-scanner scan --json --output report.json
+npx firmis-cli scan --json --output report.json
 
 # Output as SARIF (GitHub Security tab)
-npx firmis-scanner scan --sarif --output results.sarif
+npx firmis-cli scan --sarif --output results.sarif
 
 # Output as HTML report
-npx firmis-scanner scan --html --output report.html
+npx firmis-cli scan --html --output report.html
 
 # Filter by minimum severity
-npx firmis-scanner scan --severity high
+npx firmis-cli scan --severity high
 
 # Exit non-zero only for critical findings (CI use)
-npx firmis-scanner scan --fail-on critical
+npx firmis-cli scan --fail-on critical
 
 # Suppress all output, use exit code only
-npx firmis-scanner scan --quiet
+npx firmis-cli scan --quiet
 
 # LLM-powered deep analysis (requires ANTHROPIC_API_KEY)
-npx firmis-scanner scan --deep
+npx firmis-cli scan --deep
 ```
 
 ### Generic Scanning (Any Framework)
@@ -68,103 +68,103 @@ npx firmis scan ./path/to/agent/code
 Supported frameworks: LangChain, CrewAI, AutoGen, MetaGPT, AutoGPT, LangFlow, MCP Servers, n8n.
 Framework detection uses package.json, pyproject.toml, requirements.txt.
 
-### discover — List detected AI platforms (free)
+### discover - List detected AI platforms (free)
 
 ```bash
-npx firmis-scanner discover
-npx firmis-scanner discover --json
+npx firmis-cli discover
+npx firmis-cli discover --json
 ```
 
-### bom — Generate Agent Bill of Materials (free)
+### bom - Generate Agent Bill of Materials (free)
 
 ```bash
 # CycloneDX 1.7 Agent BOM
-npx firmis-scanner bom
-npx firmis-scanner bom --json --output sbom.json
+npx firmis-cli bom
+npx firmis-cli bom --json --output sbom.json
 ```
 
-### ci — Full CI pipeline: discover → bom → scan → report (free)
+### ci - Full CI pipeline: discover → bom → scan → report (free)
 
 ```bash
-npx firmis-scanner ci
-npx firmis-scanner ci --fail-on high --sarif --output results.sarif
+npx firmis-cli ci
+npx firmis-cli ci --fail-on high --sarif --output results.sarif
 ```
 
-### list — List all 227 detection rules (free)
+### list - List all 227 detection rules (free)
 
 ```bash
-npx firmis-scanner list
-npx firmis-scanner list --category prompt-injection
-npx firmis-scanner list --json
+npx firmis-cli list
+npx firmis-cli list --category prompt-injection
+npx firmis-cli list --json
 ```
 
-### validate — Validate a rule file (free)
+### validate - Validate a rule file (free)
 
 ```bash
-npx firmis-scanner validate rules/my-rule.yaml
+npx firmis-cli validate rules/my-rule.yaml
 ```
 
-### init — Initialize Firmis in a project (free)
+### init - Initialize Firmis in a project (free)
 
 ```bash
-npx firmis-scanner init
+npx firmis-cli init
 ```
 
-### fix — Remediate findings (free: guided, pro: auto-fix)
+### fix - Remediate findings (free: guided, pro: auto-fix)
 
 ```bash
-npx firmis-scanner fix                    # Free: guided, approve each fix
-npx firmis-scanner fix --yes              # Pro: auto-apply all fixes
-npx firmis-scanner fix --dry-run          # Preview fixes without applying
+npx firmis-cli fix                    # Free: guided, approve each fix
+npx firmis-cli fix --yes              # Pro: auto-apply all fixes
+npx firmis-cli fix --dry-run          # Preview fixes without applying
 ```
 
 Free users get one-time guided fix (manual approval per finding). Pro users get continuous auto-fix.
 
-### monitor — Runtime behavioral monitoring (free: passive, pro: active blocking)
+### monitor - Runtime behavioral monitoring (free: passive, pro: active blocking)
 
 ```bash
-npx firmis-scanner monitor --passive      # Free: observe tool calls (read-only)
-npx firmis-scanner monitor --start-daemon # Pro: active blocking daemon
-npx firmis-scanner monitor --stop-daemon
-npx firmis-scanner monitor --status
-npx firmis-scanner monitor --wrap "node my-agent.js"  # Pro: wrap and block
+npx firmis-cli monitor --passive      # Free: observe tool calls (read-only)
+npx firmis-cli monitor --start-daemon # Pro: active blocking daemon
+npx firmis-cli monitor --stop-daemon
+npx firmis-cli monitor --status
+npx firmis-cli monitor --wrap "node my-agent.js"  # Pro: wrap and block
 ```
 
 Free users get passive monitoring (observe tool calls in cloud dashboard). Pro users get active blocking.
 
-### pentest — Active security probing of MCP servers (business, license key required)
+### pentest - Active security probing of MCP servers (business, license key required)
 
 ```bash
-npx firmis-scanner pentest --server my-mcp-server
+npx firmis-cli pentest --server my-mcp-server
 ```
 
-### compliance — Map findings to compliance frameworks (business, license key required)
+### compliance - Map findings to compliance frameworks (business, license key required)
 
 ```bash
-npx firmis-scanner compliance --framework soc2
-npx firmis-scanner compliance --framework ai-act
-npx firmis-scanner compliance --framework owasp-agentic
+npx firmis-cli compliance --framework soc2
+npx firmis-cli compliance --framework ai-act
+npx firmis-cli compliance --framework owasp-agentic
 ```
 
-### triage — Prioritize and filter findings (free)
+### triage - Prioritize and filter findings (free)
 
 ```bash
-npx firmis-scanner triage
-npx firmis-scanner triage --severity high
+npx firmis-cli triage
+npx firmis-cli triage --severity high
 ```
 
-### login / logout / whoami — Cloud sync (free)
+### login / logout / whoami - Cloud sync (free)
 
 ```bash
-npx firmis-scanner login
-npx firmis-scanner logout
-npx firmis-scanner whoami
+npx firmis-cli login
+npx firmis-cli logout
+npx firmis-cli whoami
 ```
 
-### badge — Generate README security badge (free)
+### badge - Generate README security badge (free)
 
 ```bash
-npx firmis-scanner badge
+npx firmis-cli badge
 ```
 
 ## MCP Server Integration
@@ -178,7 +178,7 @@ To use Firmis as an MCP server inside Claude Code or Cursor, add the following t
   "mcpServers": {
     "firmis": {
       "command": "npx",
-      "args": ["firmis-scanner", "mcp"]
+      "args": ["firmis-cli", "mcp"]
     }
   }
 }
@@ -191,7 +191,7 @@ To use Firmis as an MCP server inside Claude Code or Cursor, add the following t
   "mcpServers": {
     "firmis": {
       "command": "npx",
-      "args": ["firmis-scanner", "mcp"]
+      "args": ["firmis-cli", "mcp"]
     }
   }
 }
@@ -282,23 +282,23 @@ A scan result contains the following structure (JSON mode):
 
 All 17 threat categories detected across 227 rules:
 
-1. `credential-harvesting` — Reading credential files, env vars containing secrets, AWS/SSH/API key access
-2. `data-exfiltration` — Sending data to external servers, clipboard theft, covert channels
-3. `prompt-injection` — Instructions embedded in content to manipulate AI behavior
-4. `privilege-escalation` — sudo, setuid, process injection, capability grants
-5. `suspicious-behavior` — Obfuscated code, anti-analysis techniques, anomalous patterns
-6. `network-abuse` — Unexpected outbound connections, DNS tunneling, C2 beaconing
-7. `file-system-abuse` — Unauthorized file reads/writes, traversal attacks, temp file abuse
-8. `access-control` — Bypassing authentication, permission checks, ACL manipulation
-9. `insecure-config` — Hardcoded secrets, debug modes in production, weak TLS, open CORS
-10. `known-malicious` — Matched against known malware signatures and IOCs
-11. `malware-distribution` — Dropper behavior, self-replication, payload delivery
-12. `agent-memory-poisoning` — Injecting false context into agent memory or conversation history
-13. `supply-chain` — Dependency confusion, typosquatting, malicious transitive deps
-14. `permission-overgrant` — Requesting excessive permissions beyond declared scope
-15. `secret-detection` — API keys, tokens, passwords, private keys in source code (60 rules)
-16. `tool-poisoning` — MCP tool descriptions or metadata crafted to manipulate agent behavior
-17. `cross-agent-propagation` — Threats that spread across agent boundaries via shared context or tools
+1. `credential-harvesting` - Reading credential files, env vars containing secrets, AWS/SSH/API key access
+2. `data-exfiltration` - Sending data to external servers, clipboard theft, covert channels
+3. `prompt-injection` - Instructions embedded in content to manipulate AI behavior
+4. `privilege-escalation` - sudo, setuid, process injection, capability grants
+5. `suspicious-behavior` - Obfuscated code, anti-analysis techniques, anomalous patterns
+6. `network-abuse` - Unexpected outbound connections, DNS tunneling, C2 beaconing
+7. `file-system-abuse` - Unauthorized file reads/writes, traversal attacks, temp file abuse
+8. `access-control` - Bypassing authentication, permission checks, ACL manipulation
+9. `insecure-config` - Hardcoded secrets, debug modes in production, weak TLS, open CORS
+10. `known-malicious` - Matched against known malware signatures and IOCs
+11. `malware-distribution` - Dropper behavior, self-replication, payload delivery
+12. `agent-memory-poisoning` - Injecting false context into agent memory or conversation history
+13. `supply-chain` - Dependency confusion, typosquatting, malicious transitive deps
+14. `permission-overgrant` - Requesting excessive permissions beyond declared scope
+15. `secret-detection` - API keys, tokens, passwords, private keys in source code (60 rules)
+16. `tool-poisoning` - MCP tool descriptions or metadata crafted to manipulate agent behavior
+17. `cross-agent-propagation` - Threats that spread across agent boundaries via shared context or tools
 
 ## Supported Platforms
 
@@ -341,8 +341,8 @@ All 17 threat categories detected across 227 rules:
 
 ## Package
 
-- npm package: `firmis-scanner`
-- Install: `npm install -g firmis-scanner`
-- Zero-install: `npx firmis-scanner <command>`
+- npm package: `firmis-cli`
+- Install: `npm install - g firmis-cli`
+- Zero-install: `npx firmis-cli <command>`
 - License: Apache-2.0
 - Website: https://firmislabs.com

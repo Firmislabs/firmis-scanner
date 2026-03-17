@@ -17,7 +17,7 @@ Your Claude skills, MCP servers, and AI plugins run code you didn't write, from 
 npx firmis init
 ```
 
-Detects your AI tools, runs a full security scan, shows your grade, and generates a `.firmisrc.json` config — all in one command. [Learn more about `init` →](/cli/init)
+Detects your AI tools, runs a full security scan, shows your grade, and generates a `.firmisrc.json` config - all in one command. [Learn more about `init` →](/cli/init)
 
 Or if you just want a quick scan without setup:
 
@@ -25,7 +25,7 @@ Or if you just want a quick scan without setup:
 npx firmis scan .
 ```
 
-Both auto-detect Claude Skills, MCP Servers, Codex Plugins, Cursor Rules, and 4 more platforms — no config file, no manifest, nothing to set up.
+Both auto-detect Claude Skills, MCP Servers, Codex Plugins, Cursor Rules, and 4 more platforms - no config file, no manifest, nothing to set up.
 
 ## What you'll see
 
@@ -36,7 +36,7 @@ This is what a real finding looks like:
 
  Scanning: /your/project
  Platforms: mcp (3 servers), claude (2 skills)
- Rules: 209 enabled
+ Rules: 227 enabled
 
  CRITICAL  sd-015  AWS credentials exposed in tool handler
            src/tools/aws-helper.ts:22
@@ -58,10 +58,10 @@ This is what a real finding looks like:
 <details>
 <summary>No findings? Here's why that might happen.</summary>
 
-- **No AI agent files detected** — be specific: `npx firmis scan --platform mcp`
-- **Scanning node_modules** — exclude it: add to `.firmisignore`
-- **Monorepo** — point at the right folder: `npx firmis scan ./packages/agent`
-- **All findings suppressed** — check `.firmisignore` or widen the net: `--severity low`
+- **No AI agent files detected** - be specific: `npx firmis scan --platform mcp`
+- **Scanning node_modules** - exclude it: add to `.firmisignore`
+- **Monorepo** - point at the right folder: `npx firmis scan ./packages/agent`
+- **All findings suppressed** - check `.firmisignore` or widen the net: `--severity low`
 
 </details>
 

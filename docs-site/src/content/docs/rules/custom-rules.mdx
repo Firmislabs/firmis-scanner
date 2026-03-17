@@ -1,11 +1,11 @@
 ---
 title: Custom Rules
-description: Write and load your own YAML detection rules to extend Firmis with project-specific threat patterns. Same schema as the 209 built-in rules. Example first, schema second.
+description: Write and load your own YAML detection rules to extend Firmis with project-specific threat patterns. Same schema as the 227 built-in rules. Example first, schema second.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-Custom rules use the same YAML schema as built-in rules. Write one, point Firmis at it, and your pattern runs alongside the 209 built-in rules on every scan. No plugins, no compile step, no special tooling — just YAML.
+Custom rules use the same YAML schema as built-in rules. Write one, point Firmis at it, and your pattern runs alongside the 227 built-in rules on every scan. No plugins, no compile step, no special tooling - just YAML.
 
 ## Complete example
 
@@ -106,13 +106,13 @@ rules:
 
 | Type | Description | When to use |
 |---|---|---|
-| `regex` | JavaScript regular expression against raw file content | Most patterns — flexible and well-tested |
-| `yara` | YARA-style string match (not the YARA binary) — supports `nocase`, hex strings | Simple string matches with YARA familiarity |
+| `regex` | JavaScript regular expression against raw file content | Most patterns - flexible and well-tested |
+| `yara` | YARA-style string match (not the YARA binary) - supports `nocase`, hex strings | Simple string matches with YARA familiarity |
 | `file-access` | Matches references to specific file paths; applies `~` expansion | Detecting reads of credential or system files |
 | `import` | Matches module import statements (Python and JS/TS) | Detecting use of specific libraries |
 | `network` | Matches URL and hostname patterns | Detecting requests to suspicious domains or TLDs |
 | `string-literal` | Exact match including surrounding quotes | Known-bad package names, exact string indicators |
-| `text` | Plain substring search — no regex | Simple keyword matches where speed matters |
+| `text` | Plain substring search - no regex | Simple keyword matches where speed matters |
 
 <Aside type="caution">
   `regex` patterns do not support PCRE inline flags like `(?i)`. Use the `flags` field instead: `flags: "i"`. Using `(?i)` will throw a runtime error when the rule is loaded.
@@ -128,7 +128,7 @@ The confidence score is computed as:
 confidence = Math.max(ratioConfidence, maxSinglePatternWeight)
 ```
 
-A rule with `confidenceThreshold: 75` and a single `weight: 85` pattern will always fire when that pattern matches (85 ≥ 75). A rule with three patterns at weights 30, 40, and 50 and a threshold of 75 requires multiple patterns to co-occur — a single match (max weight 50) is suppressed.
+A rule with `confidenceThreshold: 75` and a single `weight: 85` pattern will always fire when that pattern matches (85 ≥ 75). A rule with three patterns at weights 30, 40, and 50 and a threshold of 75 requires multiple patterns to co-occur - a single match (max weight 50) is suppressed.
 
 Use a **high threshold with low-weight patterns** to require co-occurrence of multiple weak signals. Use a **single high-weight pattern with a lower threshold** for precise, high-confidence single-indicator rules.
 
@@ -136,7 +136,7 @@ Use a **high threshold with low-weight patterns** to require co-occurrence of mu
 
 ## Multi-pattern rule example
 
-This rule requires two signals — an import and a suspicious network call — before firing:
+This rule requires two signals - an import and a suspicious network call - before firing:
 
 ```yaml title="rules/custom/exfil-via-requests.yaml"
 rules:
@@ -180,7 +180,7 @@ npx firmis validate rules/custom/network-policy.yaml
 # Validate an entire directory
 npx firmis validate rules/custom/
 
-# Strict mode — regex warnings become errors
+# Strict mode - regex warnings become errors
 npx firmis validate --strict rules/custom/
 ```
 
@@ -197,13 +197,13 @@ Validation checks:
 
 ## Where to place custom rule files
 
-**Option 1 — `--rules` flag (one-off or CI):**
+**Option 1 - `--rules` flag (one-off or CI):**
 
 ```bash title="Terminal"
 npx firmis scan --rules ./rules/custom/
 ```
 
-**Option 2 — Config file (persistent, team-wide):**
+**Option 2 - Config file (persistent, team-wide):**
 
 ```yaml title=".firmis.config.yaml"
 rules:
@@ -211,7 +211,7 @@ rules:
   - ./rules/custom/exfil-rules.yaml
 ```
 
-**Option 3 — `rules/` directory at project root (zero-config):**
+**Option 3 - `rules/` directory at project root (zero-config):**
 
 Place `*.yaml` files in a `rules/` directory at your project root. Firmis loads them automatically without any config.
 
@@ -248,7 +248,7 @@ npx firmis scan /tmp/test-fixture.ts --rules rules/custom/network-policy.yaml --
 
 ## What to do next
 
-- [Rules Overview →](/rules/overview) — rule anatomy, severity levels, and how loading works
-- [firmis validate →](/cli/validate) — full CLI reference for the validate command
-- [Ignoring Findings →](/rules/ignoring-findings) — suppress false positives from built-in or custom rules
-- [Built-in Rules →](/rules/built-in-rules) — browse all 209 built-in rules for inspiration and reference
+- [Rules Overview →](/rules/overview) - rule anatomy, severity levels, and how loading works
+- [firmis validate →](/cli/validate) - full CLI reference for the validate command
+- [Ignoring Findings →](/rules/ignoring-findings) - suppress false positives from built-in or custom rules
+- [Built-in Rules →](/rules/built-in-rules) - browse all 227 built-in rules for inspiration and reference
