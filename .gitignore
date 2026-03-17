@@ -41,3 +41,12 @@ temp/
 # Test fixture secrets (fake credentials for testing — never real)
 test/fixtures/**/.env
 !test/fixtures/**/.env.example
+*.tgz
+supabase/.temp/
+
+# QA test artifacts
+.qa-reports/
+
+# Generated scan reports
+firmis-report-*.html
+dashboard/firmis-report-*.html
