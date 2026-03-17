@@ -119,7 +119,7 @@ Firmis auto-detects Supabase projects and scans for:
 firmis scan --platform supabase
 
 # Example output
-  Firmis Scanner v1.4.1
+  Firmis Scanner v1.5.0
 
   Detecting platforms...
   ✓ Supabase: 8 migrations found
@@ -140,7 +140,7 @@ firmis scan --platform supabase
 ## Example Output
 
 ```
-  Firmis Scanner v1.4.1
+  Firmis Scanner v1.5.0
 
   Detecting platforms...
   ✓ Claude Skills: 47 skills found
