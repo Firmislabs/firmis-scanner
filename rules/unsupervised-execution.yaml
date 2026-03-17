@@ -1,0 +1,85 @@
+rules:
+  # =============================================================================
+  # Unsupervised Agent Execution Patterns
+  # Detects skills that spawn background agents, autonomous workers,
+  # or persistent daemons with reduced human oversight
+  # =============================================================================
+
+  - id: uex-001
+    name: Background Agent Spawning
+    description: "Spawns agents or processes in the background without per-action human oversight"
+    category: unsupervised-execution
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)(session_spawn|sessions_spawn|spawn_agent|launch_agent)'
+        weight: 85
+        description: "Agent spawn function calls"
+      - type: regex
+        pattern: '(?i)background\s*:\s*true.*command\s*:'
+        weight: 80
+        description: "Background command execution with agent"
+      - type: regex
+        pattern: '(?i)nohup\s+.*&|disown|setsid'
+        weight: 75
+        description: "Detached process execution"
+    remediation: |
+      Background agents run without per-action human oversight. If compromised, they can execute arbitrary actions
+      until manually stopped. Require periodic check-ins or approval gates for long-running background agents.
+
+  - id: uex-002
+    name: Persistent Daemon / Service
+    description: "Installs a persistent daemon or system service that runs autonomously"
+    category: unsupervised-execution
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)(systemctl|launchctl)\s+(enable|start|load)'
+        weight: 85
+        description: "System service enable/start"
+      - type: regex
+        pattern: '(?i)(systemd|launchd|init\.d).*service'
+        weight: 80
+        description: "System service configuration"
+      - type: regex
+        pattern: '(?i)Restart\s*=\s*always'
+        weight: 80
+        description: "Auto-restart daemon configuration"
+      - type: regex
+        pattern: '(?i)cron.*\*.*\*.*\*'
+        weight: 70
+        description: "Cron job scheduling (persistent recurring execution)"
+    remediation: |
+      Persistent daemons run indefinitely without human oversight. Combined with agent capabilities,
+      a compromised daemon can continuously process and act on untrusted input.
+
+  - id: uex-003
+    name: Multi-Agent Orchestration
+    description: "Spawns multiple parallel agents with tool access — amplified blast radius"
+    category: unsupervised-execution
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)(work.crew|supervisor|pipeline|council|auto.routing)\s*(pattern|mode)'
+        weight: 75
+        description: "Multi-agent orchestration patterns"
+      - type: regex
+        pattern: '(?i)(parallel|concurrent)\s*(agents?|workers?|tasks?)'
+        weight: 70
+        description: "Parallel agent/worker execution"
+      - type: regex
+        pattern: '(?i)(15x|10x|5x)\s*token\s*cost'
+        weight: 65
+        description: "Token cost multiplier warning (indicates multi-agent scale)"
+    remediation: |
+      Multi-agent orchestration amplifies the blast radius of any single compromise.
+      If one agent is compromised, it can influence outputs consumed by other agents.

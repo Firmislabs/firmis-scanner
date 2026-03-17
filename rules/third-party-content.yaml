@@ -1,0 +1,163 @@
+rules:
+  # =============================================================================
+  # Third-Party Content Ingestion Patterns
+  # Detects skills that read untrusted external content into agent context,
+  # creating indirect prompt injection risk
+  # =============================================================================
+
+  - id: tpc-001
+    name: Email Content Ingestion
+    description: "Skill reads email content (IMAP, Gmail, Outlook) — untrusted third-party content enters agent context"
+    category: third-party-content
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)(imap|smtp|gmail|outlook|email)\s.*(read|search|fetch|list|sync|message)'
+        weight: 85
+        description: "Email read/search/fetch operations"
+      - type: regex
+        pattern: '(?i)(gmail|mail)\s+(messages?\s+)?(search|read|get|list|fetch)'
+        weight: 85
+        description: "Gmail message search/read"
+      - type: regex
+        pattern: '(?i)himalaya\s+(message|envelope|template)\s+(read|list|search)'
+        weight: 90
+        description: "Himalaya email client read operations"
+      - type: regex
+        pattern: '(?i)(inbox|mailbox|email)\s.*(content|body|subject|attachment)'
+        weight: 80
+        description: "Email body/content access patterns"
+    remediation: |
+      Email content is untrusted third-party content. Agents processing email bodies are exposed to indirect prompt injection.
+      Consider: content sanitization, untrusted-content wrapping, or operator approval before acting on email content.
+
+  - id: tpc-002
+    name: Chat Message Ingestion
+    description: "Skill reads chat messages (Discord, Slack, WhatsApp, iMessage, Telegram) — untrusted content"
+    category: third-party-content
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)"action"\s*:\s*"(read|readMessages|search)".*"channel"\s*:\s*"(discord|slack|telegram)"'
+        weight: 90
+        description: "OpenClaw message tool read action on chat platforms"
+      - type: regex
+        pattern: '(?i)(readMessages|fetchMessages|getHistory|syncMessages|watchMessages)'
+        weight: 80
+        description: "Chat message read function calls"
+      - type: regex
+        pattern: '(?i)imsg\s+(history|watch|search)\b'
+        weight: 85
+        description: "iMessage history/watch operations"
+      - type: regex
+        pattern: '(?i)wacli\s+(sync|messages\s+search|history\s+backfill)\b'
+        weight: 85
+        description: "WhatsApp message sync/search operations"
+    remediation: |
+      Chat messages are untrusted third-party content. Any contact can send crafted messages containing prompt injection payloads.
+
+  - id: tpc-003
+    name: Social Media Content Ingestion
+    description: "Skill reads social media content (Twitter/X, Reddit, HN) — untrusted user-generated content"
+    category: third-party-content
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)xurl\s+(read|search|timeline|mentions|dms)\b'
+        weight: 85
+        description: "xurl social media read operations"
+      - type: regex
+        pattern: '(?i)blogwatcher\s+(scan|articles)\b'
+        weight: 85
+        description: "RSS/blog feed content scanning"
+      - type: regex
+        pattern: '(?i)--thread-url\s+"?https://(reddit|news\.ycombinator)'
+        weight: 85
+        description: "Direct thread URL fetch from social platforms"
+      - type: regex
+        pattern: '(?i)--from-discovery'
+        weight: 75
+        description: "Reading from discovered social media threads"
+    remediation: |
+      Social media content is untrusted. Posts, comments, and threads can contain prompt injection payloads targeting the agent.
+
+  - id: tpc-004
+    name: Web Content Fetch
+    description: "Skill fetches and processes arbitrary web page content — untrusted external content"
+    category: third-party-content
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)(fetch|scrape|crawl)\s.*url'
+        weight: 70
+        description: "URL fetch/scrape operations"
+      - type: regex
+        pattern: '(?i)summarize\s+"?https?://'
+        weight: 75
+        description: "Summarize arbitrary URL content"
+      - type: regex
+        pattern: '(?i)url_scraping|web_search|browse.*url'
+        weight: 70
+        description: "Web scraping tool references"
+    remediation: |
+      Web content from arbitrary URLs is untrusted. A malicious page can contain prompt injection targeting agents that process its content.
+
+  - id: tpc-005
+    name: GitHub Content Ingestion
+    description: "Skill reads GitHub issues, PRs, or comments — user-generated content enters agent context"
+    category: third-party-content
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)gh\s+(issue|pr)\s+(view|list|comment)'
+        weight: 80
+        description: "GitHub CLI issue/PR read operations"
+      - type: regex
+        pattern: '(?i)gh\s+api\s+repos/.*/issues'
+        weight: 80
+        description: "GitHub API issue endpoint access"
+      - type: regex
+        pattern: '(?i)(github|git)\s.*(issue|pull.request|comment|review).*\b(read|fetch|list|body)\b'
+        weight: 75
+        description: "GitHub content read patterns"
+    remediation: |
+      GitHub issues and PR bodies are user-generated content. Attackers can craft issues with embedded prompt injection instructions.
+
+  - id: tpc-006
+    name: Registry/Marketplace Content Ingestion
+    description: "Skill installs or reads content from skill registries or marketplaces — untrusted code"
+    category: third-party-content
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '(?i)(clawhub|registry|marketplace)\s+(install|search|update|fetch)'
+        weight: 85
+        description: "Skill registry install/search operations"
+      - type: regex
+        pattern: '(?i)clawhub\.com'
+        weight: 75
+        description: "ClawHub registry URL reference"
+      - type: regex
+        pattern: '(?i)(moltbook|community|forum)\s.*(monitor|scan|fetch|read)'
+        weight: 80
+        description: "Community forum content monitoring"
+    remediation: |
+      Skills from registries are untrusted third-party code. Install with verification. Community content can contain prompt injection.

@@ -45,6 +45,15 @@ export type ThreatCategory =
   | 'secret-detection'
   | 'tool-poisoning'
   | 'cross-agent-propagation'
+  // Deep scan categories (LLM-specific, higher precision)
+  | 'third-party-content'
+  | 'credential-extraction'
+  | 'unsafe-credential-passing'
+  | 'permission-bypass'
+  | 'unsupervised-execution'
+  | 'outbound-communication'
+  | 'code-execution'
+  | 'hidden-instructions'
 
 /**
  * Confidence tiers for threat classification
@@ -175,6 +184,14 @@ export function createEmptySummary(): ScanSummary {
       'secret-detection': 0,
       'tool-poisoning': 0,
       'cross-agent-propagation': 0,
+      'third-party-content': 0,
+      'credential-extraction': 0,
+      'unsafe-credential-passing': 0,
+      'permission-bypass': 0,
+      'unsupervised-execution': 0,
+      'outbound-communication': 0,
+      'code-execution': 0,
+      'hidden-instructions': 0,
     },
     bySeverity: {
       low: 0,
