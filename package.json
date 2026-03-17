@@ -94,13 +94,13 @@
     "@types/node": "^20.11.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
-    "@vitest/coverage-v8": "^1.6.1",
+    "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.0",
     "prettier": "^3.2.0",
     "ts-node": "^10.9.0",
     "typescript": "^5.4.0",
-    "vitest": "^1.6.1"
+    "vitest": "^4.0.18"
   }
 }
