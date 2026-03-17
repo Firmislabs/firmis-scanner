@@ -257,7 +257,7 @@ We will notify users of material changes via:
 
 For privacy questions or concerns:
 - Email: privacy@firmis.cloud
-- GitHub: https://github.com/riteshkew/firmis-scanner/issues
+- GitHub: https://github.com/firmislabs/firmis-scanner/issues
 
 ---
 

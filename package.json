@@ -1,7 +1,7 @@
 {
   "name": "firmis-scanner",
   "version": "1.4.1",
-  "description": "Security scanner for AI agents — detect threats in MCP servers, Claude skills, Codex plugins, Cursor extensions, and 5 more platforms. 212 rules across 16 threat categories.",
+  "description": "Security scanner for AI agents — detect threats in MCP servers, Claude skills, Codex plugins, Cursor extensions, and 5 more platforms. 227 rules across 17 threat categories.",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -65,10 +65,10 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/riteshkew/firmis-scanner.git"
+    "url": "git+https://github.com/firmislabs/firmis-scanner.git"
   },
   "bugs": {
-    "url": "https://github.com/riteshkew/firmis-scanner/issues"
+    "url": "https://github.com/firmislabs/firmis-scanner/issues"
   },
   "homepage": "https://firmislabs.com",
   "engines": {

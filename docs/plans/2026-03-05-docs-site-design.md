@@ -81,10 +81,10 @@ export default defineConfig({
         replacesTitle: false,
       },
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/riteshkew/firmis-scanner' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/firmislabs/firmis-scanner' },
       ],
       editLink: {
-        baseUrl: 'https://github.com/riteshkew/firmis-scanner/edit/main/docs-site/',
+        baseUrl: 'https://github.com/firmislabs/firmis-scanner/edit/main/docs-site/',
       },
       customCss: ['./src/styles/custom.css'],
       head: [
@@ -521,7 +521,7 @@ hero:
       icon: right-arrow
       variant: primary
     - text: View on GitHub
-      link: https://github.com/riteshkew/firmis-scanner
+      link: https://github.com/firmislabs/firmis-scanner
       icon: external
       variant: minimal
 ---
@@ -759,7 +759,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 <Aside type="caution" title="Beta">
   This feature is in beta. APIs and behavior may change between releases.
-  Available in the [Firmis Engine](https://github.com/riteshkew/firmis-engine) private beta.
+  Available in the [Firmis Engine](https://github.com/firmislabs/firmis-engine) private beta.
   [Request access →](mailto:beta@firmislabs.com)
 </Aside>
 

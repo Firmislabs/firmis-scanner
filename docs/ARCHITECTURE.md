@@ -1027,7 +1027,7 @@ Based on the 2026-02-16 security audit, here are critical gaps and implementatio
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
-| GitHub stars | 500 | github.com/riteshkew/firmis-scanner |
+| GitHub stars | 500 | github.com/firmislabs/firmis-scanner |
 | npm downloads | 1,000/month | npmjs.com/package/firmis-scanner |
 | Contributors | 10 | Unique PR authors |
 | Custom rules contributed | 25 | Community YAML rule PRs |
@@ -1155,7 +1155,7 @@ Based on the 2026-02-16 security audit, here are critical gaps and implementatio
 
 ## 14. Contact & Contribution
 
-**Project:** https://github.com/riteshkew/firmis-scanner
+**Project:** https://github.com/firmislabs/firmis-scanner
 **Website:** https://firmislabs.com
 **Documentation:** https://docs.firmislabs.com
 **Security Issues:** security@firmislabs.com (responsible disclosure)
