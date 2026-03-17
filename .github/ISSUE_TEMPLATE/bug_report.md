@@ -22,7 +22,7 @@ What actually happened.
 ## Environment
 - OS: [e.g., macOS 14.0, Ubuntu 22.04]
 - Node.js version: [e.g., 20.10.0]
-- Firmis Scanner version: [e.g., 1.0.0]
+- Firmis version: [e.g., 2.0.1]
 - Platform being scanned: [e.g., Claude Skills, MCP Servers]
 
 ## Additional Context

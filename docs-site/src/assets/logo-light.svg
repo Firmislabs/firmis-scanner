@@ -1,6 +1,6 @@
 <svg width="140" height="32" viewBox="0 0 140 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Icon -->
-  <rect width="32" height="32" rx="6" fill="#7c3aed"/>
+  <rect width="32" height="32" rx="6" fill="#059669"/>
   <path d="M5.3 5.3 H26.7 V26.7 H5.3 Z" stroke="#fff" stroke-width="2.1" stroke-linejoin="miter" fill="none"/>
   <path d="M16 5.3 V26.7" stroke="#fff" stroke-width="2.1" stroke-linejoin="miter"/>
   <path d="M16 16 H23.1" stroke="#fff" stroke-width="2.1" stroke-linejoin="miter"/>

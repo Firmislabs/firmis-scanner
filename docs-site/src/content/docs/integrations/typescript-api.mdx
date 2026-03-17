@@ -1,24 +1,24 @@
 ---
 title: TypeScript API
-description: Embed Firmis scanning directly into your TypeScript or JavaScript tooling. Full access to the scan engine, discovery, and reporters — no CLI required.
+description: Embed Firmis scanning directly into your TypeScript or JavaScript tooling. Full access to the scan engine, discovery, and reporters - no CLI required.
 ---
 
 import { Aside, Card, CardGrid } from '@astrojs/starlight/components'
 
-The CLI is the fastest way to get started. The TypeScript API is for when you need Firmis inside your own tooling — custom CI scripts, security dashboards, editor integrations, or automated remediation pipelines.
+The CLI is the fastest way to get started. The TypeScript API is for when you need Firmis inside your own tooling - custom CI scripts, security dashboards, editor integrations, or automated remediation pipelines.
 
 ## Installation
 
-Install `firmis-scanner` as a dependency rather than running it via `npx`.
+Install `firmis-cli` as a dependency rather than running it via `npx`.
 
 ```bash title="Terminal"
-npm install firmis-scanner
+npm install firmis-cli
 ```
 
 ```bash title="Terminal"
 # or with pnpm / yarn
-pnpm add firmis-scanner
-yarn add firmis-scanner
+pnpm add firmis-cli
+yarn add firmis-cli
 ```
 
 ## Basic scan
@@ -67,11 +67,11 @@ async function scanDirectory(targetPath: string): Promise<void> {
   const result = await engine.scan()
 
   if (result.summary.bySeverity.critical > 0 || result.summary.bySeverity.high > 0) {
-    console.error(`Found ${result.summary.threatsFound} threats — grade ${result.score}`)
+    console.error(`Found ${result.summary.threatsFound} threats - grade ${result.score}`)
     process.exit(1)
   }
 
-  console.log(`Clean scan — grade ${result.score}`)
+  console.log(`Clean scan - grade ${result.score}`)
 }
 
 await scanDirectory('./packages/agent')
@@ -144,7 +144,7 @@ const engine = new ScanEngine(config)
 await engine.initialize()
 const result = await engine.scan()
 
-console.log(`Finished — ${result.summary.threatsFound} threats in ${result.duration}ms`)
+console.log(`Finished - ${result.summary.threatsFound} threats in ${result.duration}ms`)
 ```
 
 ## SARIF output
@@ -178,7 +178,7 @@ console.log('SARIF written to firmis.sarif')
 
 ## Custom rules
 
-Load additional YAML rule files alongside the 209 built-in rules.
+Load additional YAML rule files alongside the 227 built-in rules.
 
 ```typescript title="scan-with-custom-rules.ts"
 import { ScanEngine } from 'firmis-scanner'
@@ -394,8 +394,8 @@ Firmis is written in TypeScript and ships its own types. No `@types/firmis-scann
 
 ## What to do next
 
-- [GitHub Actions integration →](/integrations/github-actions) — run this API in CI with a security gate
-- [GitLab CI integration →](/integrations/gitlab-ci) — same for GitLab pipelines
-- [Configuration reference →](/reference/config-schema) — every `FirmisConfig` field documented
-- [SARIF output reference →](/reference/sarif-output) — what the SARIF reporter produces
-- [Threat categories reference →](/reference/threat-categories) — all 227 rules across 17 categories
+- [GitHub Actions integration →](/integrations/github-actions) - run this API in CI with a security gate
+- [GitLab CI integration →](/integrations/gitlab-ci) - same for GitLab pipelines
+- [Configuration reference →](/reference/config-schema) - every `FirmisConfig` field documented
+- [SARIF output reference →](/reference/sarif-output) - what the SARIF reporter produces
+- [Threat categories reference →](/reference/threat-categories) - all 227 rules across 17 categories

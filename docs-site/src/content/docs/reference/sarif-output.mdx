@@ -1,11 +1,11 @@
 ---
 title: SARIF Output Reference
-description: GitHub, VS Code, and every major SAST dashboard speaks SARIF. Firmis outputs standard SARIF 2.1.0 — field mappings, generation commands, and a complete example.
+description: GitHub, VS Code, and every major SAST dashboard speaks SARIF. Firmis outputs standard SARIF 2.1.0 - field mappings, generation commands, and a complete example.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-GitHub, VS Code, and every major SAST dashboard speaks SARIF. Firmis outputs SARIF 2.1.0 natively — so your findings land directly in the GitHub Security tab, the VS Code Problems panel, and any CI security dashboard your team uses.
+GitHub, VS Code, and every major SAST dashboard speaks SARIF. Firmis outputs SARIF 2.1.0 natively - so your findings land directly in the GitHub Security tab, the VS Code Problems panel, and any CI security dashboard your team uses.
 
 ## What is SARIF?
 
@@ -15,7 +15,7 @@ Key benefits of SARIF output:
 
 | Benefit | Description |
 |---|---|
-| **GitHub Security tab** | Upload via `github/codeql-action/upload-sarif` — findings appear as code scanning alerts |
+| **GitHub Security tab** | Upload via `github/codeql-action/upload-sarif` - findings appear as code scanning alerts |
 | **PR annotations** | GitHub annotates pull request diffs with finding locations and messages |
 | **VS Code viewer** | The SARIF Viewer extension (Microsoft) renders findings in the Problems panel |
 | **CI dashboards** | Tools like Semgrep App, SonarQube, and Snyk Code accept SARIF imports |
@@ -71,7 +71,7 @@ SARIF uses a different severity vocabulary than Firmis:
 | `low` | `note` |
 
 <Aside type="note">
-  Both `critical` and `high` map to SARIF `error` level. This is standard practice — SARIF only has three actionable levels (`error`, `warning`, `note`). Use Firmis's `--fail-on critical` or `--fail-on high` to distinguish between the two in CI logic.
+  Both `critical` and `high` map to SARIF `error` level. This is standard practice - SARIF only has three actionable levels (`error`, `warning`, `note`). Use Firmis's `--fail-on critical` or `--fail-on high` to distinguish between the two in CI logic.
 </Aside>
 
 ---
@@ -258,8 +258,8 @@ This produces `results.sarif` alongside `agent-bom.json`. Both can be archived a
 
 ## What to do next
 
-- [firmis scan →](/cli/scan) — CLI reference including `--sarif` flag
-- [firmis ci →](/cli/ci) — CI pipeline command
-- [GitHub Actions integration →](/integrations/github-actions) — full workflow example with SARIF upload
-- [CycloneDX BOM →](/reference/cyclonedx-bom) — the agent inventory output format
-- [Threat Categories →](/reference/threat-categories) — what each ruleId maps to across 17 categories
+- [firmis scan →](/cli/scan) - CLI reference including `--sarif` flag
+- [firmis ci →](/cli/ci) - CI pipeline command
+- [GitHub Actions integration →](/integrations/github-actions) - full workflow example with SARIF upload
+- [CycloneDX BOM →](/reference/cyclonedx-bom) - the agent inventory output format
+- [Threat Categories →](/reference/threat-categories) - what each ruleId maps to across 17 categories

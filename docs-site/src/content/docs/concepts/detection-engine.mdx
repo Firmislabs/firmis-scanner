@@ -5,7 +5,7 @@ description: Traditional security scanners look for known CVEs and malware hashe
 
 import { Aside } from '@astrojs/starlight/components';
 
-Traditional security scanners look for known CVEs and malware hashes. Agent threats are different — they hide in natural language, YAML configs, and tool metadata. A malicious tool description is valid JSON. A prompt injection is a plain text string. A credential path reference is just a string literal. None of these trigger conventional scanners.
+Traditional security scanners look for known CVEs and malware hashes. Agent threats are different - they hide in natural language, YAML configs, and tool metadata. A malicious tool description is valid JSON. A prompt injection is a plain text string. A credential path reference is just a string literal. None of these trigger conventional scanners.
 
 Firmis uses a YARA-inspired pattern engine designed specifically for this. 227 rules. 7 matcher types. Confidence scoring that suppresses noise without missing real threats.
 
@@ -47,19 +47,19 @@ rules:
 | `patterns` | array | One or more pattern objects, each with `type`, `pattern`, and `weight` |
 | `enabled` | boolean | Set to `false` to disable a rule globally |
 
-**Why this structure matters:** Rules are not boolean — they are weighted. A rule with a threshold of 70 will not fire on a single weak signal. Multiple signals need to co-occur, or a single high-weight signal must be present. This is what keeps false positive rates low on real codebases.
+**Why this structure matters:** Rules are not boolean - they are weighted. A rule with a threshold of 70 will not fire on a single weak signal. Multiple signals need to co-occur, or a single high-weight signal must be present. This is what keeps false positive rates low on real codebases.
 
 ---
 
 ## The 7 matcher types
 
-Each pattern in a rule specifies a `type` that determines how the pattern is evaluated against a file. Different threat categories need different matching strategies — a credential path is best matched as a file path, a package name as a string literal, and a suspicious URL pattern as a network pattern.
+Each pattern in a rule specifies a `type` that determines how the pattern is evaluated against a file. Different threat categories need different matching strategies - a credential path is best matched as a file path, a package name as a string literal, and a suspicious URL pattern as a network pattern.
 
 ### 1. `regex`
 
 Applies a JavaScript regular expression to the raw file content. The most common matcher type. Used for secrets, prompt injection phrases, and malware signatures where the exact shape of the dangerous content is known.
 
-```yaml title="Example — regex"
+```yaml title="Example - regex"
 - type: regex
   pattern: 'AKIA[0-9A-Z]{16}'
   weight: 100
@@ -67,14 +67,14 @@ Applies a JavaScript regular expression to the raw file content. The most common
 ```
 
 <Aside type="note">
-  PCRE-style inline flags like `(?i)` are not supported — JavaScript's `RegExp` does not support them. Use the `flags` field instead, or write case-insensitive patterns using character classes.
+  PCRE-style inline flags like `(?i)` are not supported - JavaScript's `RegExp` does not support them. Use the `flags` field instead, or write case-insensitive patterns using character classes.
 </Aside>
 
 ### 2. `yara`
 
 Applies a YARA-syntax string match (not the YARA binary). Supports hex strings, wide strings, and simple string conditions. Used for malware signature matching where the YARA ecosystem's pattern vocabulary is well-established.
 
-```yaml title="Example — yara"
+```yaml title="Example - yara"
 - type: yara
   pattern: '"bitcoin" nocase'
   weight: 70
@@ -83,9 +83,9 @@ Applies a YARA-syntax string match (not the YARA binary). Supports hex strings, 
 
 ### 3. `file-access`
 
-Matches when the file content contains a reference to a specific file path — typically a sensitive credential file or system path. Path expansion (e.g., `~` → home directory) is applied before matching. This is the primary matcher type for credential harvesting and file system abuse rules.
+Matches when the file content contains a reference to a specific file path - typically a sensitive credential file or system path. Path expansion (e.g., `~` → home directory) is applied before matching. This is the primary matcher type for credential harvesting and file system abuse rules.
 
-```yaml title="Example — file-access"
+```yaml title="Example - file-access"
 - type: file-access
   pattern: "~/.aws/credentials"
   weight: 90
@@ -96,18 +96,18 @@ Matches when the file content contains a reference to a specific file path — t
 
 Matches when a specific module or package import appears in the file. Handles Python `import`/`from` and JavaScript/TypeScript `require`/`import` statements. Used for supply chain rules where the presence of a compromised package import is itself the finding.
 
-```yaml title="Example — import"
+```yaml title="Example - import"
 - type: import
   pattern: "paramiko"
   weight: 60
-  description: SSH library import — check for unauthorized tunnel creation
+  description: SSH library import - check for unauthorized tunnel creation
 ```
 
 ### 5. `network`
 
 Matches URL patterns or hostname patterns in the file content. Used to detect requests to suspicious TLDs, tunneling services, or known malicious domains. The agent threat landscape involves many domains that have no legitimate use in agent code.
 
-```yaml title="Example — network"
+```yaml title="Example - network"
 - type: network
   pattern: "https?://[^/]*\\.(tk|ml|ga|cf|gq|xyz)/"
   weight: 85
@@ -118,18 +118,18 @@ Matches URL patterns or hostname patterns in the file content. Used to detect re
 
 Matches an exact string literal, including surrounding quotes. Used for known-bad package names and exact-match indicators where regex overhead is unnecessary and a partial match would produce false positives.
 
-```yaml title="Example — string-literal"
+```yaml title="Example - string-literal"
 - type: string-literal
   pattern: '"event-stream"'
   weight: 90
-  description: event-stream — compromised to steal bitcoin wallets
+  description: event-stream - compromised to steal bitcoin wallets
 ```
 
 ### 7. `text`
 
-Plain substring search against file content. No regex syntax. Used for simple keyword matches — for example, an exact config flag that disables authentication. Faster than regex for exact string matching.
+Plain substring search against file content. No regex syntax. Used for simple keyword matches - for example, an exact config flag that disables authentication. Faster than regex for exact string matching.
 
-```yaml title="Example — text"
+```yaml title="Example - text"
 - type: text
   pattern: "DISABLE_AUTH=true"
   weight: 80
@@ -158,7 +158,7 @@ Taking the `Math.max` of the two ensures that a single very strong indicator (e.
 
 ### Why this matters
 
-Most security scanners are binary: either a pattern matches or it doesn't. That produces high false positive rates on real codebases because individual signals are often ambiguous. The confidence model lets Firmis express: "this pattern alone is suspicious but not conclusive — but this other pattern combined with it crosses the threshold."
+Most security scanners are binary: either a pattern matches or it doesn't. That produces high false positive rates on real codebases because individual signals are often ambiguous. The confidence model lets Firmis express: "this pattern alone is suspicious but not conclusive - but this other pattern combined with it crosses the threshold."
 
 ### Confidence threshold
 
@@ -170,13 +170,13 @@ confidence >= confidenceThreshold
 
 Rules with multiple low-weight patterns and a high threshold require several patterns to co-occur before a finding is emitted. This reduces false positives for ambiguous indicators.
 
-**Example — data exfiltration rule with threshold 70:**
+**Example - data exfiltration rule with threshold 70:**
 
 | Signals present | Confidence | Result |
 |---|---|---|
-| `fetch()` call alone (weight 35) | 35 | Suppressed — normal code uses fetch |
-| `fetch()` + `process.env` access (weight 40) | ~37 | Suppressed — still plausibly legitimate |
-| Suspicious domain match (weight 85) | 85 | Finding emitted — this is the strong signal |
+| `fetch()` call alone (weight 35) | 35 | Suppressed - normal code uses fetch |
+| `fetch()` + `process.env` access (weight 40) | ~37 | Suppressed - still plausibly legitimate |
+| Suspicious domain match (weight 85) | 85 | Finding emitted - this is the strong signal |
 | `fetch()` + `process.env` + suspicious domain | 85 | Finding emitted |
 
 ---
@@ -189,11 +189,11 @@ Files with `.md` and `.txt` extensions receive a confidence multiplier before th
 adjustedConfidence = confidence * 0.15
 ```
 
-This reduces noise from rule matches in documentation files, README files, and changelog entries that mention threat patterns in a non-executable context. A pattern that would produce confidence 80 in a `.ts` file produces confidence 12 in a `.md` file — well below most thresholds.
+This reduces noise from rule matches in documentation files, README files, and changelog entries that mention threat patterns in a non-executable context. A pattern that would produce confidence 80 in a `.ts` file produces confidence 12 in a `.md` file - well below most thresholds.
 
 **Why this matters:** Documentation often explains attack techniques. A README that documents how prompt injection works should not fire a prompt injection rule. The 0.15x multiplier handles this without requiring every documentation reference to be suppressed manually.
 
-**Exception:** The `secret-detection` category is exempt from this multiplier. A hardcoded secret in `.env.example` or a `README.md` is still a real finding because it may be committed to source control and discovered by attackers — even if it was intended as an example.
+**Exception:** The `secret-detection` category is exempt from this multiplier. A hardcoded secret in `.env.example` or a `README.md` is still a real finding because it may be committed to source control and discovered by attackers - even if it was intended as an example.
 
 ---
 
@@ -201,13 +201,13 @@ This reduces noise from rule matches in documentation files, README files, and c
 
 When running a path-based scan (`npx firmis scan .`), the same file can be indexed by multiple platforms. For example, a shared `src/tools/` directory may be picked up by both the `claude` and `mcp` analyzers.
 
-Firmis deduplicates findings with the same `(ruleId, file, line)` triple. The first occurrence is kept; subsequent duplicates are dropped. Without this, a project with 5 detected platforms could report each finding 5 times — inflating counts and making real threats harder to spot.
+Firmis deduplicates findings with the same `(ruleId, file, line)` triple. The first occurrence is kept; subsequent duplicates are dropped. Without this, a project with 5 detected platforms could report each finding 5 times - inflating counts and making real threats harder to spot.
 
 ---
 
 ## Rule evaluation order
 
-Rules are evaluated in the order they appear in their YAML file. Within a file, all rules are applied to each file independently. There is no short-circuit evaluation across rules — all enabled rules are always evaluated.
+Rules are evaluated in the order they appear in their YAML file. Within a file, all rules are applied to each file independently. There is no short-circuit evaluation across rules - all enabled rules are always evaluated.
 
 To skip specific rules, use:
 
@@ -224,7 +224,7 @@ rule:sec-045
 
 ## What to read next
 
-- [How It Works](/concepts/how-it-works) — the three-stage pipeline and what happens at each step
-- [Threat Model](/concepts/threat-model) — all 17 threat categories with real attack examples
-- [Built-in Rules](/rules/built-in-rules) — full rule listing with IDs, weights, and descriptions
-- [Ignoring Findings](/rules/ignoring-findings) — how to suppress false positives without weakening your scan coverage
+- [How It Works](/concepts/how-it-works) - the three-stage pipeline and what happens at each step
+- [Threat Model](/concepts/threat-model) - all 17 threat categories with real attack examples
+- [Built-in Rules](/rules/built-in-rules) - full rule listing with IDs, weights, and descriptions
+- [Ignoring Findings](/rules/ignoring-findings) - how to suppress false positives without weakening your scan coverage

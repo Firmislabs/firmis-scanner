@@ -61,7 +61,7 @@ Each item in `patterns` has the following fields:
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `type` | enum | Yes | Matcher type — one of 7 values (see below) |
+| `type` | enum | Yes | Matcher type - one of 7 values (see below) |
 | `pattern` | string | Yes | The pattern expression to match against file content |
 | `weight` | number | Yes | Contribution to the confidence score (0–100) |
 | `description` | string | No | Human label for this pattern, shown in verbose output |
@@ -83,7 +83,7 @@ Applies a JavaScript regular expression to raw file content. The most common and
 ```
 
 <Aside type="caution">
-  PCRE inline flags like `(?i)` are not supported — JavaScript's `RegExp` does not recognise them. Use the `flags` field instead: `flags: "i"`.
+  PCRE inline flags like `(?i)` are not supported - JavaScript's `RegExp` does not recognise them. Use the `flags` field instead: `flags: "i"`.
 </Aside>
 
 ### `yara`
@@ -99,7 +99,7 @@ Applies a YARA-style string match (not the YARA binary). Supports case-insensiti
 
 ### `file-access`
 
-Matches when the file content contains a reference to a specific file path — typically a sensitive credential or system file. Tilde expansion (`~` → home directory) is applied before matching.
+Matches when the file content contains a reference to a specific file path - typically a sensitive credential or system file. Tilde expansion (`~` → home directory) is applied before matching.
 
 ```yaml
 - type: file-access
@@ -116,7 +116,7 @@ Matches when a specific module or package import appears in the file. Handles Py
 - type: import
   pattern: "paramiko"
   weight: 60
-  description: SSH library — check for unauthorized tunnel creation
+  description: SSH library - check for unauthorized tunnel creation
 ```
 
 ### `network`
@@ -138,12 +138,12 @@ Matches an exact string literal including surrounding quotes. Used for known-bad
 - type: string-literal
   pattern: '"event-stream"'
   weight: 90
-  description: event-stream — compromised to steal bitcoin wallets
+  description: event-stream - compromised to steal bitcoin wallets
 ```
 
 ### `text`
 
-Plain substring search against file content. No regex syntax. Fastest matcher — use it for simple keyword matches where regex overhead is not needed.
+Plain substring search against file content. No regex syntax. Fastest matcher - use it for simple keyword matches where regex overhead is not needed.
 
 ```yaml
 - type: text
@@ -158,10 +158,10 @@ Plain substring search against file content. No regex syntax. Fastest matcher �
 
 | Severity | Meaning | Typical examples |
 |---|---|---|
-| `critical` | Immediate exploitable risk — block CI | Hidden instructions, hardcoded root credentials, auth bypass |
-| `high` | Significant vulnerability — fix before merge | API key exposure, data exfiltration, unsigned package installs |
-| `medium` | Noteworthy risk — fix in current sprint | Overly broad permissions, weak JWT configuration |
-| `low` | Informational — investigate when convenient | Debug logging left enabled, overly verbose error messages |
+| `critical` | Immediate exploitable risk - block CI | Hidden instructions, hardcoded root credentials, auth bypass |
+| `high` | Significant vulnerability - fix before merge | API key exposure, data exfiltration, unsigned package installs |
+| `medium` | Noteworthy risk - fix in current sprint | Overly broad permissions, weak JWT configuration |
+| `low` | Informational - investigate when convenient | Debug logging left enabled, overly verbose error messages |
 
 Use `--severity` to filter output to a minimum level:
 
@@ -193,7 +193,7 @@ npx firmis scan --severity low
      - ./rules/custom/network-rules.yaml
    ```
 
-3. A `rules/` directory at the project root — Firmis loads any `*.yaml` files found there automatically.
+3. A `rules/` directory at the project root - Firmis loads any `*.yaml` files found there automatically.
 
 Custom rules are merged with built-in rules. Custom rule IDs that collide with built-in IDs override the built-in rule.
 
@@ -205,7 +205,7 @@ Custom rules are merged with built-in rules. Custom rule IDs that collide with b
 
 ## What to do next
 
-- [Built-in Rules →](/rules/built-in-rules) — complete listing of all 227 rules with IDs and descriptions
-- [Custom Rules →](/rules/custom-rules) — full YAML schema and working examples for writing your own
-- [Ignoring Findings →](/rules/ignoring-findings) — suppress false positives without disabling rules
-- [Detection Engine →](/concepts/detection-engine) — confidence scoring and deduplication internals
+- [Built-in Rules →](/rules/built-in-rules) - complete listing of all 227 rules with IDs and descriptions
+- [Custom Rules →](/rules/custom-rules) - full YAML schema and working examples for writing your own
+- [Ignoring Findings →](/rules/ignoring-findings) - suppress false positives without disabling rules
+- [Detection Engine →](/concepts/detection-engine) - confidence scoring and deduplication internals

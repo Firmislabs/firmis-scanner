@@ -8,6 +8,12 @@ export default defineConfig({
     starlight({
       title: 'Firmis',
       description: 'AI agent security scanner — detect threats in Claude Skills, MCP Servers, Codex Plugins, and more.',
+      logo: {
+        light: './src/assets/logo-light.svg',
+        dark: './src/assets/logo-dark.svg',
+        replacesTitle: true,
+      },
+      favicon: '/favicon.svg',
       social: [
         { icon: 'external', label: 'firmislabs.com', href: 'https://firmislabs.com' },
         { icon: 'github', label: 'GitHub', href: 'https://github.com/riteshkew/firmis-scanner' },

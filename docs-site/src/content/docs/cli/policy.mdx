@@ -1,23 +1,23 @@
 ---
-title: "firmis policy — Policy Engine"
+title: "firmis policy - Policy Engine"
 description: "Define your security standards in code. Fail the build when they're violated. Beta."
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-Every team has security standards. Most of them live in a Notion doc nobody reads. `firmis policy` puts them in code — and enforces them in CI.
+Every team has security standards. Most of them live in a Notion doc nobody reads. `firmis policy` puts them in code - and enforces them in CI.
 
 Write a policy file that says what your project must and must not have. Run `firmis policy check` to fail the build when those standards are violated. The policy travels with the code. It's always enforced. Nobody has to remember it.
 
 <Aside type="caution" title="Beta">
   This feature is in private beta. APIs and behavior may change between releases.
-  Available in the [Firmis Engine](https://github.com/riteshkew/firmis-engine) private beta.
+  Available in the [Firmis Engine](https://github.com/firmislabs/firmis-engine) private beta.
   [Request access →](mailto:beta@firmislabs.com)
 </Aside>
 
 ## The problem with ad-hoc security rules
 
-"We don't allow hardcoded secrets" is a reasonable rule. But without automation, it gets checked inconsistently — by whoever happens to review the PR, at whatever level of attention they happen to have. `firmis scan` catches secrets, but it doesn't tell you whether the finding crosses your team's specific threshold for blocking a merge.
+"We don't allow hardcoded secrets" is a reasonable rule. But without automation, it gets checked inconsistently - by whoever happens to review the PR, at whatever level of attention they happen to have. `firmis scan` catches secrets, but it doesn't tell you whether the finding crosses your team's specific threshold for blocking a merge.
 
 Policy does. You write what you require. Firmis enforces it. The check is deterministic, documented, and consistent on every run.
 
@@ -96,16 +96,16 @@ firmis policy check [path] --policy <policy-file>
 
 | Flag | Type | Default | Description |
 |---|---|---|---|
-| `--policy <file>` | string | — | Policy file to enforce. Required. |
+| `--policy <file>` | string | - | Policy file to enforce. Required. |
 | `--platform <name>` | string | auto-detect | Scope scan to a specific platform |
 | `--format <type>` | enum | `json` | Output format: `json` for CI, `html` for human review |
-| `--output <file>` | string | — | Save policy check results to file |
+| `--output <file>` | string | - | Save policy check results to file |
 | `--fail-on-violation` | boolean | `true` | Exit non-zero on any policy violation. Set to `false` to report-only mode. |
 
 ## When to use this
 
 - **Team standards as code**: Replace security review checklists with policy files. Everyone on the team knows what's enforced because it's in the repo.
-- **Tiered environments**: Different policy files for different contexts — a strict `production-policy.yaml` for prod deployments, a lighter `dev-policy.yaml` for development branches.
+- **Tiered environments**: Different policy files for different contexts - a strict `production-policy.yaml` for prod deployments, a lighter `dev-policy.yaml` for development branches.
 - **Compliance baselines**: Map your SOC 2 or EU AI Act requirements into a policy file so every scan proves compliance, not just finds issues.
 - **Onboarding new contributors**: New contributors can't accidentally introduce secrets or tool-poisoning patterns without the CI gate catching it on their first PR.
 
@@ -181,6 +181,6 @@ jobs:
 
 ## Related
 
-- [scan](/cli/scan) — underlying scan that policy check runs against
-- [Custom Rules](/rules/custom-rules) — write detection rules that your policies can reference
-- [CI Pipeline](/cli/ci) — full discover → BOM → scan → report pipeline
+- [scan](/cli/scan) - underlying scan that policy check runs against
+- [Custom Rules](/rules/custom-rules) - write detection rules that your policies can reference
+- [CI Pipeline](/cli/ci) - full discover → BOM → scan → report pipeline

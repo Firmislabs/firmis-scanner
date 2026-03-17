@@ -1,4 +1,4 @@
-# Firmis Scanner — Claude Code Rules (Public Repo)
+# Firmis Scanner - Claude Code Rules (Public Repo)
 
 ## Repo Structure
 
@@ -19,11 +19,11 @@ This is the **PUBLIC open-source** repo. It contains M0 + M1 code only.
 
 ### Files That Must NEVER Appear Here
 
-- `src/fix/` — Fix engine
-- `src/pentest/` — Pentest engine
-- `src/rugpull/` — Rug pull detection
-- `src/monitor/` — Runtime monitor
-- `src/cloud/` — Cloud/telemetry
+- `src/fix/` - Fix engine
+- `src/pentest/` - Pentest engine
+- `src/rugpull/` - Rug pull detection
+- `src/monitor/` - Runtime monitor
+- `src/cloud/` - Cloud/telemetry
 - `src/types/fix.ts`, `src/types/pentest.ts`
 - `src/cli/commands/fix.ts`, `src/cli/commands/pentest.ts`, `src/cli/commands/monitor.ts`
 - `test/unit/fix/`, `test/unit/pentest/`, `test/unit/rugpull/`
@@ -48,7 +48,7 @@ ls src/fix src/pentest src/rugpull 2>/dev/null && echo "DANGER: M2 files!" || ec
 
 ## Git Commit Rules
 
-- **NEVER add `Co-Authored-By` trailers** to commits in this repo. This is a public repo — commit history must show only human authors.
+- **NEVER add `Co-Authored-By` trailers** to commits in this repo. This is a public repo - commit history must show only human authors.
 - Commit messages should be clean conventional commits (feat/fix/docs/chore/test/refactor).
 
 ## What's Here

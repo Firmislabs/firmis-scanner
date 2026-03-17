@@ -232,7 +232,7 @@ rules:
         description: "inputProvenance explicitly null or empty — missing source attribution"
     remediation: |
       Inter-session messages must carry explicit provenance metadata.
-      Add inputProvenance: { kind: "inter_session", sessionId: ... } to all messages
+      Add inputProvenance with kind "inter_session" and sessionId to all messages
       delivered via sessions_send. Without this, a compromised session can inject instructions.
     references:
       - "GHSA-w5c7-9qqw-6645"

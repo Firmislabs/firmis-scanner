@@ -5,7 +5,7 @@ description: "AI agent supply chain attacks don't need to run code. A prompt inj
 
 import { Aside } from '@astrojs/starlight/components';
 
-Traditional npm supply chain attacks run code. AI agent supply chain attacks can do the same — but they can also work without running a single line. A compromised dependency that writes a malicious instruction to `CLAUDE.md` has persistent access to every future session. That's the new attack surface. This guide explains it and shows how Firmis detects it.
+Traditional npm supply chain attacks run code. AI agent supply chain attacks can do the same - but they can also work without running a single line. A compromised dependency that writes a malicious instruction to `CLAUDE.md` has persistent access to every future session. That's the new attack surface. This guide explains it and shows how Firmis detects it.
 
 ## How AI agent supply chain attacks differ
 
@@ -13,11 +13,11 @@ Traditional supply chain attacks target code execution: a compromised package ru
 
 | Attack type | Traditional software | AI agents |
 |---|---|---|
-| **Malicious code** | `postinstall` script runs a reverse shell | Same — plus the shell runs inside an agent with broad tool access |
+| **Malicious code** | `postinstall` script runs a reverse shell | Same - plus the shell runs inside an agent with broad tool access |
 | **Prompt injection** | Not applicable | Compromised tool description contains hidden instructions that redirect the agent |
 | **Config poisoning** | Not applicable | Malicious package writes to `.claude/settings.json` or `mcp.json`, persisting across sessions |
 | **Data exfiltration** | Steals tokens from memory | Reads `~/.aws/credentials` and calls a webhook via a legitimate-looking tool |
-| **Typosquatting** | `lodash` vs `lodassh` | Same — plus the typosquatted package registers a malicious MCP server |
+| **Typosquatting** | `lodash` vs `lodassh` | Same - plus the typosquatted package registers a malicious MCP server |
 
 The key difference: **a compromised AI agent dependency can attack the user without executing any traditional exploit code.** It only needs to influence what text the agent reads.
 
@@ -76,7 +76,7 @@ npx firmis scan --platform mcp
 ```text title="Example output"
  HIGH  supply-001  Compromised Package in Dependencies
        package.json:14
-       Pattern: event-stream@3.3.6 — known compromised version (bitcoin wallet theft)
+       Pattern: event-stream@3.3.6 - known compromised version (bitcoin wallet theft)
 ```
 
 ### Known-malicious pattern matching
@@ -90,7 +90,7 @@ Firmis maintains a list of packages with documented security incidents, includin
 ```text title="Example output"
  CRITICAL  km-007  Known Malicious Package
            package.json:22
-           Pattern: "ua-parser-js" — version range includes compromised 0.7.29/1.0.0/2.0.0
+           Pattern: "ua-parser-js" - version range includes compromised 0.7.29/1.0.0/2.0.0
 ```
 
 ### Dependency analysis for agent-specific threats
@@ -112,7 +112,7 @@ Standard npm audit checks for CVEs. Firmis additionally checks for agent-specifi
 
 Use exact versions in `package.json` for direct dependencies, and commit your lockfile.
 
-```json title="package.json — before"
+```json title="package.json - before"
 {
   "dependencies": {
     "crewai-tools": "^2.1.0"
@@ -120,7 +120,7 @@ Use exact versions in `package.json` for direct dependencies, and commit your lo
 }
 ```
 
-```json title="package.json — after"
+```json title="package.json - after"
 {
   "dependencies": {
     "crewai-tools": "2.1.4"
@@ -146,7 +146,7 @@ npx firmis scan ./downloaded-mcp-server/ --platform mcp --severity high
 
 ### Use BOM for dependency visibility
 
-Generate a Software Bill of Materials (BOM) — a complete inventory of every component, skill, and dependency your agent depends on — before you can monitor what changes:
+Generate a Software Bill of Materials (BOM) - a complete inventory of every component, skill, and dependency your agent depends on - before you can monitor what changes:
 
 ```bash title="Terminal"
 npx firmis bom --format cyclonedx --output agent-bom.json
@@ -210,11 +210,11 @@ Look for rule IDs in the `supply-`, `km-` (known malicious), and `malware-` pref
 ```text title="Example output"
  CRITICAL  km-003  Known Malicious Package
            package.json:8
-           Pattern: xz-utils@5.6.0 — backdoored version (CVE-2024-3094)
+           Pattern: xz-utils@5.6.0 - backdoored version (CVE-2024-3094)
 
  HIGH      supply-002  Typosquatted Package Name
            package.json:15
-           Pattern: "crewia" — possible typosquat of "crewai"
+           Pattern: "crewia" - possible typosquat of "crewai"
 
  HIGH      supply-008  Postinstall Script with Network Access
            node_modules/suspicious-tool/package.json
@@ -225,8 +225,8 @@ Each of these is actionable: remove the package, verify it is a typosquat or int
 
 ## What to do next
 
-- [Agent BOM concept →](/concepts/agent-bom) — why inventorying your agent stack matters before you can secure it
-- [Threat Categories — Supply Chain →](/reference/threat-categories) — 8 supply chain rules explained
-- [Threat Categories — Known Malicious →](/reference/threat-categories) — 10 known-malicious rules with package examples
-- [Securing MCP Servers →](/guides/securing-mcp-servers) — the tool-level companion to this guide
-- [CI command reference →](/cli/ci) — full pipeline: discover, BOM, scan, report
+- [Agent BOM concept →](/concepts/agent-bom) - why inventorying your agent stack matters before you can secure it
+- [Threat Categories - Supply Chain →](/reference/threat-categories) - 8 supply chain rules explained
+- [Threat Categories - Known Malicious →](/reference/threat-categories) - 10 known-malicious rules with package examples
+- [Securing MCP Servers →](/guides/securing-mcp-servers) - the tool-level companion to this guide
+- [CI command reference →](/cli/ci) - full pipeline: discover, BOM, scan, report

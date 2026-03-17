@@ -24,17 +24,17 @@ If you want `firmis` available everywhere without the `npx` prefix:
 <Tabs>
   <TabItem label="npm">
     ```bash
-    npm install -g firmis-scanner
+    npm install -g firmis-cli
     ```
   </TabItem>
   <TabItem label="yarn">
     ```bash
-    yarn global add firmis-scanner
+    yarn global add firmis-cli
     ```
   </TabItem>
   <TabItem label="pnpm">
     ```bash
-    pnpm add -g firmis-scanner
+    pnpm add -g firmis-cli
     ```
   </TabItem>
 </Tabs>
@@ -50,7 +50,7 @@ firmis scan .
 Pin a version and share it with your team. Consistent results across every machine and every CI run.
 
 ```bash title="Terminal"
-npm install --save-dev firmis-scanner
+npm install --save-dev firmis-cli
 ```
 
 ```json title="package.json"
@@ -78,7 +78,7 @@ Then run a real scan to confirm everything is working:
 npx firmis scan .
 ```
 
-You should see a platform detection line and a rule count of 209. If the scanner exits with findings, those are real — not test artifacts.
+You should see a platform detection line and a rule count of 227. If the scanner exits with findings, those are real - not test artifacts.
 
 ## Requirements
 
@@ -91,5 +91,5 @@ You should see a platform detection line and a rule count of 209. If the scanner
 | Disk space | ~15 MB (including all 227 rules) |
 
 <Aside type="tip">
-  Zero native dependencies. No build step, no system libraries, no architecture-specific binaries. Firmis runs on any platform that supports Node.js 20+. That includes M1/M2 Macs, ARM Linux, and Windows — no extra setup on any of them.
+  Zero native dependencies. No build step, no system libraries, no architecture-specific binaries. Firmis runs on any platform that supports Node.js 20+. That includes M1/M2 Macs, ARM Linux, and Windows - no extra setup on any of them.
 </Aside>

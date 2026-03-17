@@ -1,5 +1,5 @@
 ---
-title: "firmis list — List Detected Platforms"
+title: "firmis list - List Detected Platforms"
 description: "Instantly see which AI agent platforms Firmis has found in your project. The fastest way to confirm what's in scope before scanning."
 ---
 
@@ -10,11 +10,11 @@ One line. Instant answer.
 ## When to use this
 
 - **Quick orientation**: Before running `scan` or `discover`, confirm which platforms Firmis will detect
-- **Checking coverage**: You added a new MCP server — run `list` to verify Firmis picks it up
+- **Checking coverage**: You added a new MCP server - run `list` to verify Firmis picks it up
 - **Scripting and automation**: Use `--json` to programmatically check which platforms are present before conditionally running platform-specific scans
-- **Debugging a scan**: If `scan` seems to be skipping something, run `list` first — if the platform isn't listed, Firmis didn't detect it
+- **Debugging a scan**: If `scan` seems to be skipping something, run `list` first - if the platform isn't listed, Firmis didn't detect it
 
-For the full picture — component names, file paths, dependencies, and model references — use [`firmis discover`](/cli/discover) instead.
+For the full picture - component names, file paths, dependencies, and model references - use [`firmis discover`](/cli/discover) instead.
 
 ## Usage
 
@@ -27,7 +27,7 @@ firmis list [options]
 ### Terminal output
 
 ```text
-Firmis — Detected Platforms
+Firmis - Detected Platforms
 Scanning: /Users/me/my-agent-project
 
   claude     2 components
@@ -66,7 +66,7 @@ The more platforms in your project, the wider your attack surface. A project wit
 
 | Flag | Type | Default | Description |
 |---|---|---|---|
-| `--json` | boolean | `false` | Output as JSON array — useful for scripting or piping into other tools |
+| `--json` | boolean | `false` | Output as JSON array - useful for scripting or piping into other tools |
 
 ## Examples
 
@@ -91,6 +91,6 @@ npx firmis list --json | jq -e '.[] | select(.platform == "mcp")' && \
 
 ## Related
 
-- [Platforms](/concepts/platforms) — what each platform is and how Firmis detects it
-- [discover](/cli/discover) — go deeper: component names, file paths, dependencies, and model references
-- [scan](/cli/scan) — security scan everything that `list` finds
+- [Platforms](/concepts/platforms) - what each platform is and how Firmis detects it
+- [discover](/cli/discover) - go deeper: component names, file paths, dependencies, and model references
+- [scan](/cli/scan) - security scan everything that `list` finds

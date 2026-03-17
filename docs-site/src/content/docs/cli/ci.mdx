@@ -1,15 +1,15 @@
 ---
-title: "firmis ci — CI Pipeline Command"
+title: "firmis ci - CI Pipeline Command"
 description: "One command runs the full security pipeline: discover, BOM, scan, report. Built for GitHub Actions, GitLab CI, and any CI system that reads exit codes."
 ---
 
-Every PR that touches agent configuration is a potential security regression. `firmis ci` blocks threats before they reach production — one command, four stages, zero setup beyond a YAML file.
+Every PR that touches agent configuration is a potential security regression. `firmis ci` blocks threats before they reach production - one command, four stages, zero setup beyond a YAML file.
 
 ## When to use this
 
 - **PR gates**: Block merges when high or critical findings are introduced
 - **Nightly audits**: Run a full pipeline on schedule to catch newly discovered threats against existing code
-- **Release checks**: Gate deployments — require a clean scan before any release that includes agent changes
+- **Release checks**: Gate deployments - require a clean scan before any release that includes agent changes
 - **Audit artifacts**: Generate a BOM and SARIF report as CI artifacts for compliance evidence
 
 For quick local checks, [`firmis scan`](/cli/scan) is faster. Use `ci` when you want the full pipeline with BOM generation and structured output baked in.
@@ -37,13 +37,13 @@ If any stage fails, the pipeline stops and exits with code `2`. If findings exce
 
 | Flag | Type | Default | Description |
 |---|---|---|---|
-| `--platform <name>` | string | auto-detect | Scope the pipeline to a specific platform — useful in monorepos where only one platform changed |
-| `--fail-on <level>` | enum | — | Fail the build when findings at this severity or above exist. Use `high` for most teams. |
+| `--platform <name>` | string | auto-detect | Scope the pipeline to a specific platform - useful in monorepos where only one platform changed |
+| `--fail-on <level>` | enum | - | Fail the build when findings at this severity or above exist. Use `high` for most teams. |
 | `--format <type>` | enum | `sarif` | Report format: `json` for custom tooling, `sarif` for GitHub Security tab, `html` for human review |
-| `--output <file>` | string | — | Save the scan report to a file. Required for uploading to GitHub Security tab. |
-| `--bom-output <file>` | string | — | Save the Agent BOM to a separate file. Required for compliance artifact storage. |
+| `--output <file>` | string | - | Save the scan report to a file. Required for uploading to GitHub Security tab. |
+| `--bom-output <file>` | string | - | Save the Agent BOM to a separate file. Required for compliance artifact storage. |
 | `--quiet` | boolean | `false` | Suppress terminal output. The exit code is your signal. |
-| `--verbose` | boolean | `false` | Print detailed progress for every stage — helpful when debugging why the pipeline is failing |
+| `--verbose` | boolean | `false` | Print detailed progress for every stage - helpful when debugging why the pipeline is failing |
 
 ## Examples
 
@@ -59,7 +59,7 @@ npx firmis ci --fail-on high --format sarif --output results.sarif
 npx firmis ci --fail-on critical --bom-output agent-bom.json --output scan.sarif
 ```
 
-### Quiet mode — exit code only
+### Quiet mode - exit code only
 
 ```bash title="Terminal"
 npx firmis ci --fail-on high --quiet
@@ -118,10 +118,10 @@ firmis-scan:
 |---|---|
 | `0` | Pipeline completed cleanly. No findings above your `--fail-on` threshold. |
 | `1` | Findings found at or above your `--fail-on` threshold. Fix them before merging. |
-| `2` | Pipeline error — bad path, unreadable config, or unexpected failure in a stage. |
+| `2` | Pipeline error - bad path, unreadable config, or unexpected failure in a stage. |
 
 ## Related
 
-- [GitHub Actions integration](/integrations/github-actions) — detailed CI setup guide with branch protection rules
-- [SARIF output](/reference/sarif-output) — understanding the SARIF format and how GitHub surfaces findings
-- [scan](/cli/scan) — standalone scan without the full pipeline
+- [GitHub Actions integration](/integrations/github-actions) - detailed CI setup guide with branch protection rules
+- [SARIF output](/reference/sarif-output) - understanding the SARIF format and how GitHub surfaces findings
+- [scan](/cli/scan) - standalone scan without the full pipeline

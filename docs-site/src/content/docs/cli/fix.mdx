@@ -1,17 +1,17 @@
 ---
-title: "firmis fix — Auto-Remediate Security Threats"
+title: "firmis fix - Auto-Remediate Security Threats"
 description: "Scanning finds the problems. Fix writes the patches. Review the diff, apply what you want. Beta."
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-Scanning finds the problems. Fix writes the code to remediate them — automatically.
+Scanning finds the problems. Fix writes the code to remediate them - automatically.
 
 You run `firmis scan`, you get a list of threats. Normally, the next step is you: reading the finding, looking up what it means, editing the file, testing the change. `firmis fix` does that work for you. It analyzes each finding, generates a remediation patch, and shows you a diff before touching anything.
 
 <Aside type="caution" title="Beta">
   This feature is in private beta. APIs and behavior may change between releases.
-  Available in the [Firmis Engine](https://github.com/riteshkew/firmis-engine) private beta.
+  Available in the [Firmis Engine](https://github.com/firmislabs/firmis-engine) private beta.
   [Request access →](mailto:beta@firmislabs.com)
 </Aside>
 
@@ -19,10 +19,10 @@ You run `firmis scan`, you get a list of threats. Normally, the next step is you
 
 The fix engine takes `scan` findings and generates surgical, reviewable patches:
 
-- **Hardcoded secrets** — removes the secret, adds an environment variable reference, and generates a `.env.example` entry
-- **Overpermissive tool scopes** — rewrites permission declarations to least-privilege based on what the tool actually uses
-- **Missing input validation** — adds Zod or JSON Schema validation to tool handlers that accept unvalidated input
-- **Known-malicious components** — quarantines the component and adds a commented explanation of the threat
+- **Hardcoded secrets** - removes the secret, adds an environment variable reference, and generates a `.env.example` entry
+- **Overpermissive tool scopes** - rewrites permission declarations to least-privilege based on what the tool actually uses
+- **Missing input validation** - adds Zod or JSON Schema validation to tool handlers that accept unvalidated input
+- **Known-malicious components** - quarantines the component and adds a commented explanation of the threat
 
 ## Before and after
 
@@ -71,9 +71,9 @@ firmis fix [path] [options]
 | `--platform <name>` | string | auto-detect | Fix findings for a specific platform only |
 | `--dry-run` | boolean | `false` | Show the proposed patches as diffs without writing any files. Always start here. |
 | `--severity <level>` | enum | `high` | Only generate fixes for findings at this severity or above. `critical` for high-confidence fixes only. |
-| `--output <file>` | string | — | Write a fix report (patches + explanations) to file |
+| `--output <file>` | string | - | Write a fix report (patches + explanations) to file |
 | `--verbose` | boolean | `false` | Show detailed fix generation progress and reasoning |
-| `--interactive` | boolean | `true` | Prompt before applying each fix — review and accept or skip individually |
+| `--interactive` | boolean | `true` | Prompt before applying each fix - review and accept or skip individually |
 
 ## Workflow
 
@@ -87,9 +87,9 @@ The intended workflow is deliberate:
 5. firmis scan                         # confirm clean
 ```
 
-Fix is not autopilot. It's a co-pilot — it does the research and writes the first draft. You ship it.
+Fix is not autopilot. It's a co-pilot - it does the research and writes the first draft. You ship it.
 
 ## Related
 
-- [scan](/cli/scan) — detect threats before fixing
-- [Threat Categories](/reference/threat-categories) — what gets fixed and why
+- [scan](/cli/scan) - detect threats before fixing
+- [Threat Categories](/reference/threat-categories) - what gets fixed and why

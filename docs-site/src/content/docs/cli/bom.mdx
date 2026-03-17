@@ -1,16 +1,16 @@
 ---
-title: "firmis bom — Generate Agent Bill of Materials"
+title: "firmis bom - Generate Agent Bill of Materials"
 description: "Know exactly what's in your agent stack. Generate a CycloneDX 1.7 Agent Bill of Materials for compliance audits, supply chain tracking, and security reviews."
 ---
 
-You can't pass a SOC 2 audit for an AI system you haven't inventoried. `firmis bom` generates a CycloneDX 1.7 Agent Bill of Materials — a complete, structured record of every component, dependency, tool, and model reference in your agent stack.
+You can't pass a SOC 2 audit for an AI system you haven't inventoried. `firmis bom` generates a CycloneDX 1.7 Agent Bill of Materials - a complete, structured record of every component, dependency, tool, and model reference in your agent stack.
 
 SOC 2 auditors will love you. Your security team will too.
 
 ## When to use this
 
 - **Compliance prep**: Your SOC 2, EU AI Act, or GDPR audit requires evidence of what AI components you're running. BOM gives you that artifact in a standard format auditors recognize.
-- **Supply chain review**: Before shipping an agent to production, generate a BOM to confirm exactly what's in it — versions, dependencies, model references.
+- **Supply chain review**: Before shipping an agent to production, generate a BOM to confirm exactly what's in it - versions, dependencies, model references.
 - **Incident response**: After a security event, a pre-incident BOM tells you what was running and when.
 - **Change tracking**: Generate BOMs before and after a dependency update to diff what changed in your agent stack.
 
@@ -24,12 +24,12 @@ firmis bom [path] [options]
 
 ## What's in the BOM
 
-The Agent BOM follows the CycloneDX 1.7 specification — the same standard used for software supply chain security across the industry. It includes:
+The Agent BOM follows the CycloneDX 1.7 specification - the same standard used for software supply chain security across the industry. It includes:
 
-- **Components** — each AI agent tool, skill, or plugin listed as a named component with type, version, and file location
-- **Dependencies** — npm/pip packages with exact version numbers, allowing vulnerability checks against the OSV database
-- **Models** — detected AI model references (model IDs, quantization, config paths)
-- **Metadata** — scan timestamp, Firmis version, project name, and component count
+- **Components** - each AI agent tool, skill, or plugin listed as a named component with type, version, and file location
+- **Dependencies** - npm/pip packages with exact version numbers, allowing vulnerability checks against the OSV database
+- **Models** - detected AI model references (model IDs, quantization, config paths)
+- **Metadata** - scan timestamp, Firmis version, project name, and component count
 
 ## Example output
 
@@ -63,7 +63,7 @@ The Agent BOM follows the CycloneDX 1.7 specification — the same standard used
 
 | Flag | Type | Default | Description |
 |---|---|---|---|
-| `--platform <name>` | string | auto-detect | Generate BOM for a specific platform only — useful when scoping to one part of a larger monorepo |
+| `--platform <name>` | string | auto-detect | Generate BOM for a specific platform only - useful when scoping to one part of a larger monorepo |
 | `--output <file>` | string | stdout | Save the BOM to a file. Use `agent-bom.json` as a convention for CI artifact storage. |
 | `--verbose` | boolean | `false` | Show detailed logging during BOM generation |
 
@@ -95,6 +95,6 @@ npx firmis bom --output artifacts/agent-bom-$(date +%Y%m%d).json
 
 ## Related
 
-- [Agent BOM concept](/concepts/agent-bom) — what Agent BOMs are, why they matter, and how they differ from a standard SBOM
-- [CycloneDX BOM spec](/reference/cyclonedx-bom) — full output format reference
-- [CI pipeline](/cli/ci) — generate the BOM automatically as part of your CI security pipeline
+- [Agent BOM concept](/concepts/agent-bom) - what Agent BOMs are, why they matter, and how they differ from a standard SBOM
+- [CycloneDX BOM spec](/reference/cyclonedx-bom) - full output format reference
+- [CI pipeline](/cli/ci) - generate the BOM automatically as part of your CI security pipeline

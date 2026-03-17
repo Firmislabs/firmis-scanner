@@ -1,13 +1,13 @@
 ---
 title: GitHub Actions
-description: Every PR that ships without a security scan is a gamble. Add Firmis to GitHub Actions in under 5 minutes — findings in the Security tab, PR annotations, and a hard gate on every push.
+description: Every PR that ships without a security scan is a gamble. Add Firmis to GitHub Actions in under 5 minutes - findings in the Security tab, PR annotations, and a hard gate on every push.
 ---
 
 import { Aside, Card, CardGrid, Steps, Tabs, TabItem } from '@astrojs/starlight/components'
 
-Every PR that ships without a security scan is a gamble. This one takes five minutes to set up and runs on every push from that point on — no maintenance required.
+Every PR that ships without a security scan is a gamble. This one takes five minutes to set up and runs on every push from that point on - no maintenance required.
 
-## Quickstart — Official Action
+## Quickstart - Official Action
 
 The fastest way to add Firmis to your CI. The official composite action handles Node setup, scanning, PR comments with grade badges, and HTML report upload.
 
@@ -23,7 +23,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: riteshkew/firmis-scanner@v1
+      - uses: firmislabs/firmis-scanner@v1
         with:
           severity: medium
           fail-on: high
@@ -38,7 +38,7 @@ That's it. On PRs, you'll get a comment with your security grade badge and threa
 | `severity` | Minimum severity to report | `medium` |
 | `fail-on` | Exit non-zero at this severity | `high` |
 | `sync` | Sync results to firmislabs.com | `false` |
-| `firmis-token` | Auth token for `--sync` | — |
+| `firmis-token` | Auth token for `--sync` | - |
 | `node-version` | Node.js version | `20` |
 
 ### Action outputs
@@ -53,7 +53,7 @@ That's it. On PRs, you'll get a comment with your security grade badge and threa
   To sync results to the Firmis dashboard, set `sync: 'true'` and store your auth token as a GitHub secret named `FIRMIS_TOKEN`.
 </Aside>
 
-## Alternative — Manual workflow
+## Alternative - Manual workflow
 
 If you prefer full control, use `npx firmis ci` directly:
 
@@ -355,7 +355,7 @@ For large repositories, you can scope the scan to files changed in a PR to reduc
 
 ## What to do next
 
-- [GitLab CI integration →](/integrations/gitlab-ci) — same security gate for GitLab pipelines
-- [Pre-commit hooks →](/integrations/pre-commit-hooks) — catch threats before they ever reach CI
-- [SARIF output reference →](/reference/sarif-output) — full field mapping and example document
-- [`firmis ci` command →](/cli/ci) — the command powering this workflow
+- [GitLab CI integration →](/integrations/gitlab-ci) - same security gate for GitLab pipelines
+- [Pre-commit hooks →](/integrations/pre-commit-hooks) - catch threats before they ever reach CI
+- [SARIF output reference →](/reference/sarif-output) - full field mapping and example document
+- [`firmis ci` command →](/cli/ci) - the command powering this workflow

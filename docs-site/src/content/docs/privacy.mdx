@@ -18,10 +18,10 @@ Firmis is offline-first. By default, nothing leaves your machine. Ever.
 
 | Data Type | Collected | Opt-in | Sent to Cloud |
 |-----------|-----------|--------|---------------|
-| File paths | No | — | Never |
-| Code snippets | No | — | Never |
-| Environment variables | No | — | Never |
-| IP address | No | — | Never |
+| File paths | No | - | Never |
+| Code snippets | No | - | Never |
+| Environment variables | No | - | Never |
+| IP address | No | - | Never |
 | Threat pattern hashes | Yes | Telemetry | Anonymized |
 | Platform statistics | Yes | Telemetry | Aggregated |
 | Behavioral features | Yes | Cloud scan | Numeric only |
@@ -32,7 +32,7 @@ When you run `firmis scan` without the `--cloud` flag:
 
 **What happens locally:**
 - Scans your AI agent components
-- Matches against 209 bundled YAML rules
+- Matches against 227 bundled YAML rules
 - Generates reports (JSON, SARIF, HTML, terminal)
 
 **What is NOT collected or sent:**
@@ -58,7 +58,7 @@ When you run `firmis scan --cloud`, we send **threat pattern hashes** to enhance
 
 **What we DO NOT send:** file paths, file names, code snippets, directory structure, environment variables, or user/machine identifiers.
 
-For behavioral analysis, we send **numeric feature vectors only** — counts and booleans, never actual code, function names, variable names, or string literals.
+For behavioral analysis, we send **numeric feature vectors only** - counts and booleans, never actual code, function names, variable names, or string literals.
 
 ## Telemetry (opt-in)
 
@@ -96,7 +96,7 @@ Firmis is GDPR compliant (EU) and CCPA compliant (California). No personal data 
 - We never upload your code, file paths, or directory structure
 - We never sell data to third parties
 - We never profile individual developers or organizations
-- We never run your code — all analysis is static, operating on raw file content
+- We never run your code - all analysis is static, operating on raw file content
 
 ## Third-party services
 
@@ -112,4 +112,4 @@ No third party receives your code, file paths, or personally identifiable inform
 
 For privacy questions or concerns:
 - Email: **privacy@firmislabs.com**
-- GitHub: [github.com/riteshkew/firmis-scanner/issues](https://github.com/riteshkew/firmis-scanner/issues)
+- GitHub: [github.com/firmislabs/firmis-scanner/issues](https://github.com/firmislabs/firmis-scanner/issues)

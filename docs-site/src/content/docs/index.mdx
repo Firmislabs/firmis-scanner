@@ -1,17 +1,17 @@
 ---
-title: Firmis — AI Agent Security Scanner
-description: "1 in 14 AI tools is secretly stealing data. One command. 8 platforms. 227 rules. Fully offline. No account required."
+title: Firmis - AI Agent Security Scanner
+description: "1 in 14 AI tools is secretly stealing data. One command. 227 rules. Fully offline. No account required."
 template: splash
 hero:
   title: Your AI agents have access to everything.
-  tagline: AWS keys. SSH keys. API tokens. Browser passwords. Every tool you install can read them — and most people never check. Firmis scans your entire agent stack in one command.
+  tagline: AWS keys. SSH keys. API tokens. Browser passwords. Every tool you install can read them - and most people never check. Firmis scans your entire agent stack in one command.
   actions:
     - text: Run your first scan →
       link: /quickstart/
       icon: right-arrow
       variant: primary
     - text: View on GitHub
-      link: https://github.com/riteshkew/firmis-scanner
+      link: https://github.com/firmislabs/firmis-scanner
       icon: external
       variant: minimal
 ---
@@ -37,7 +37,7 @@ You are not the target. Your credentials are. And they're sitting one misconfigu
 
 <CardGrid>
   <Card title="Find what's hiding in your agent stack" icon="warning">
-    209 detection rules. 17 threat categories. Prompt injection, credential harvesting, tool poisoning, supply chain attacks — scanned in seconds, reported in plain English.
+    227 detection rules. 17 threat categories. Prompt injection, credential harvesting, tool poisoning, supply chain attacks - scanned in seconds, reported in plain English.
 
     [Run your first scan →](/cli/scan)
   </Card>
@@ -47,7 +47,7 @@ You are not the target. Your credentials are. And they're sitting one misconfigu
     [MCP security guide →](/platforms/mcp-servers)
   </Card>
   <Card title="Know exactly what's in your AI stack" icon="document">
-    CycloneDX 1.7 Agent Bill of Materials — every component, dependency, model, and tool definition catalogued. Know what you have before you ship it.
+    CycloneDX 1.7 Agent Bill of Materials - every component, dependency, model, and tool definition catalogued. Know what you have before you ship it.
 
     [Generate your BOM →](/cli/bom)
   </Card>
@@ -58,7 +58,7 @@ You are not the target. Your credentials are. And they're sitting one misconfigu
   </Card>
 </CardGrid>
 
-## 8 platforms. One command.
+## Every platform. One command.
 
 | Platform | What gets scanned | Status |
 |---|---|---|
@@ -81,7 +81,7 @@ npx firmis scan .
 │  Discovery   │───▶│  Rule Engine  │───▶│   Reporter   │
 │              │    │              │    │              │
 │ Auto-detect  │    │ 227 YAML     │    │ Terminal     │
-│ 9 platforms  │    │ rules across │    │ JSON / SARIF │
+│ platforms    │    │ rules across │    │ JSON / SARIF │
 │ components   │    │ 17 threat    │    │ HTML report  │
 │ dependencies │    │ categories   │    │              │
 └─────────────┘    └──────────────┘    └─────────────┘
@@ -114,21 +114,21 @@ Every finding comes with a severity rating, a plain English explanation of what 
 | Insecure Configuration | Weak or missing security settings | Medium–Low |
 | Access Control | Missing authentication or authorization checks | High–Medium |
 
-[View all 209 detection rules →](/rules/built-in-rules)
+[View all 227 detection rules →](/rules/built-in-rules)
 
 ## Frequently asked questions
 
-**Wait — my AI tools can actually steal my stuff?**
+**Wait - my AI tools can actually steal my stuff?**
 
-Yes. Every agent you install — Cursor, Claude, MCP servers, OpenClaw skills — gets access to your files, API keys, and credentials. Most people never check what these tools actually do behind the scenes. Our research found that 7.1% of agent marketplace skills are actively stealing credentials or sending data to external servers. One command will tell you if yours are clean.
+Yes. Every agent you install - Cursor, Claude, MCP servers, OpenClaw skills - gets access to your files, API keys, and credentials. Most people never check what these tools actually do behind the scenes. Our research found that 7.1% of agent marketplace skills are actively stealing credentials or sending data to external servers. One command will tell you if yours are clean.
 
 **What exactly does Firmis check for?**
 
-227 rules across 17 threat categories: prompt injection, credential harvesting, data exfiltration, tool poisoning, supply chain attacks, hardcoded secrets, malware signatures, and more. Every finding is explained in plain English — not cryptic error codes. "This skill is reading your AWS credentials and sending them to an unknown server" is the kind of message you get.
+227 rules across 17 threat categories: prompt injection, credential harvesting, data exfiltration, tool poisoning, supply chain attacks, hardcoded secrets, malware signatures, and more. Every finding is explained in plain English - not cryptic error codes. "This skill is reading your AWS credentials and sending them to an unknown server" is the kind of message you get.
 
 **Is my code uploaded anywhere?**
 
-No. Firmis is fully offline. It reads your config files and source code locally — nothing leaves your machine. No telemetry, no analytics, no account required. Ever.
+No. Firmis is fully offline. It reads your config files and source code locally - nothing leaves your machine. No telemetry, no analytics, no account required. Ever.
 
 **I'm not a security expert. Can I still use this?**
 
@@ -136,24 +136,24 @@ That's exactly who we built it for. You don't need to understand regex patterns 
 
 **How is this different from Snyk or Semgrep?**
 
-Snyk and Semgrep are built for traditional application code. They don't know what an MCP server is, what tool poisoning looks like, or how to read a CLAUDE.md file for hidden instructions. Firmis is purpose-built for the AI agent threat surface: 8 platforms, 227 rules written specifically for how agents get compromised.
+Snyk and Semgrep are built for traditional application code. They don't know what an MCP server is, what tool poisoning looks like, or how to read a CLAUDE.md file for hidden instructions. Firmis is purpose-built for the AI agent threat surface: 227 rules written specifically for how agents get compromised, covering every major agent platform.
 
 **Is it really free?**
 
-Completely free. `npx firmis scan .` — no account, no credit card, no usage limits. You get a security grade (A through F) and a full list of findings in plain English.
+Completely free. `npx firmis scan .` - no account, no credit card, no usage limits. You get a security grade (A through F) and a full list of findings in plain English.
 
 <FaqSchema faqs={[
   {
-    question: "Wait — my AI tools can actually steal my stuff?",
-    answer: "Yes. Every agent you install — Cursor, Claude, MCP servers, OpenClaw skills — gets access to your files, API keys, and credentials. Most people never check what these tools actually do behind the scenes. Our research found that 7.1% of agent marketplace skills are actively stealing credentials or sending data to external servers. One command will tell you if yours are clean."
+    question: "Wait - my AI tools can actually steal my stuff?",
+    answer: "Yes. Every agent you install - Cursor, Claude, MCP servers, OpenClaw skills - gets access to your files, API keys, and credentials. Most people never check what these tools actually do behind the scenes. Our research found that 7.1% of agent marketplace skills are actively stealing credentials or sending data to external servers. One command will tell you if yours are clean."
   },
   {
     question: "What exactly does Firmis check for?",
-    answer: "227 rules across 17 threat categories: prompt injection, credential harvesting, data exfiltration, tool poisoning, supply chain attacks, hardcoded secrets, malware signatures, and more. Every finding is explained in plain English — not cryptic error codes."
+    answer: "227 rules across 17 threat categories: prompt injection, credential harvesting, data exfiltration, tool poisoning, supply chain attacks, hardcoded secrets, malware signatures, and more. Every finding is explained in plain English - not cryptic error codes."
   },
   {
     question: "Is my code uploaded anywhere?",
-    answer: "No. Firmis is fully offline. It reads your config files and source code locally — nothing leaves your machine. No telemetry, no analytics, no account required. Ever."
+    answer: "No. Firmis is fully offline. It reads your config files and source code locally - nothing leaves your machine. No telemetry, no analytics, no account required. Ever."
   },
   {
     question: "I'm not a security expert. Can I still use this?",
@@ -161,10 +161,10 @@ Completely free. `npx firmis scan .` — no account, no credit card, no usage li
   },
   {
     question: "How is this different from Snyk or Semgrep?",
-    answer: "Snyk and Semgrep are built for traditional application code. They don't know what an MCP server is, what tool poisoning looks like, or how to read a CLAUDE.md file for hidden instructions. Firmis is purpose-built for the AI agent threat surface: 8 platforms, 227 rules written specifically for how agents get compromised."
+    answer: "Snyk and Semgrep are built for traditional application code. They don't know what an MCP server is, what tool poisoning looks like, or how to read a CLAUDE.md file for hidden instructions. Firmis is purpose-built for the AI agent threat surface: 227 rules written specifically for how agents get compromised, covering every major agent platform."
   },
   {
     question: "Is it really free?",
-    answer: "Completely free. npx firmis scan . — no account, no credit card, no usage limits. You get a security grade (A through F) and a full list of findings in plain English."
+    answer: "Completely free. npx firmis scan . - no account, no credit card, no usage limits. You get a security grade (A through F) and a full list of findings in plain English."
   }
 ]} />

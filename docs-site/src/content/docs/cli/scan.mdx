@@ -1,5 +1,5 @@
 ---
-title: "firmis scan — Scan AI Agent Components"
+title: "firmis scan - Scan AI Agent Components"
 description: "The core Firmis command. Point it at any directory and it tells you what's dangerous. 227 rules across 17 threat categories. JSON, SARIF, and HTML output."
 ---
 
@@ -63,13 +63,13 @@ Every finding includes the exact file and line number, a plain English explanati
 | `--platform <name>` | string | auto-detect | Scan a specific platform: `claude`, `mcp`, `codex`, `cursor`, `crewai`, `autogpt`, `openclaw`, `nanobot` |
 | `--all` | boolean | `true` | Scan all detected platforms |
 | `--severity <level>` | enum | `low` | Minimum severity to report: `low`, `medium`, `high`, `critical` |
-| `--fail-on <level>` | enum | — | Exit non-zero if findings at this severity or above exist. Essential for CI gates. |
+| `--fail-on <level>` | enum | - | Exit non-zero if findings at this severity or above exist. Essential for CI gates. |
 | `--json` | boolean | `false` | Machine-readable JSON output for scripting or custom tooling |
-| `--sarif` | boolean | `false` | SARIF 2.1.0 output — uploads directly to GitHub Security tab |
-| `--html` | boolean | `false` | Self-contained HTML report — shareable with your team |
+| `--sarif` | boolean | `false` | SARIF 2.1.0 output - uploads directly to GitHub Security tab |
+| `--html` | boolean | `false` | Self-contained HTML report - shareable with your team |
 | `--output <file>` | string | stdout | Write output to a file instead of printing to terminal |
-| `--config <file>` | string | — | Path to a custom `.firmisrc` config file |
-| `--ignore <rules>` | string | — | Skip specific rule IDs (comma-separated). Use sparingly — see [Ignoring Findings](/rules/ignoring-findings). |
+| `--config <file>` | string | - | Path to a custom `.firmisrc` config file |
+| `--ignore <rules>` | string | - | Skip specific rule IDs (comma-separated). Use sparingly - see [Ignoring Findings](/rules/ignoring-findings). |
 | `--concurrency <n>` | number | `4` | Number of parallel workers. Increase for large monorepos. |
 | `--verbose` | boolean | `false` | Show per-file scan progress and rule match details |
 | `--quiet` | boolean | `false` | Suppress all terminal output. Only the exit code tells you the result. Good for CI scripts. |
@@ -106,7 +106,7 @@ npx firmis scan ./packages/agent --ignore sd-045,sd-046
 npx firmis scan --html --output report.html
 ```
 
-### High-signal only — skip noise, focus on what matters
+### High-signal only - skip noise, focus on what matters
 
 ```bash title="Terminal"
 npx firmis scan --severity high
@@ -118,10 +118,10 @@ npx firmis scan --severity high
 |---|---|
 | `0` | Scan completed. No findings above your `--fail-on` threshold. |
 | `1` | Findings found at or above your `--fail-on` threshold. Fix them. |
-| `2` | Scan error — invalid path, bad config, or unreadable files. |
+| `2` | Scan error - invalid path, bad config, or unreadable files. |
 
 ## Related
 
-- [Threat Categories](/reference/threat-categories) — all 17 categories Firmis detects across 227 rules
-- [Ignoring Findings](/rules/ignoring-findings) — suppress specific rules or files without deleting them
-- [CI Pipeline](/cli/ci) — full discover → BOM → scan → report in one command
+- [Threat Categories](/reference/threat-categories) - all 17 categories Firmis detects across 227 rules
+- [Ignoring Findings](/rules/ignoring-findings) - suppress specific rules or files without deleting them
+- [CI Pipeline](/cli/ci) - full discover → BOM → scan → report in one command
