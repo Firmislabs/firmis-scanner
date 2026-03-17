@@ -84,9 +84,9 @@ function validateRule(rule: Rule, filePath: string, index: number): Rule {
       )
     }
 
-    if (pattern.weight < 0 || pattern.weight > 100) {
+    if (pattern.weight < -50 || pattern.weight > 100) {
       throw new RuleError(
-        `Pattern weight in rule ${rule.id} must be between 0 and 100`,
+        `Pattern weight in rule ${rule.id} must be between -50 and 100`,
         rule.id
       )
     }

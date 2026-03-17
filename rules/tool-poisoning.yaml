@@ -9,9 +9,13 @@ rules:
     confidenceThreshold: 50
     patterns:
       - type: regex
-        pattern: '[\u200B\u200C\uFEFF]'
+        pattern: '[\u200B\u200C]'
         weight: 95
-        description: "Zero-width space/non-joiner or BOM used to hide content (U+200D ZWJ excluded — used in emoji)"
+        description: "Zero-width space (U+200B) or zero-width non-joiner (U+200C) used to hide content — always suspicious"
+      - type: regex
+        pattern: '\uFEFF'
+        weight: 75
+        description: "BOM character (U+FEFF) used to hide content. Note: U+FEFF at byte offset 0 is a UTF-8 BOM and may be benign (editor artifact)"
       - type: regex
         pattern: '[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]'
         weight: 95
