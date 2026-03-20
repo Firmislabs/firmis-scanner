@@ -16,8 +16,7 @@
 </p>
 
 <p align="center">
-  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 18 other threat categories. 260 detection rules. Zero config.<!-- /readme-stats -->
-  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 18 other threat categories. 260 detection rules. Zero config.<!-- /readme-stats -->
+  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 21 total threat categories. 242 detection rules. Zero config.<!-- /readme-stats -->
 </p>
 
 <p align="center">
@@ -72,19 +71,17 @@ No `--platform` flag needed. Firmis detects the framework from `package.json`, `
 
 ## What is Firmis?
 
-**Firmis is a security scanner purpose-built for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them - detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 14 other threat categories.
+**Firmis is a security scanner purpose-built for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them - detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 21 total threat categories.
 
 **Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
 
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 260 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 260 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
+<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 242 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
 
 ## Features
 
 | Capability | Command | Tier |
 |-----------|---------|------|
-| <!-- readme-features -->Scan for threats (260 rules, 21 categories)<!-- /readme-features --> | `firmis scan` | Free |
-| <!-- readme-features -->Scan for threats (260 rules, 21 categories)<!-- /readme-features --> | `firmis scan` | Free |
+| <!-- readme-features -->Scan for threats (242 rules, 21 categories)<!-- /readme-features --> | `firmis scan` | Free |
 | Discover AI agent platforms | `firmis discover` | Free |
 | Generate Agent BOM (CycloneDX) | `firmis bom` | Free |
 | CI/CD pipeline with fail gates | `firmis ci` | Free |
@@ -355,6 +352,20 @@ Add to `.cursor/mcp.json`:
 | `firmis_scan` | Scan a path for AI agent security threats |
 | `firmis_discover` | Discover installed AI agent platforms |
 | `firmis_report` | Generate an HTML security report |
+
+## FAQ
+
+**What does Firmis detect?**
+242 detection rules across 24 threat categories. Covers credential extraction, tool poisoning, prompt injection, data exfiltration, supply chain attacks, privilege escalation, and more. Scans MCP servers, Claude Code, Cursor, Codex, CrewAI, AutoGPT, OpenClaw, Nanobot, and Supabase.
+
+**Is it free?**
+Yes. The scanner is free, open-source (Apache-2.0), and requires no account. Run `npx firmis-cli scan` — unlimited scans, all 242 rules, HTML + JSON reports.
+
+**What is tool poisoning?**
+Tool poisoning is when an MCP server embeds hidden instructions in tool descriptions to hijack your AI agent. Research shows a 72.8% attack success rate. Firmis detects known poisoning patterns, malicious tool definitions, and description/behavior mismatches.
+
+**How is Firmis different from mcp-scan?**
+mcp-scan checks MCP server configs against a known-bad list. Firmis runs 242 static analysis rules across 9 platforms (not just MCP), generates compliance reports, and includes deep scan (AI-powered analysis) and runtime monitoring.
 
 ## Contributing
 
