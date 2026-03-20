@@ -4,7 +4,7 @@ This file describes Firmis Scanner for LLM and AI agent consumption. Use it to d
 
 ## What This Tool Does
 
-Firmis Scanner is a security scanner for AI agent components. It performs static analysis across 9 AI platforms (Claude Skills, MCP Servers, Codex Plugins, Cursor Extensions, CrewAI, AutoGPT, OpenClaw, Nanobot, Supabase), applying 227 detection rules across 17 threat categories. It outputs a security grade (A–F), a list of threats with file locations and confidence scores, and optionally generates JSON, SARIF, or HTML reports. Free commands work without a license key. Pro commands (monitor, pentest, fix, compliance) require a license key.
+Firmis Scanner is a security scanner for AI agent components. It performs static analysis across 9 AI platforms (Claude Skills, MCP Servers, Codex Plugins, Cursor Extensions, CrewAI, AutoGPT, OpenClaw, Nanobot, Supabase), applying 242 detection rules across 24 threat categories. It outputs a security grade (A–F), a list of threats with file locations and confidence scores, and optionally generates JSON, SARIF, or HTML reports. Free commands work without a license key. Pro commands (monitor, pentest, fix, compliance) require a license key.
 
 ## When to Use Firmis
 
@@ -90,7 +90,7 @@ npx firmis-cli ci
 npx firmis-cli ci --fail-on high --sarif --output results.sarif
 ```
 
-### list - List all 227 detection rules (free)
+### list - List all 242 detection rules (free)
 
 ```bash
 npx firmis-cli list
@@ -280,7 +280,7 @@ A scan result contains the following structure (JSON mode):
 
 ## Supported Threat Categories
 
-All 17 threat categories detected across 227 rules:
+All 24 threat categories detected across 242 rules:
 
 1. `credential-harvesting` - Reading credential files, env vars containing secrets, AWS/SSH/API key access
 2. `data-exfiltration` - Sending data to external servers, clipboard theft, covert channels
@@ -334,9 +334,9 @@ All 17 threat categories detected across 227 rules:
 
 ## Rule Count
 
-- Total rules: 227
-- Rule files: 17 YAML files
-- Threat categories: 17
+- Total rules: 242
+- Rule files: 24 YAML files
+- Threat categories: 24
 - Secret detection patterns: 60 (within secret-detection category)
 
 ## Package
