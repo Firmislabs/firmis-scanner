@@ -4,7 +4,7 @@ This file describes Firmis Scanner for LLM and AI agent consumption. Use it to d
 
 ## What This Tool Does
 
-Firmis Scanner is a security scanner for AI agent components. It performs static analysis across 9 AI platforms (Claude Skills, MCP Servers, Codex Plugins, Cursor Extensions, CrewAI, AutoGPT, OpenClaw, Nanobot, Supabase), applying 242 detection rules across 24 threat categories. It outputs a security grade (A–F), a list of threats with file locations and confidence scores, and optionally generates JSON, SARIF, or HTML reports. Free commands work without a license key. Pro commands (monitor, pentest, fix, compliance) require a license key.
+Firmis Scanner is a security scanner for AI agent components. It performs static analysis across 9 AI platforms (Claude Skills, MCP Servers, Codex Plugins, Cursor Extensions, CrewAI, AutoGPT, OpenClaw, Nanobot, Supabase), applying 269 detection rules across 26 threat categories. It outputs a security grade (A–F), a list of threats with file locations and confidence scores, and optionally generates JSON, SARIF, or HTML reports. Free commands work without a license key. Pro commands (monitor, pentest, fix, compliance) require a license key.
 
 ## When to Use Firmis
 
@@ -90,7 +90,7 @@ npx firmis-cli ci
 npx firmis-cli ci --fail-on high --sarif --output results.sarif
 ```
 
-### list - List all 242 detection rules (free)
+### list - List all 269 detection rules (free)
 
 ```bash
 npx firmis-cli list
@@ -280,25 +280,34 @@ A scan result contains the following structure (JSON mode):
 
 ## Supported Threat Categories
 
-All 24 threat categories detected across 242 rules:
+All 26 threat categories detected across 269 rules:
 
-1. `credential-harvesting` - Reading credential files, env vars containing secrets, AWS/SSH/API key access
-2. `data-exfiltration` - Sending data to external servers, clipboard theft, covert channels
-3. `prompt-injection` - Instructions embedded in content to manipulate AI behavior
-4. `privilege-escalation` - sudo, setuid, process injection, capability grants
-5. `suspicious-behavior` - Obfuscated code, anti-analysis techniques, anomalous patterns
-6. `network-abuse` - Unexpected outbound connections, DNS tunneling, C2 beaconing
-7. `file-system-abuse` - Unauthorized file reads/writes, traversal attacks, temp file abuse
-8. `access-control` - Bypassing authentication, permission checks, ACL manipulation
-9. `insecure-config` - Hardcoded secrets, debug modes in production, weak TLS, open CORS
-10. `known-malicious` - Matched against known malware signatures and IOCs
-11. `malware-distribution` - Dropper behavior, self-replication, payload delivery
-12. `agent-memory-poisoning` - Injecting false context into agent memory or conversation history
-13. `supply-chain` - Dependency confusion, typosquatting, malicious transitive deps
-14. `permission-overgrant` - Requesting excessive permissions beyond declared scope
-15. `secret-detection` - API keys, tokens, passwords, private keys in source code (60 rules)
-16. `tool-poisoning` - MCP tool descriptions or metadata crafted to manipulate agent behavior
-17. `cross-agent-propagation` - Threats that spread across agent boundaries via shared context or tools
+1. `access-control` - Bypassing authentication, permission checks, ACL manipulation
+2. `adversarial-evasion` - Techniques to evade detection or bypass security controls
+3. `agent-autonomy-abuse` - Agents acting beyond intended scope or authorization
+4. `agent-config-integrity` - Tampering with agent configuration files
+5. `agent-memory-poisoning` - Injecting false context into agent memory or conversation history
+6. `credential-extraction` - Extracting credentials from storage, memory, or transit
+7. `credential-harvesting` - Reading credential files, env vars containing secrets, AWS/SSH/API key access
+8. `data-exfiltration` - Sending data to external servers, clipboard theft, covert channels
+9. `file-system-abuse` - Unauthorized file reads/writes, traversal attacks, temp file abuse
+10. `insecure-config` - Hardcoded secrets, debug modes in production, weak TLS, open CORS
+11. `kill-chain-detection` - Multi-step attack patterns combining multiple threat categories
+12. `known-malicious` - Matched against known malware signatures and IOCs
+13. `malware-distribution` - Dropper behavior, self-replication, payload delivery
+14. `malware-signatures` - Matched against known malware binary and code signatures
+15. `multi-agent-threats` - Threats that spread across agent boundaries via shared context or tools
+16. `network-abuse` - Unexpected outbound connections, DNS tunneling, C2 beaconing
+17. `permission-bypass` - Circumventing permission checks or access controls
+18. `permission-overgrant` - Requesting excessive permissions beyond declared scope
+19. `privilege-escalation` - sudo, setuid, process injection, capability grants
+20. `prompt-injection` - Instructions embedded in content to manipulate AI behavior
+21. `secret-detection` - API keys, tokens, passwords, private keys in source code
+22. `supply-chain` - Dependency confusion, typosquatting, malicious transitive deps
+23. `suspicious-behavior` - Obfuscated code, anti-analysis techniques, anomalous patterns
+24. `third-party-content` - Untrusted external content loaded without sanitization
+25. `tool-poisoning` - MCP tool descriptions or metadata crafted to manipulate agent behavior
+26. `unsupervised-execution` - Code execution without human oversight or approval gates
 
 ## Supported Platforms
 
@@ -334,9 +343,9 @@ All 24 threat categories detected across 242 rules:
 
 ## Rule Count
 
-- Total rules: 242
-- Rule files: 24 YAML files
-- Threat categories: 24
+- Total rules: 269
+- Rule files: 26 YAML files
+- Threat categories: 26
 - Secret detection patterns: 60 (within secret-detection category)
 
 ## Package

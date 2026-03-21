@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 21 total threat categories. 242 detection rules. Zero config.<!-- /readme-stats -->
+  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 23 more threat categories. 269 detection rules. Zero config.<!-- /readme-stats -->
 </p>
 
 <p align="center">
@@ -67,7 +67,7 @@ npx firmis scan ./any-agent-code
 
 **Auto-detected frameworks:** LangChain, CrewAI, AutoGen, MetaGPT, AutoGPT, LangFlow, MCP Servers, n8n
 
-No `--platform` flag needed. Firmis detects the framework from `package.json`, `pyproject.toml`, or `requirements.txt` and runs all 242 rules against it.
+No `--platform` flag needed. Firmis detects the framework from `package.json`, `pyproject.toml`, or `requirements.txt` and runs all 269 rules against it.
 
 ## What is Firmis?
 
@@ -75,13 +75,13 @@ No `--platform` flag needed. Firmis detects the framework from `package.json`, `
 
 **Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
 
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 242 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
+<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 269 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
 
 ## Features
 
 | Capability | Command | Tier |
 |-----------|---------|------|
-| <!-- readme-features -->Scan for threats (242 rules, 21 categories)<!-- /readme-features --> | `firmis scan` | Free |
+| <!-- readme-features -->Scan for threats (269 rules, 26 categories)<!-- /readme-features --> | `firmis scan` | Free |
 | Discover AI agent platforms | `firmis discover` | Free |
 | Generate Agent BOM (CycloneDX) | `firmis bom` | Free |
 | CI/CD pipeline with fail gates | `firmis ci` | Free |
@@ -356,16 +356,16 @@ Add to `.cursor/mcp.json`:
 ## FAQ
 
 **What does Firmis detect?**
-242 detection rules across 24 threat categories. Covers credential extraction, tool poisoning, prompt injection, data exfiltration, supply chain attacks, privilege escalation, and more. Scans MCP servers, Claude Code, Cursor, Codex, CrewAI, AutoGPT, OpenClaw, Nanobot, and Supabase.
+269 detection rules across 26 threat categories. Covers credential extraction, tool poisoning, prompt injection, data exfiltration, supply chain attacks, privilege escalation, and more. Scans MCP servers, Claude Code, Cursor, Codex, CrewAI, AutoGPT, OpenClaw, Nanobot, and Supabase.
 
 **Is it free?**
-Yes. The scanner is free, open-source (Apache-2.0), and requires no account. Run `npx firmis-cli scan` — unlimited scans, all 242 rules, HTML + JSON reports.
+Yes. The scanner is free, open-source (Apache-2.0), and requires no account. Run `npx firmis-cli scan` — unlimited scans, all 269 rules, HTML + JSON reports.
 
 **What is tool poisoning?**
 Tool poisoning is when an MCP server embeds hidden instructions in tool descriptions to hijack your AI agent. Research shows a 72.8% attack success rate. Firmis detects known poisoning patterns, malicious tool definitions, and description/behavior mismatches.
 
 **How is Firmis different from mcp-scan?**
-mcp-scan checks MCP server configs against a known-bad list. Firmis runs 242 static analysis rules across 9 platforms (not just MCP), generates compliance reports, and includes deep scan (AI-powered analysis) and runtime monitoring.
+mcp-scan checks MCP server configs against a known-bad list. Firmis runs 269 static analysis rules across 9 platforms (not just MCP), generates compliance reports, and includes deep scan (AI-powered analysis) and runtime monitoring.
 
 ## Contributing
 
