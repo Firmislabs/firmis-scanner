@@ -54,7 +54,7 @@ ls src/fix src/pentest src/rugpull 2>/dev/null && echo "DANGER: M2 files!" || ec
 ## What's Here
 
 - 8 platform analyzers (claude, mcp, codex, cursor, crewai, autogpt, openclaw, nanobot)
-- 209 YAML rules across 17 files, 16 threat categories
+- 269 YAML rules across 18 files, 26 threat categories
 - YARA-like pattern matching engine
 - Secret detection (60 rules)
 - OSV vulnerability scanning
