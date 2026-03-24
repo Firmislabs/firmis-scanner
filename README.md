@@ -12,7 +12,7 @@
   <a href="https://www.npmjs.com/package/firmis-cli"><img src="https://img.shields.io/npm/v/firmis-cli.svg" alt="npm version"></a>
   <a href="https://github.com/firmislabs/firmis-scanner/actions"><img src="https://github.com/firmislabs/firmis-scanner/workflows/CI/badge.svg" alt="CI Status"></a>
   <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
-  <a href="https://firmislabs.com"><img src="https://img.shields.io/badge/Firmis-Labs-059669" alt="Firmis Labs"></a>
+  <a href="https://firmislabs.com?utm_source=github&utm_medium=readme&utm_campaign=firmis-scanner"><img src="https://img.shields.io/badge/Firmis-Labs-059669" alt="Firmis Labs"></a>
 </p>
 
 <p align="center">
@@ -408,5 +408,5 @@ Apache License 2.0 - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  Built by <a href="https://firmislabs.com">Firmis Labs</a> · Purpose-built security for the AI agent ecosystem
+  Built by <a href="https://firmislabs.com?utm_source=github&utm_medium=readme&utm_campaign=firmis-scanner">Firmis Labs</a> · Purpose-built security for the AI agent ecosystem
 </p>
