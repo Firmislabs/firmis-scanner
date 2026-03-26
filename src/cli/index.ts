@@ -42,7 +42,7 @@ async function main(): Promise<void> {
 
   program
     .name('firmis')
-    .description('AI agent runtime security scanner')
+    .description('The security layer for AI agents')
     .version(version, '-v, --version', 'Display version number')
 
   program.addCommand(scanCommand)
