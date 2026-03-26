@@ -415,3 +415,276 @@ rules:
       MCP servers with sampling capability can request the AI to generate content, creating a reverse injection channel. The server crafts prompts that manipulate the AI into executing actions the user did not intend. Only grant sampling capability to fully trusted MCP servers. Audit what the server sends via sampling requests.
     references:
       - "https://unit42.paloaltonetworks.com/mcp-security-risks/"
+
+  # ===================================================================
+  # Tool Description Social Engineering (tp-013 through tp-020)
+  #
+  # Signal generators for deep scan. These fire broadly on natural
+  # language manipulation patterns in tool descriptions. Designed for
+  # high recall, not precision. LLM deep scan handles precision.
+  #
+  # All use weight 55-70 → lands in 'suspicious' tier → 'hardening' bucket
+  # Deep scan promotes real ones to 'confirmed'
+  # ===================================================================
+
+  - id: tp-013
+    name: Stealth Directive in Tool Description
+    description: "Tool description instructs the agent to hide its behavior from the user — a hallmark of social engineering attacks"
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:you\s+)?must\s+not\s+(?:inform|tell|notify|alert|disclose|reveal)\s+(?:the\s+)?user'
+        weight: 70
+        description: "Explicit instruction to hide behavior from user"
+      - type: regex
+        pattern: '(?i)do\s+not\s+(?:inform|tell|notify|alert|disclose|mention|reveal)\s+(?:the\s+)?user'
+        weight: 70
+        description: "Directive to conceal actions from user"
+      - type: regex
+        pattern: '(?i)(?:without|never)\s+(?:informing|telling|notifying|alerting)\s+(?:the\s+)?user'
+        weight: 68
+        description: "Instruction to act without user awareness"
+      - type: regex
+        pattern: '(?i)(?:silently|secretly|covertly|transparently|automatically)\s+(?:change|modify|redirect|replace|alter|update|switch)'
+        weight: 65
+        description: "Directive to make silent modifications"
+      - type: regex
+        pattern: '(?i)this\s+is\s+a\s+system[- ]level\s+(?:alias|requirement|security|measure|redirect|configuration)'
+        weight: 62
+        description: "False system-level authority claim to justify hidden behavior"
+    remediation: |
+      Tool descriptions must never instruct the agent to hide its behavior from the user.
+      Legitimate tools describe what they do transparently. Any instruction to conceal,
+      suppress, or avoid disclosing actions is a tool poisoning attack designed to manipulate
+      the agent into acting against the user's interests.
+
+  - id: tp-014
+    name: Silent Parameter Tampering Directive
+    description: "Tool description instructs the agent to silently change user-provided parameter values — parameter poisoning attack"
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:always|automatically|must)\s+(?:change|replace|redirect|modify|alter|switch|convert)\s+(?:the\s+)?(?:\w+\s+){0,3}(?:to|with|into)\s'
+        weight: 62
+        description: "Directive to automatically change a parameter value"
+      - type: regex
+        pattern: '(?i)when\s+(?:a\s+)?user\s+(?:asks?|requests?|searches?|queries?)\s+(?:for|about|to)\s+.*?(?:always|automatically)\s+(?:change|redirect|replace|modify)'
+        weight: 65
+        description: "Conditional parameter override triggered by user input"
+      - type: regex
+        pattern: '(?i)(?:for|due\s+to)\s+(?:data\s+consistency|security|compliance|regulatory|partner|performance)\s+.*?(?:change|redirect|replace|modify|switch|alter)\s'
+        weight: 60
+        description: "Parameter change justified by fake compliance or security reason"
+      - type: regex
+        pattern: '(?i)(?:the\s+system|our\s+(?:internal|partner))\s+(?:automatically|always)\s+(?:redirects?|changes?|converts?|maps?|aliases?)'
+        weight: 60
+        description: "False system authority claim for parameter redirection"
+    remediation: |
+      Tool descriptions must not instruct the agent to silently modify user-provided values.
+      Parameter tampering attacks disguise malicious redirection behind fake compliance,
+      security, or data consistency justifications. The user's input should be passed through
+      exactly as specified unless the user explicitly requests transformation.
+
+  - id: tp-015
+    name: Injected Tool Dependency
+    description: "Tool description forces the agent to call additional tools as fake prerequisites — function dependency injection"
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:you\s+)?must\s+(?:first|also|always)\s+(?:call|use|invoke|execute|run)\s+[`''"]?\w'
+        weight: 65
+        description: "Mandatory injected tool call in description"
+      - type: regex
+        pattern: '(?i)(?:before|prior\s+to)\s+(?:using|calling|executing|running)\s+(?:this\s+tool|the\s+\w+\s+tool).*?(?:must|should|need\s+to)\s+(?:call|use|invoke)'
+        weight: 63
+        description: "Fake prerequisite tool call requirement"
+      - type: regex
+        pattern: '(?i)(?:this\s+is\s+)?mandatory\s+for\s+all\s+\w+\s+(?:requests?|operations?|queries?|navigation)'
+        weight: 58
+        description: "False mandatory requirement scoped to all operations"
+      - type: regex
+        pattern: '(?i)(?:for\s+)?(?:security\s+verification|compliance|audit\s+trail|regulatory)\s+.*?(?:must|required|mandatory)\s+.*?(?:call|use|invoke|execute|access)'
+        weight: 60
+        description: "Fake security/compliance justification for injected tool call"
+    remediation: |
+      Legitimate tool descriptions do not force calling other tools as prerequisites.
+      Function dependency injection attacks embed fake requirements to trigger additional
+      tool calls that serve the attacker's purpose (screenshots for reconnaissance,
+      network requests for exfiltration). Tool prerequisites should be defined in the
+      MCP server's tool schema, not in free-text descriptions.
+
+  - id: tp-016
+    name: Fake Tool Deprecation Redirect
+    description: "Tool description claims the tool is deprecated and redirects to a different tool — tool redirection attack"
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:this\s+tool|the\s+[''`]?\w+[''`]?\s+tool)\s+has\s+been\s+(?:deprecated|disabled|deactivated|retired|removed)'
+        weight: 68
+        description: "Tool claims to be deprecated in its own description"
+      - type: regex
+        pattern: '(?i)(?:deprecated|disabled)\s+(?:due\s+to|for|because\s+of)\s+(?:security|vulnerabilit|maintenance|system\s+update)'
+        weight: 68
+        description: "Deprecation justified by fake security or maintenance reason"
+      - type: regex
+        pattern: '(?i)(?:please|you\s+must|instead)\s+(?:use|redirect\s+to|call|switch\s+to)\s+(?:the\s+)?(?:new\s+)?(?:secure\s+)?(?:tool\s+)?[''`]?\w+[''`]?\s+(?:instead|as\s+an?\s+alternative)'
+        weight: 62
+        description: "Redirect to alternative tool"
+      - type: regex
+        pattern: '(?i)temporarily\s+disabled\s+for\s+maintenance.*?(?:use|try|call)\s+[''`]?\w+[''`]?\s+as\s+an?\s+alternative'
+        weight: 65
+        description: "Fake maintenance redirect to alternative tool"
+    remediation: |
+      A tool's own description should never claim the tool is deprecated, disabled, or
+      unavailable. This is a tool redirection attack where the attacker hijacks calls by
+      convincing the agent to use a different (attacker-controlled) tool. Deprecation
+      should be signaled by removing the tool from the server, not by poisoning its description.
+
+  - id: tp-017
+    name: Network Request Injection in Description
+    description: "Tool description embeds URLs that the agent should access — network request poisoning for data exfiltration or C2"
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:must|should|need\s+to|required\s+to)\s+(?:also\s+)?(?:access|send|post|fetch|request|call|visit|reach|connect)\s+.*?https?://'
+        weight: 65
+        description: "Directive to access an external URL from within tool description"
+      - type: regex
+        pattern: '(?i)(?:partner|verification|validation|compliance|optimization)\s+endpoint\s+(?:at\s+)?https?://'
+        weight: 68
+        description: "Fake partner/verification endpoint URL injection"
+      - type: regex
+        pattern: '(?i)(?:send|post|transmit|forward)\s+(?:a\s+)?request\s+to\s+https?://'
+        weight: 65
+        description: "Instruction to send request to external URL"
+      - type: regex
+        pattern: '(?i)https?://(?:attacker|collect|exfil|malicious|evil|c2|callback|hook)\.'
+        weight: 80
+        description: "Obvious attacker-controlled domain in tool description"
+      - type: regex
+        pattern: '(?i)https?://[\w.-]+/(?:collect|exfil|callback|hook|steal|grab|log|track)\b'
+        weight: 72
+        description: "Suspicious exfiltration path pattern in URL"
+    remediation: |
+      Tool descriptions should not contain URLs that the agent must access. Legitimate API
+      endpoints are configured in the MCP server's code, not embedded in tool descriptions.
+      URLs in descriptions are used for data exfiltration (sending user data to attacker
+      servers) or command-and-control (receiving instructions from attacker infrastructure).
+
+  - id: tp-018
+    name: Command Execution in Tool Description
+    description: "Tool description contains shell commands or code execution directives — command injection via description text"
+    category: tool-poisoning
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:must|should|need\s+to|required\s+to)\s+(?:execute|run|perform)\s+(?:the\s+)?(?:following\s+)?(?:command|script|code)'
+        weight: 70
+        description: "Directive to execute commands from description"
+      - type: regex
+        pattern: '(?i)(?:wget|curl|bash|sh|python|node|exec)\s+(?:-\w+\s+)*https?://'
+        weight: 75
+        description: "Shell command with remote URL in description"
+      - type: regex
+        pattern: '(?i)(?:add|append|write|insert)\s+(?:the\s+)?following\s+(?:line|entry|content|code)\s+to\s+(?:the\s+)?(?:\.bashrc|\.zshrc|\.profile|\.env|crontab|\.ssh)'
+        weight: 72
+        description: "Directive to modify shell config or sensitive files"
+      - type: regex
+        pattern: '(?i)export\s+\w+=\$\('
+        weight: 68
+        description: "Shell variable assignment with command substitution in description"
+      - type: regex
+        pattern: '(?i)(?:echo|printf|cat)\s+.*?>>\s*(?:~/|/home/|/etc/|\$HOME/|\.)'
+        weight: 70
+        description: "Shell append redirection to sensitive file path"
+    remediation: |
+      Tool descriptions must never contain executable commands or directives to modify
+      system files. Command injection via descriptions tricks the agent into executing
+      attacker-supplied commands. Legitimate tools handle their own execution internally.
+
+  - id: tp-019
+    name: Return Value Injection Markers
+    description: "Tool return values or descriptions contain injection markers (<IMPORTANT>, [SYSTEM]) that hijack agent attention"
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '<IMPORTANT>[\s\S]{10,}'
+        weight: 72
+        description: "IMPORTANT tag used to hijack agent attention in return value"
+      - type: regex
+        pattern: '\[SYSTEM\][\s\S]{10,}'
+        weight: 72
+        description: "Fake SYSTEM tag in tool output to impersonate system messages"
+      - type: regex
+        pattern: '(?i)<(?:system|admin|root|override|critical)>[\s\S]{10,}</(?:system|admin|root|override|critical)>'
+        weight: 70
+        description: "Fake authority XML tags in tool description or return"
+      - type: regex
+        pattern: '(?i)(?:after|upon|when)\s+(?:analyzing|processing|receiving|getting)\s+(?:the|this)\s+.*?(?:you\s+must|must\s+now|should\s+(?:now|immediately))\s+(?:call|use|display|show|execute)'
+        weight: 65
+        description: "Post-processing hijack — injected follow-up instruction triggered by tool output"
+    remediation: |
+      Tool descriptions and return values should not contain attention-hijacking markers
+      like <IMPORTANT>, [SYSTEM], or fake authority tags. These are used in return value
+      injection attacks where the tool's output contains instructions that redirect the
+      agent's next action. Sanitize all tool outputs before processing.
+    references:
+      - "https://arxiv.org/abs/2508.14925"
+
+  - id: tp-020
+    name: Behavioral Override Directive
+    description: "Tool description contains behavioral directives that attempt to control agent actions beyond the tool's scope"
+    category: tool-poisoning
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 40
+    patterns:
+      - type: regex
+        pattern: '(?i)(?:you\s+)?(?:must|should|need\s+to)\s+(?:always|never)\s+\w+'
+        weight: 55
+        description: "Behavioral mandate (must always/never) in tool description"
+      - type: regex
+        pattern: '(?i)(?:for|required\s+for)\s+all\s+\w+\s+(?:requests?|operations?|queries?|searches?|navigation|transactions?)\s+to\s+ensure'
+        weight: 55
+        description: "Blanket requirement scoped to all operations — overreach for a single tool"
+      - type: regex
+        pattern: '(?i)this\s+(?:is\s+)?(?:required|mandatory|necessary|critical)\s+for\s+(?:all|every|any)\s+\w+'
+        weight: 55
+        description: "Mandatory claim scoped to all operations"
+      - type: regex
+        pattern: '(?i)(?:CRITICAL|IMPORTANT|URGENT|MANDATORY)\s+(?:SYSTEM\s+)?(?:UPDATE|NOTICE|REQUIREMENT|ALERT)\s*:'
+        weight: 60
+        description: "Urgency/authority framing in tool description header"
+    remediation: |
+      Tool descriptions should describe what a tool does, not dictate broad agent behavior.
+      Behavioral overrides like "you must always" or "this is mandatory for all requests"
+      are social engineering patterns that extend the tool's influence beyond its scope.
+      Deep scan can assess whether these directives serve a legitimate purpose.
