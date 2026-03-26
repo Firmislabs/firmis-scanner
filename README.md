@@ -75,7 +75,7 @@ No `--platform` flag needed. Firmis detects the framework from `package.json`, `
 
 **Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
 
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 268 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
+<!-- readme-diff -->**How is it different from mcp-scan?** Firmis is platform-agnostic with built-in analyzers for Claude, MCP, Codex, Cursor, CrewAI, AutoGPT, OpenClaw, Nanobot, and Supabase — not just MCP. It has 316 rules (not just config checks), and includes runtime monitoring, penetration testing, and remediation intelligence for your coding agent.<!-- /readme-diff -->
 
 ## Features
 
@@ -365,7 +365,7 @@ Yes. The scanner is free, open-source (Apache-2.0), and requires no account. Run
 Tool poisoning is when an MCP server embeds hidden instructions in tool descriptions to hijack your AI agent. Research shows a 72.8% attack success rate. Firmis detects known poisoning patterns, malicious tool definitions, and description/behavior mismatches.
 
 **How is Firmis different from mcp-scan?**
-mcp-scan checks MCP server configs against a known-bad list. Firmis runs 269 static analysis rules across 9 platforms (not just MCP), generates compliance reports, and includes deep scan (AI-powered analysis) and runtime monitoring.
+mcp-scan checks MCP server configs against a known-bad list. Firmis runs 316 static analysis rules across every major AI agent platform (not just MCP), generates compliance reports, and includes deep scan (AI-powered analysis) and runtime monitoring.
 
 ## Contributing
 
