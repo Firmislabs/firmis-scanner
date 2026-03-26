@@ -71,11 +71,11 @@ No `--platform` flag needed. Firmis detects the framework from `package.json`, `
 
 ## What is Firmis?
 
-**Firmis is a security scanner purpose-built for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them - detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 21 total threat categories.
+**Firmis is the security layer for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them - detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 21 total threat categories.
 
 **Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
 
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 260 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
+<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 260 rules (not just config checks), and includes runtime monitoring, penetration testing, and remediation intelligence for your coding agent.<!-- /readme-diff -->
 
 ## Features
 

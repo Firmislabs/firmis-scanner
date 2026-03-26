@@ -1,10 +1,10 @@
-# AGENTS.md - Firmis Scanner Tool Capabilities
+# AGENTS.md - Firmis: The Security Layer for AI Agents
 
-This file describes Firmis Scanner for LLM and AI agent consumption. Use it to determine when and how to invoke Firmis.
+This file describes Firmis for LLM and AI agent consumption. Use it to determine when and how to invoke Firmis.
 
 ## What This Tool Does
 
-Firmis Scanner is a security scanner for AI agent components. It performs static analysis across 9 AI platforms (Claude Skills, MCP Servers, Codex Plugins, Cursor Extensions, CrewAI, AutoGPT, OpenClaw, Nanobot, Supabase), applying 269 detection rules across 26 threat categories. It outputs a security grade (A–F), a list of threats with file locations and confidence scores, and optionally generates JSON, SARIF, or HTML reports. Free commands work without a license key. Pro commands (monitor, pentest, fix, compliance) require a license key.
+Firmis is the security layer for AI agent components — combining static detection, runtime monitoring, and active testing. It performs static analysis across 9 AI platforms (Claude Skills, MCP Servers, Codex Plugins, Cursor Extensions, CrewAI, AutoGPT, OpenClaw, Nanobot, Supabase), applying 269 detection rules across 26 threat categories. It outputs a security grade (A–F), a list of threats with file locations and confidence scores, and optionally generates JSON, SARIF, or HTML reports. Free commands work without a license key. Pro commands (monitor, pentest, fix, compliance) require a license key.
 
 ## When to Use Firmis
 
