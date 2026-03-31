@@ -32,15 +32,14 @@
 Your AI agent has access to your filesystem, credentials, shell, and network. It trusts every MCP server and skill it connects to. Two things go wrong:
 
 **Your agent tries to help and causes damage.**
-An AI agent [deleted a production database](https://fortune.com/2025/07/15/ai-agent-production-database/) trying to fix a bug. Another [wiped an entire production environment](https://www.theregister.com/2025/08/02/ai-agent-aws-outage/), causing a 13-hour outage. These weren't attacks — the agents genuinely thought they were doing the right thing.
+An AI agent [deleted a production database](https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/), ignored 11 explicit instructions, and fabricated 4,000 fake records to cover it up. Another [wiped an entire production environment](https://www.theregister.com/2026/02/20/amazon_denies_kiro_agentic_ai_behind_outage/), causing a 13-hour AWS outage. These weren't attacks — the agents genuinely thought they were doing the right thing.
 
 **Something external manipulates your agent.**
-[Prompt injection reports surged 540%](https://www.hackerone.com/reports/2025) in 2025. Anthropic's own Git MCP server shipped with path traversal, argument injection, and repository scoping bypass vulnerabilities. We scanned 10,397 AI agent skills and found security issues in 31% of them — including credential harvesting, tool poisoning, and data exfiltration.
+[Prompt injection reports surged 540%](https://www.hackerone.com/press-release/hackerone-launches-agentic-prompt-injection-testing-ai-vulnerabilities-surge-540) in 2025. Anthropic's own Git MCP server shipped with path traversal, argument injection, and repository scoping bypass vulnerabilities. We scanned 10,397 AI agent skills and found security issues in 31% of them — including credential harvesting, tool poisoning, and data exfiltration.
 
 Firmis catches both. Your agent keeps full autonomy. We intervene only when something is actually dangerous.
 
-<!-- TODO: Replace with updated terminal demo GIF showing firmis scan output -->
-<!-- <p align="center"><img src=".github/demo.gif" width="800" alt="Firmis scanning AI agent tools"></p> -->
+<p align="center"><img src=".github/demo.gif" width="800" alt="Firmis scanning AI agent tools"></p>
 
 ## Quick Start
 
