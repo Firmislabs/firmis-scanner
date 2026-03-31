@@ -18,6 +18,8 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.js.map",
+    "!dist/**/*.d.ts.map",
     "rules",
     "README.md",
     "LICENSE"
@@ -32,7 +34,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build && find dist -name '*.map' -delete",
+    "check-package": "npm pack --dry-run 2>&1 | grep -c '\\.map' && echo 'ERROR: Source maps in package!' && exit 1 || echo 'OK: No source maps'",
     "firmis": "node --loader ts-node/esm src/cli/index.ts"
   },
   "keywords": [

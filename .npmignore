@@ -1,0 +1,16 @@
+# Source maps — never publish
+**/*.js.map
+**/*.d.ts.map
+
+# Source code
+src/
+tsconfig.json
+vitest*.ts
+
+# Dev files
+.eslintrc*
+.prettierrc*
+.github/
+scripts/
+tests/
+coverage/
