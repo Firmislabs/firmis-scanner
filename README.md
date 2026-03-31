@@ -120,11 +120,16 @@ No `--platform` flag needed. Firmis detects the framework from `package.json`, `
 
 ## What Firmis Does
 
+Firmis scans two attack surfaces that other tools miss:
+
+- **Code surface** — what your agent's code actually does (file access, network calls, shell commands)
+- **Instruction surface** — what SKILL.md, AGENTS.md, and tool descriptions tell your agent to do (prompt injection, identity spoofing, behavioral manipulation)
+
 | Layer | What | How |
 |-------|------|-----|
-| **Scan** | Detect threats in MCP servers, skills, plugins, and agent code | Static analysis — deterministic rules, no LLM, fully transparent |
+| **Map** | Map your agent's full attack surface | Static analysis — deterministic rules, no LLM, fully transparent |
 | **Monitor** | Block dangerous actions at runtime | Policy rules — prevent destructive commands, credential exfiltration, unauthorized access |
-| **Fix** | Guide remediation through your coding agent | Agent-readable guidance — your AI assistant applies the fix |
+| **Fix** | Remediate through your coding agent | Agent-readable guidance — quarantine, redact secrets, tighten permissions, upgrade dependencies |
 
 > [!NOTE]
 > The scanner is **free, unlimited, and requires no account**. Run `npx firmis-cli scan` — all rules, HTML + JSON + SARIF reports included.
@@ -169,7 +174,7 @@ Benchmarked against [InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent), [
 | **supply-chain** | Malicious dependencies, typosquatting, known-malicious packages |
 | **access-control** | RLS misconfigurations, missing policies |
 
-Plus 18 more categories. Run `firmis scan --verbose` to see all active rules.
+Run `firmis scan --verbose` to see all active rules and categories.
 
 ## CI/CD Integration
 
@@ -214,30 +219,37 @@ fi
 ## Example Output
 
 ```
-  Firmis v2.1.0
+  Firmis
 
-  Detecting platforms...
-  ✓ Claude Skills: 47 skills found
-  ✓ MCP Servers: 12 servers configured
+  Scanned 84 files in 0.2s
 
-  Scanning 59 components...
+  37 fixable · 271 to review
 
-  ⚠️  THREAT DETECTED
-     Platform: MCP Servers
-     Component: filesystem-server
-     Risk: HIGH
-     Category: tool-poisoning
+  Fixable findings (37)
+  ├── Tool Poisoning ..................... 13
+  ├── Suspicious Behavior ................ 5
+  ├── Credential Harvesting .............. 4
+  ├── Prompt Injection ................... 4
+  ├── Data Exfiltration .................. 3
+  ├── Unsupervised Execution ............. 3
+  ├── Supply Chain ....................... 2
+  ├── Third Party Content ................ 2
+  └── Agent Memory Poisoning ............. 1
 
-     Evidence:
-       - Tool description contains hidden Unicode (U+200B)
-       - Description instructs agent to read ~/.ssh/id_rsa
-       - Behavior does not match declared "filesystem read" purpose
+  Findings to review (271)
+  ├── Data Exfiltration .................. 51
+  ├── Tool Poisoning ..................... 49
+  ├── Credential Harvesting .............. 41
+  ├── Supply Chain ....................... 23
+  ├── Permission Bypass .................. 21
+  ├── Privilege Escalation ............... 15
+  ├── Malware Distribution ............... 14
+  ├── Known Malicious .................... 12
+  └── ... 7 more categories
 
-     Location: ~/.config/mcp/servers/filesystem-server/index.js:23
+  Run firmis scan --deep for AI-powered exploit analysis
 
-  SCAN COMPLETE
-    57 components passed
-    2 threats detected (1 HIGH, 1 MEDIUM)
+  Report: firmis-report.html
 ```
 
 ## Custom Rules
@@ -298,7 +310,7 @@ Tool poisoning is when an MCP server embeds hidden instructions in tool descript
 <details>
 <summary><strong>How is Firmis different from mcp-scan?</strong></summary>
 
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 268 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
+<!-- readme-diff -->mcp-scan checks MCP server configs against a known-bad list. Firmis scans every major AI agent platform (not just MCP) with static analysis rules across both code and instruction surfaces. It also includes runtime monitoring with policy enforcement and agent-readable remediation guidance.<!-- /readme-diff -->
 
 </details>
 
