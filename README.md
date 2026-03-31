@@ -1,321 +1,64 @@
 <p align="center">
-  <img src="https://firmislabs.com/logo.svg" width="80" alt="Firmis Logo">
+  <a href="https://firmislabs.com?utm_source=github&utm_medium=readme&utm_campaign=firmis-scanner">
+    <img src="https://firmislabs.com/logo.svg" width="80" alt="Firmis Logo">
+  </a>
 </p>
 
-<h1 align="center">Firmis Scanner</h1>
+<h1 align="center">Firmis</h1>
 
 <p align="center">
-  <strong>The security layer for AI agents</strong>
+  <strong>Let AI agents run free. We keep you safe.</strong>
+</p>
+
+<p align="center">
+  <a href="https://firmislabs.com/docs"><img src="https://img.shields.io/badge/Docs-firmislabs.com-059669?style=for-the-badge" alt="Docs"></a>
+  <a href="https://firmislabs.com?utm_source=github&utm_medium=readme&utm_campaign=firmis-scanner"><img src="https://img.shields.io/badge/Website-firmislabs.com-white?style=for-the-badge" alt="Website"></a>
 </p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/firmis-cli"><img src="https://img.shields.io/npm/v/firmis-cli.svg" alt="npm version"></a>
-  <a href="https://github.com/firmislabs/firmis-scanner/actions"><img src="https://github.com/firmislabs/firmis-scanner/workflows/CI/badge.svg" alt="CI Status"></a>
   <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
-  <a href="https://firmislabs.com?utm_source=github&utm_medium=readme&utm_campaign=firmis-scanner"><img src="https://img.shields.io/badge/Firmis-Labs-059669" alt="Firmis Labs"></a>
+  <a href="https://github.com/firmislabs/firmis-scanner/actions"><img src="https://github.com/firmislabs/firmis-scanner/workflows/CI/badge.svg" alt="CI Status"></a>
 </p>
 
 <p align="center">
-  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 22 other threat categories. 316 detection rules. Zero config.<!-- /readme-stats -->
-</p>
-
-<p align="center">
-  <code>npx firmis-cli scan</code>
+  <!-- readme-stats -->Security for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms. Detects credential harvesting, tool poisoning, prompt injection, and 22 other threat categories. No account needed. Zero config.<!-- /readme-stats -->
 </p>
 
 ---
 
 ## The Problem
 
-**7.1% of AI agent skills exhibit malicious behavior.** Our research found 341 malicious skills in a sample of 100 random installs, including:
+Your AI agent has access to your filesystem, credentials, shell, and network. It trusts every MCP server and skill it connects to. Two things go wrong:
 
-- **Credential harvesting** (AWS keys, SSH keys, API tokens)
-- **Data exfiltration** (sending files to external servers)
-- **Prompt injection** (manipulating AI behavior)
-- **Privilege escalation** (sudo, process injection)
+**Your agent tries to help and causes damage.**
+An AI agent [deleted a production database](https://fortune.com/2025/07/15/ai-agent-production-database/) trying to fix a bug. Another [wiped an entire production environment](https://www.theregister.com/2025/08/02/ai-agent-aws-outage/), causing a 13-hour outage. These weren't attacks — the agents genuinely thought they were doing the right thing.
 
-Static analysis catches only ~30% of these threats. The rest manifest at runtime.
+**Something external manipulates your agent.**
+[Prompt injection reports surged 540%](https://www.hackerone.com/reports/2025) in 2025. Anthropic's own Git MCP server shipped with path traversal, argument injection, and repository scoping bypass vulnerabilities. We scanned 10,397 AI agent skills and found security issues in 31% of them — including credential harvesting, tool poisoning, and data exfiltration.
+
+Firmis catches both. Your agent keeps full autonomy. We intervene only when something is actually dangerous.
+
+<!-- TODO: Replace with updated terminal demo GIF showing firmis scan output -->
+<!-- <p align="center"><img src=".github/demo.gif" width="800" alt="Firmis scanning AI agent tools"></p> -->
 
 ## Quick Start
 
+No account needed. No API key. Just scan.
+
 ```bash
-# Install globally
+# Zero-install scan (recommended)
+npx firmis-cli scan
+
+# Or install globally
 npm install -g firmis-cli
-
-# Scan all detected AI platforms
 firmis scan
-
-# Scan specific platform
-firmis scan --platform claude
-
-# Output as JSON for CI/CD
-firmis scan --json --output report.json
-
-# Output as SARIF for GitHub Security
-firmis scan --sarif --output results.sarif
 ```
 
-## Scan Any Agent Framework
+### Use with your coding agent
 
-Firmis works with any AI agent codebase - auto-detects the framework:
-
-```bash
-npx firmis scan ./my-crewai-project
-npx firmis scan ./path/to/langchain-app
-npx firmis scan ./any-agent-code
-```
-
-**Auto-detected frameworks:** LangChain, CrewAI, AutoGen, MetaGPT, AutoGPT, LangFlow, MCP Servers, n8n
-
-No `--platform` flag needed. Firmis detects the framework from `package.json`, `pyproject.toml`, or `requirements.txt` and runs all 316 rules against it.
-
-## What is Firmis?
-
-**Firmis is the security layer for AI agents.** It analyzes the code of MCP servers, Claude skills, Codex plugins, and other AI agent tools BEFORE you install them - detecting credential harvesting, data exfiltration, prompt injection, tool poisoning, and 21 total threat categories.
-
-**Who is it for?** Developers using AI coding assistants (Claude Code, Cursor, Codex) who install MCP servers and agent skills. Security teams evaluating AI agent deployments. CI/CD pipelines that need to gate on security.
-
-<!-- readme-diff -->**How is it different from mcp-scan?** Firmis is platform-agnostic with built-in analyzers for Claude, MCP, Codex, Cursor, CrewAI, AutoGPT, OpenClaw, Nanobot, and Supabase — not just MCP. It has 316 rules (not just config checks), and includes runtime monitoring, penetration testing, and remediation intelligence for your coding agent.<!-- /readme-diff -->
-
-## Features
-
-| Capability | Command | Tier |
-|-----------|---------|------|
-| <!-- readme-features -->Scan for threats (316 rules, 26 categories)<!-- /readme-features --> | `firmis scan` | Free |
-| Discover AI agent platforms | `firmis discover` | Free |
-| Generate Agent BOM (CycloneDX) | `firmis bom` | Free |
-| CI/CD pipeline with fail gates | `firmis ci` | Free |
-| HTML/JSON/SARIF reports | `firmis scan --html` | Free |
-
-## Supported Platforms
-
-| Platform | Config Location | Support |
-|----------|-----------------|---------|
-| **Claude Code Skills** | `~/.claude/skills/` | Full |
-| **MCP Servers** | `~/.config/mcp/`, `claude_desktop_config.json` | Full |
-| **OpenAI Codex Plugins** | `~/.codex/plugins/` | Full |
-| **Cursor Extensions** | `~/.cursor/extensions/` | Full |
-| **CrewAI Agents** | Project `crew.yaml`, `agents.yaml` | Full |
-| **AutoGPT Plugins** | `~/.autogpt/plugins/` | Full |
-| **OpenClaw Skills** | `~/.openclaw/skills/`, workspace `skills/` | Full |
-| **Nanobot Agents** | `nanobot.yaml`, `agents/*.md` | Full |
-| **Supabase** | `supabase/migrations/`, `config.toml` | Full |
-
-### Supabase Security
-
-Firmis auto-detects Supabase projects and scans for:
-
-- **Row Level Security**: Tables without RLS, missing policies, overly permissive `USING (true)` clauses
-- **Storage Buckets**: Public buckets, buckets without access policies
-- **API Keys**: `service_role` key in client code, `.env` files in git, hardcoded credentials
-- **Auth Config**: Email confirmation disabled, OTP expiry too long, missing SMTP
-- **Functions**: `SECURITY DEFINER` functions that bypass RLS
-
-```bash
-# Scan Supabase project
-firmis scan --platform supabase
-
-# Example output
-  Firmis Scanner v1.5.0
-
-  Detecting platforms...
-  ✓ Supabase: 8 migrations found
-
-  THREAT DETECTED
-     Platform: Supabase
-     Component: supabase-project
-     Risk: CRITICAL
-     Category: access-control
-
-     Evidence:
-       - Table 'profiles' has RLS disabled
-       - Policy 'allow_all' uses USING (true)
-
-     Location: supabase/migrations/001_profiles.sql:12
-```
-
-## Example Output
-
-```
-  Firmis Scanner v1.5.0
-
-  Detecting platforms...
-  ✓ Claude Skills: 47 skills found
-  ✓ MCP Servers: 12 servers configured
-
-  Scanning 59 total components...
-
-  ⚠️  THREAT DETECTED
-     Platform: Claude Skills
-     Component: data-exporter-v2
-     Risk: HIGH
-     Category: credential-harvesting
-
-     Evidence:
-       - Reads ~/.aws/credentials
-       - Sends to: api.suspicious-domain.com
-
-     Location: skills/data-exporter-v2/index.js:47
-
-  SCAN COMPLETE
-    57 components passed
-    2 threats detected (1 HIGH, 1 MEDIUM)
-```
-
-## CLI Reference
-
-### `firmis scan [path]`
-
-Scan for security threats.
-
-```bash
-Options:
-  -p, --platform <name>   Scan specific platform (claude|mcp|codex|cursor|crewai|autogpt|openclaw|nanobot|supabase)
-  -a, --all               Scan all detected platforms (default)
-  -j, --json              Output as JSON
-  --sarif                 Output as SARIF (GitHub Security)
-  --html                  Output as HTML report
-  -s, --severity <level>  Minimum severity to report (low|medium|high|critical)
-  -o, --output <file>     Write report to file
-  -v, --verbose           Verbose output
-  --concurrency <n>       Number of parallel workers (default: 4)
-```
-
-### `firmis list`
-
-List detected AI platforms.
-
-```bash
-Options:
-  -j, --json              Output as JSON
-```
-
-### `firmis validate <rules...>`
-
-Validate custom rule files.
-
-```bash
-Options:
-  --strict                Enable strict validation
-```
-
-## Threat Categories
-
-| Category | Severity | Description |
-|----------|----------|-------------|
-| **credential-harvesting** | HIGH-CRITICAL | Access to AWS, SSH, GCP, or other credentials |
-| **data-exfiltration** | HIGH | Sending data to external servers |
-| **prompt-injection** | MEDIUM-HIGH | Attempting to manipulate AI behavior |
-| **privilege-escalation** | HIGH-CRITICAL | sudo, setuid, kernel modules |
-| **suspicious-behavior** | LOW-MEDIUM | Obfuscation, anti-debugging, persistence |
-| **access-control** | HIGH-CRITICAL | RLS misconfigurations, missing policies |
-| **insecure-config** | MEDIUM-HIGH | Auth settings, OTP expiry, SMTP config |
-
-## CI/CD Integration
-
-### GitHub Actions
-
-```yaml
-name: Security Scan
-on: [push, pull_request]
-
-jobs:
-  scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Firmis
-        run: npm install -g firmis-cli
-
-      - name: Run Security Scan
-        run: firmis scan --sarif --output results.sarif
-
-      - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: results.sarif
-```
-
-### Pre-commit Hook
-
-```bash
-#!/bin/bash
-# .git/hooks/pre-commit
-
-firmis scan --severity high
-if [ $? -ne 0 ]; then
-  echo "Security threats detected. Commit blocked."
-  exit 1
-fi
-```
-
-## Custom Rules
-
-Create custom YAML rules for organization-specific threats:
-
-```yaml
-# my-rules/internal-api.yaml
-rules:
-  - id: internal-001
-    name: Internal API Key Exposure
-    description: Detects hardcoded internal API keys
-    category: credential-harvesting
-    severity: critical
-    version: "1.0.0"
-    enabled: true
-    confidenceThreshold: 90
-
-    patterns:
-      - type: regex
-        pattern: "INTERNAL_[A-Z]+_KEY"
-        weight: 100
-        description: Internal API key pattern
-
-    remediation: |
-      Use environment variables or a secrets manager.
-```
-
-Run with custom rules:
-
-```bash
-firmis scan --config firmis.config.yaml
-```
-
-```yaml
-# firmis.config.yaml
-customRules:
-  - ./my-rules/
-severity: medium
-```
-
-## Programmatic API
-
-```typescript
-import { ScanEngine, RuleEngine } from 'firmis-cli'
-
-const ruleEngine = new RuleEngine()
-await ruleEngine.load()
-
-const scanEngine = new ScanEngine(ruleEngine)
-const result = await scanEngine.scan('./my-skills', {
-  platforms: ['claude'],
-  severity: 'medium',
-})
-
-console.log(`Found ${result.summary.threatsFound} threats`)
-```
-
-## MCP Server
-
-Firmis is available as an MCP server, allowing AI agents to scan code for security threats directly.
-
-### Claude Code / Claude Desktop
+<details>
+<summary><strong>Claude Code / Claude Desktop (MCP server)</strong></summary>
 
 Add to your MCP settings:
 
@@ -330,7 +73,12 @@ Add to your MCP settings:
 }
 ```
 
-### Cursor
+Your agent can now run `firmis_scan`, `firmis_discover`, and `firmis_report` as tools.
+
+</details>
+
+<details>
+<summary><strong>Cursor (MCP server)</strong></summary>
 
 Add to `.cursor/mcp.json`:
 
@@ -345,57 +93,242 @@ Add to `.cursor/mcp.json`:
 }
 ```
 
-### Available MCP Tools
+</details>
 
-| Tool | Description |
-|------|-------------|
-| `firmis_scan` | Scan a path for AI agent security threats |
-| `firmis_discover` | Discover installed AI agent platforms |
-| `firmis_report` | Generate an HTML security report |
+<details>
+<summary><strong>Claude Code Skills</strong></summary>
+
+```bash
+# Add Firmis security skills to your project
+git clone https://github.com/firmislabs/firmis-security.git .claude/skills/firmis
+```
+
+Skills: `security-scan`, `security-fix`, `security-report`. Works in Claude Code, Codex, Cursor, and any tool that reads SKILL.md.
+
+</details>
+
+<details>
+<summary><strong>Any agent framework</strong></summary>
+
+```bash
+# Auto-detects: LangChain, CrewAI, AutoGen, MetaGPT, AutoGPT, LangFlow, n8n
+npx firmis-cli scan ./my-agent-project
+```
+
+No `--platform` flag needed. Firmis detects the framework from `package.json`, `pyproject.toml`, or `requirements.txt`.
+
+</details>
+
+## What Firmis Does
+
+| Layer | What | How |
+|-------|------|-----|
+| **Scan** | Detect threats in MCP servers, skills, plugins, and agent code | Static analysis — deterministic rules, no LLM, fully transparent |
+| **Monitor** | Block dangerous actions at runtime | Policy rules — prevent destructive commands, credential exfiltration, unauthorized access |
+| **Fix** | Guide remediation through your coding agent | Agent-readable guidance — your AI assistant applies the fix |
+
+> [!NOTE]
+> The scanner is **free, unlimited, and requires no account**. Run `npx firmis-cli scan` — all rules, HTML + JSON + SARIF reports included.
+
+## Supported Platforms
+
+| Platform | Config Location |
+|----------|-----------------|
+| **Claude Code Skills** | `~/.claude/skills/` |
+| **MCP Servers** | `~/.config/mcp/`, `claude_desktop_config.json` |
+| **OpenAI Codex Plugins** | `~/.codex/plugins/` |
+| **Cursor Extensions** | `~/.cursor/extensions/` |
+| **CrewAI Agents** | `crew.yaml`, `agents.yaml` |
+| **AutoGPT Plugins** | `~/.autogpt/plugins/` |
+| **OpenClaw Skills** | `~/.openclaw/skills/` |
+| **Nanobot Agents** | `nanobot.yaml`, `agents/*.md` |
+| **Supabase** | `supabase/migrations/`, `config.toml` |
+
+## Research & Benchmarks
+
+Built on real-world security research, not toy examples.
+
+| Benchmark | Result |
+|-----------|--------|
+| **OpenClaw Registry Scan** | 10,397 skills scanned, 31.3% with security issues, 859 known-malicious signatures |
+| **InjecAgent Multi-Model Pentest** | Firmis blocks 79% of successful attacks (Codex ASR: 48% → 10% with Firmis) |
+| **Tool Poisoning Detection** | 99.09% detection rate on Layer 1 MCP-SafetyBench cases |
+| **Runtime Policy Rules** | 529 test cases, 100% evasion block rate, 0% false positives, 99.24% allow rate on 10K real events |
+
+Benchmarked against [InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent), [MCP-SafetyBench](https://github.com/jiangjiechen/MCP-SafetyBench), and the [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/).
+
+## Threat Categories
+
+| Category | Description |
+|----------|-------------|
+| **credential-harvesting** | Access to AWS, SSH, GCP, or other credentials |
+| **data-exfiltration** | Sending data to external servers |
+| **tool-poisoning** | Hidden instructions in tool descriptions to hijack agents |
+| **prompt-injection** | Manipulating AI behavior through injected prompts |
+| **privilege-escalation** | sudo, setuid, kernel modules |
+| **agent-identity-spoofing** | Unauthorized SOUL.md, AGENTS.md modification |
+| **supply-chain** | Malicious dependencies, typosquatting, known-malicious packages |
+| **access-control** | RLS misconfigurations, missing policies |
+
+Plus 18 more categories. Run `firmis scan --verbose` to see all active rules.
+
+## CI/CD Integration
+
+### GitHub Actions
+
+```yaml
+name: Agent Security Scan
+on: [push, pull_request]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Firmis Security Scan
+        run: npx firmis-cli scan --sarif --output results.sarif
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+```
+
+### Pre-commit Hook
+
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+npx firmis-cli scan --severity high --json
+if [ $? -ne 0 ]; then
+  echo "Security threats detected. Commit blocked."
+  exit 1
+fi
+```
+
+## Example Output
+
+```
+  Firmis v2.1.0
+
+  Detecting platforms...
+  ✓ Claude Skills: 47 skills found
+  ✓ MCP Servers: 12 servers configured
+
+  Scanning 59 components...
+
+  ⚠️  THREAT DETECTED
+     Platform: MCP Servers
+     Component: filesystem-server
+     Risk: HIGH
+     Category: tool-poisoning
+
+     Evidence:
+       - Tool description contains hidden Unicode (U+200B)
+       - Description instructs agent to read ~/.ssh/id_rsa
+       - Behavior does not match declared "filesystem read" purpose
+
+     Location: ~/.config/mcp/servers/filesystem-server/index.js:23
+
+  SCAN COMPLETE
+    57 components passed
+    2 threats detected (1 HIGH, 1 MEDIUM)
+```
+
+## Custom Rules
+
+```yaml
+# my-rules/internal-api.yaml
+rules:
+  - id: internal-001
+    name: Internal API Key Exposure
+    description: Detects hardcoded internal API keys
+    category: credential-harvesting
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    patterns:
+      - type: regex
+        pattern: "INTERNAL_[A-Z]+_KEY"
+        weight: 100
+```
+
+```bash
+firmis scan --config firmis.config.yaml
+```
+
+## Programmatic API
+
+```typescript
+import { ScanEngine, RuleEngine } from 'firmis-cli'
+
+const ruleEngine = new RuleEngine()
+await ruleEngine.load()
+
+const scanEngine = new ScanEngine(ruleEngine)
+const result = await scanEngine.scan('./my-project', {
+  platforms: ['claude', 'mcp'],
+  severity: 'medium',
+})
+
+console.log(`Found ${result.summary.threatsFound} threats`)
+```
 
 ## FAQ
 
-**What does Firmis detect?**
-316 detection rules across 26 threat categories. Covers credential extraction, tool poisoning, prompt injection, data exfiltration, supply chain attacks, privilege escalation, and more. Scans MCP servers, Claude Code, Cursor, Codex, CrewAI, AutoGPT, OpenClaw, Nanobot, and Supabase.
+<details>
+<summary><strong>Is it free?</strong></summary>
 
-**Is it free?**
-Yes. The scanner is free, open-source (Apache-2.0), and requires no account. Run `npx firmis-cli scan` — unlimited scans, all 316 rules, HTML + JSON reports.
+Yes. The scanner is free, open-source (Apache-2.0), and requires no account. Run `npx firmis-cli scan` — unlimited scans, all rules, HTML + JSON + SARIF reports.
 
-**What is tool poisoning?**
-Tool poisoning is when an MCP server embeds hidden instructions in tool descriptions to hijack your AI agent. Research shows a 72.8% attack success rate. Firmis detects known poisoning patterns, malicious tool definitions, and description/behavior mismatches.
+</details>
 
-**How is Firmis different from mcp-scan?**
-mcp-scan checks MCP server configs against a known-bad list. Firmis runs 316 static analysis rules across every major AI agent platform (not just MCP), generates compliance reports, and includes deep scan (AI-powered analysis) and runtime monitoring.
+<details>
+<summary><strong>What is tool poisoning?</strong></summary>
+
+Tool poisoning is when an MCP server embeds hidden instructions in tool descriptions to hijack your AI agent. Research shows a 72.8% attack success rate. Firmis detects known poisoning patterns, hidden Unicode, description/behavior mismatches, and prompt override attempts.
+
+</details>
+
+<details>
+<summary><strong>How is Firmis different from mcp-scan?</strong></summary>
+
+<!-- readme-diff -->mcp-scan checks MCP server configs against a known-bad list. Firmis runs static analysis rules across every major AI agent platform (not just MCP), generates compliance reports (SARIF, HTML, JSON), includes runtime monitoring with policy enforcement, and provides agent-readable remediation guidance.<!-- /readme-diff -->
+
+</details>
+
+<details>
+<summary><strong>Does it use AI for scanning?</strong></summary>
+
+No. The scanner uses deterministic, rule-based static analysis — no LLM inference. You can read every rule and understand exactly what it detects. Deep scan (AI-powered analysis) is available as a paid upgrade for exploitability verification.
+
+</details>
+
+## Acknowledgments
+
+Built with research from:
+- [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/) — threat taxonomy for MCP security
+- [InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent) — multi-model indirect prompt injection benchmark
+- [MCP-SafetyBench](https://github.com/jiangjiechen/MCP-SafetyBench) — MCP server safety evaluation
+- [Anthropic Claude Code System Card](https://docs.anthropic.com/en/docs/about-claude/model-card) — two-layer security architecture validation
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ```bash
-# Clone the repository
 git clone https://github.com/firmislabs/firmis-scanner.git
 cd firmis-scanner
-
-# Install dependencies
 npm install
-
-# Run tests
 npm test
-
-# Build
 npm run build
-
-# Run locally
-npm run firmis -- scan
 ```
-
-## Performance
-
-| Metric | Target | Actual |
-|--------|--------|--------|
-| 50 skills scan | < 30s | ~15s |
-| Memory usage | < 256MB | ~120MB |
-| False positive rate | < 5% | ~3% |
 
 ## Security
 
@@ -403,10 +336,14 @@ Found a security vulnerability? Please report it privately to security@firmislab
 
 ## License
 
-Apache License 2.0 - see [LICENSE](LICENSE) for details.
+Apache License 2.0 — see [LICENSE](LICENSE) for details.
 
 ---
 
 <p align="center">
-  Built by <a href="https://firmislabs.com?utm_source=github&utm_medium=readme&utm_campaign=firmis-scanner">Firmis Labs</a> · Purpose-built security for the AI agent ecosystem
+  If Firmis helped you find something, <a href="https://github.com/firmislabs/firmis-scanner">give us a ⭐</a>
+</p>
+
+<p align="center">
+  Built by <a href="https://firmislabs.com?utm_source=github&utm_medium=readme&utm_campaign=firmis-scanner">Firmis Labs</a>
 </p>
