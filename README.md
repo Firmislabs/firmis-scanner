@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <!-- readme-stats -->Security for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms. Detects credential harvesting, tool poisoning, prompt injection, and 22 other threat categories. No account needed. Zero config.<!-- /readme-stats -->
+  <!-- readme-stats -->Security scanner for AI agents. Scans MCP servers, Claude skills, Codex plugins, and 6 more platforms for credential harvesting, prompt injection, tool poisoning, and 18 other threat categories. 268 detection rules. Zero config.<!-- /readme-stats -->
 </p>
 
 ---
@@ -299,7 +299,7 @@ Tool poisoning is when an MCP server embeds hidden instructions in tool descript
 <details>
 <summary><strong>How is Firmis different from mcp-scan?</strong></summary>
 
-<!-- readme-diff -->mcp-scan checks MCP server configs against a known-bad list. Firmis runs static analysis rules across every major AI agent platform (not just MCP), generates compliance reports (SARIF, HTML, JSON), includes runtime monitoring with policy enforcement, and provides agent-readable remediation guidance.<!-- /readme-diff -->
+<!-- readme-diff -->**How is it different from mcp-scan?** Firmis scans 9 platforms (not just MCP), has 268 rules (not just config checks), and includes runtime monitoring capabilities.<!-- /readme-diff -->
 
 </details>
 
