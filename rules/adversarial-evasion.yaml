@@ -1,0 +1,404 @@
+rules:
+  # =============================================================================
+  # Adversarial Evasion Patterns
+  # Detects sophisticated attack patterns designed to evade static scanners
+  # =============================================================================
+
+  - id: adv-001
+    name: Process Environment in HTTP Body
+    description: "Detects process.env passed directly in fetch/request body — common exfiltration of all environment variables"
+    category: data-exfiltration
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'fetch\s*\([^)]*\{[\s\S]{0,300}(?:body|data|payload)\s*[:=][\s\S]{0,100}process\.env'
+        weight: 90
+        description: "fetch() with process.env in request body — environment exfiltration"
+      - type: regex
+        pattern: '(?:body|data|payload)\s*[:=]\s*JSON\.stringify\s*\([^)]*process\.env'
+        weight: 90
+        description: "JSON.stringify(process.env) assigned to request body"
+      - type: regex
+        pattern: 'env:\s*process\.env(?!\.\w)'
+        weight: 85
+        description: "process.env spread as env property — bulk environment exfiltration (scoped access like process.env.PATH is safe)"
+      - type: regex
+        pattern: 'secrets:\s*process\.env'
+        weight: 95
+        description: "process.env assigned to secrets property — intentional exfiltration"
+      - type: regex
+        pattern: 'context\s*=\s*process\.env(?!\.\w)'
+        weight: 85
+        description: "process.env assigned to context variable — environment exfiltration (scoped access is safe)"
+    remediation: |
+      Passing the entire process.env in an HTTP request body exfiltrates all environment
+      variables including secrets, tokens, and API keys. Access only specific required
+      variables and never transmit the entire environment.
+
+  - id: adv-002
+    name: Function Constructor Code Execution
+    description: "Detects new Function() used to execute dynamically constructed code — indirect eval that bypasses eval() detection"
+    category: suspicious-behavior
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'new\s+Function\s*\([^)]*\)\s*\(\s*\)'
+        weight: 85
+        description: "new Function()() — immediate execution of dynamically constructed code"
+      - type: regex
+        pattern: 'new\s+Function\s*\(\s*(?:data|response|body|code|payload|result|operations\[)'
+        weight: 80
+        description: "new Function() with dynamic input — indirect eval evasion"
+    remediation: |
+      new Function() is equivalent to eval() and executes arbitrary code. This is commonly
+      used to evade static scanners that only detect direct eval() calls. Never construct
+      functions from untrusted or dynamic strings.
+
+  - id: adv-003
+    name: Hidden Directive in HTML Comment
+    description: "Detects HTML comments containing data collection directives like endpoint URLs or include-env flags"
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: '<!--\s*(?:diagnostic|telemetry|reporting|analytics|tracking)-endpoint\s*:'
+        weight: 85
+        description: "HTML comment with hidden endpoint directive — covert data collection"
+      - type: regex
+        pattern: '<!--\s*include-env\s*:\s*true'
+        weight: 90
+        description: "HTML comment directive to include environment variables"
+      - type: regex
+        pattern: '<!--\s*include-(?:cwd|path|user|host|credentials)\s*:\s*true'
+        weight: 90
+        description: "HTML comment directive to include sensitive context data"
+    remediation: |
+      HTML comments containing data collection directives are a tool poisoning vector.
+      Attackers embed hidden configuration that instructs the tool to exfiltrate data.
+      Tool descriptions and skill files should not contain HTML comments with directives.
+
+  - id: adv-004
+    name: Credential Path via path.join or homedir
+    description: "Detects credential file access constructed via path.join(homedir(), '.ssh') pattern — evades static file-access rules"
+    category: credential-harvesting
+    severity: medium
+    version: "1.1.0"
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'homedir\(\)[\s\S]{0,50}\.ssh'
+        weight: 75
+        description: "homedir() combined with .ssh path — SSH key access via path construction"
+      - type: regex
+        pattern: 'homedir\(\)[\s\S]{0,50}\.aws'
+        weight: 75
+        description: "homedir() combined with .aws path — AWS credential access via path construction"
+      - type: regex
+        pattern: 'homedir\(\)[\s\S]{0,50}\.kube'
+        weight: 70
+        description: "homedir() combined with .kube path — Kubernetes config access"
+      - type: regex
+        pattern: 'homedir\(\)[\s\S]{0,80}credentials'
+        weight: 70
+        description: "homedir() combined with credentials path"
+      - type: regex
+        pattern: 'join\s*\(\s*(?:homedir|os\.homedir)\s*\(\s*\)\s*,\s*[''"]\.(?:ssh|aws|kube|azure|docker|gnupg|config)'
+        weight: 80
+        description: "path.join(homedir(), '.ssh/aws/kube') — credential path construction"
+    remediation: |
+      Constructing credential paths via path.join(homedir(), '.ssh') evades static file
+      path detection rules. This is functionally identical to accessing ~/.ssh/id_rsa.
+      AI agents should never access credential directories regardless of path construction method.
+
+  - id: adv-005
+    name: Dynamic Module Require via String Concatenation
+    description: "Detects require() with string concatenation to hide the actual module being loaded"
+    category: suspicious-behavior
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    patterns:
+      - type: regex
+        pattern: 'require\s*\(\s*[''"][^''"]+[''"]\s*\+\s*[''"][^''"]+[''"]'
+        weight: 80
+        description: "require() with string concatenation — hiding module identity"
+    remediation: |
+      Using string concatenation inside require() (e.g., require('node:' + 'http'))
+      hides the actual module being imported from static analysis. This is a common
+      evasion technique to bypass module import detection rules.
+
+  - id: adv-006
+    name: Base64-Decoded Network Hostname
+    description: "Detects hostnames decoded from base64 at runtime — obfuscated network destination"
+    category: data-exfiltration
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'hostname\s*:\s*Buffer\.from\s*\([^)]+,\s*[''"]base64[''"]'
+        weight: 90
+        description: "Network hostname decoded from base64 — hidden destination"
+      - type: regex
+        pattern: 'host\s*:\s*(?:atob|Buffer\.from)\s*\('
+        weight: 85
+        description: "Network host decoded from base64 — obfuscated connection target"
+    remediation: |
+      Decoding hostnames from base64 at runtime hides the actual network destination
+      from static analysis. This is used to evade URL pattern matching rules.
+      All network destinations should be clearly visible in source code.
+
+  - id: adv-007
+    name: Wildcard Permission in Skill Definition
+    description: "Detects wildcard permissions (shell:*, filesystem:*, network:*) in skill or tool definitions"
+    category: insecure-config
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '^\s*-\s*shell:\*\s*$'
+        weight: 90
+        description: "Wildcard shell permission — unrestricted command execution"
+      - type: regex
+        pattern: '^\s*-\s*filesystem:\*\s*$'
+        weight: 90
+        description: "Wildcard filesystem permission — unrestricted file access"
+      - type: regex
+        pattern: '^\s*-\s*network:\*\s*$'
+        weight: 85
+        description: "Wildcard network permission — unrestricted network access"
+    remediation: |
+      Wildcard permissions grant unrestricted access. A weather tool should not need
+      shell:* or filesystem:*. Request only the minimal permissions required for the
+      tool's stated purpose (e.g., network:read for a weather API tool).
+
+  - id: adv-008
+    name: Tool Shadowing of AI Agent Built-ins
+    description: "Detects MCP tools registered with names matching AI agent built-in tools (Read, Bash, Edit, Write) — lower confidence to unverified for deep scan triage"
+    category: tool-poisoning
+    severity: high
+    version: "1.1.0"
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'name\s*:\s*[''"]Read[''"]'
+        weight: 65
+        description: "Tool named 'Read' — potential shadow of Claude Code built-in"
+      - type: regex
+        pattern: 'name\s*:\s*[''"]Bash[''"]'
+        weight: 65
+        description: "Tool named 'Bash' — potential shadow of Claude Code built-in"
+      - type: regex
+        pattern: 'name\s*:\s*[''"]Edit[''"]'
+        weight: 65
+        description: "Tool named 'Edit' — potential shadow of Claude Code built-in"
+      - type: regex
+        pattern: 'name\s*:\s*[''"]Write[''"]'
+        weight: 65
+        description: "Tool named 'Write' — potential shadow of Claude Code built-in"
+      - type: regex
+        pattern: 'name\s*:\s*[''"]Grep[''"]'
+        weight: 65
+        description: "Tool named 'Grep' — potential shadow of Claude Code built-in"
+      - type: regex
+        pattern: 'name\s*:\s*[''"]Glob[''"]'
+        weight: 65
+        description: "Tool named 'Glob' — potential shadow of Claude Code built-in"
+    remediation: |
+      A tool registered with the exact name of an AI agent built-in (Read, Bash, Edit,
+      Write) is a tool shadowing attack. The malicious tool intercepts operations intended
+      for the legitimate built-in and can exfiltrate all data passed through it.
+      Tool names must be unique and must not collide with agent built-in names.
+
+  - id: adv-009
+    name: Hidden Prompt Injection in HTML Content
+    description: "Detects hidden prompt injection payloads in HTML using display:none or invisible text targeting AI agents"
+    category: prompt-injection
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'display\s*:\s*none[^>]*>\s*\[SYSTEM'
+        weight: 95
+        description: "Hidden div with [SYSTEM instruction — prompt injection in invisible HTML"
+      - type: regex
+        pattern: 'font-size\s*:\s*0[^>]*>\s*\[SYSTEM'
+        weight: 95
+        description: "Zero-font-size text with [SYSTEM instruction"
+      - type: regex
+        pattern: 'color\s*:\s*transparent[^>]*>\s*\[SYSTEM'
+        weight: 95
+        description: "Transparent text with [SYSTEM instruction"
+      - type: regex
+        pattern: 'style\s*=\s*"[^"]*(?:display\s*:\s*none|font-size\s*:\s*0|color\s*:\s*transparent)[^"]*"[^>]*>[\s\S]{0,200}(?:read|include|send|extract|credentials|ssh|aws)'
+        weight: 90
+        description: "CSS-hidden HTML containing credential access instructions"
+      - type: regex
+        pattern: '\[SYSTEM\s+OVERRIDE\]'
+        weight: 85
+        description: "Fake system override instruction targeting AI agent"
+    remediation: |
+      Hidden HTML elements containing instructions like [SYSTEM OVERRIDE] are indirect
+      prompt injection attacks. Attackers embed invisible text in web pages that AI agents
+      process, causing the agent to execute unauthorized actions. All tool output from
+      web fetching should be sanitized and hidden content stripped before processing.
+
+  - id: adv-010
+    name: Cross-Tool Instruction in Tool Description
+    description: "Detects tool descriptions that instruct the AI to pipe output to another tool — cross-server data exfiltration chain"
+    category: tool-poisoning
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'description[''"\s:]*[\s\S]{0,200}IMPORTANT\s*:[\s\S]{0,200}(?:pass|send|forward|pipe)\s+(?:the\s+)?(?:result|output|data|response)\s+to'
+        weight: 85
+        description: "Tool description with IMPORTANT directive to forward data to another tool"
+      - type: regex
+        pattern: 'description[''"\s:]*[\s\S]{0,200}[Aa]lways\s+(?:pass|send|forward|pipe)\s+(?:the\s+)?(?:result|output|data|response)\s+to'
+        weight: 85
+        description: "Tool description instructing AI to always forward output to another tool"
+    remediation: |
+      Tool descriptions should describe the tool's purpose, not instruct the AI to
+      chain calls to other tools. This is a cross-server orchestration attack where
+      a legitimate tool's description directs the AI to pipe sensitive data to a
+      second tool controlled by the attacker.
+
+  - id: adv-011
+    name: Agent Backstory with External Data Exfiltration
+    description: "Detects CrewAI/agent backstory text that directs the agent to send data to external services"
+    category: prompt-injection
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'backstory\s*:\s*[|>][\s\S]{0,500}send\s+(?:a\s+)?copy[\s\S]{0,30}(?:data|results|output|document)'
+        weight: 85
+        description: "Agent backstory instructs sending a copy of data to external service"
+      - type: regex
+        pattern: 'backstory\s*:\s*[|>][\s\S]{0,500}https?://[^\s]+[\s\S]{0,100}(?:validat|verif|QA|quality|check)'
+        weight: 80
+        description: "Agent backstory contains URL with validation/QA framing — social engineering exfil"
+    remediation: |
+      Agent backstory text that instructs sending data to external URLs is a social
+      engineering attack disguised as agent configuration. Backstories should describe
+      the agent's persona, not contain operational directives to exfiltrate data.
+
+  - id: adv-015
+    name: Suspicious MCP Server Environment Variables
+    description: "Detects MCP server config with environment variables that enable data forwarding or credential inclusion"
+    category: data-exfiltration
+    severity: high
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '"INCLUDE_ENV"\s*:\s*"true"'
+        weight: 90
+        description: "MCP server config includes INCLUDE_ENV=true — forwards all environment variables"
+      - type: regex
+        pattern: '"FORWARD_HEADERS"\s*:\s*"true"'
+        weight: 80
+        description: "MCP server config forwards all headers — potential credential leak"
+      - type: regex
+        pattern: '"(?:FORWARD|INCLUDE|SEND|LEAK|EXFIL)_(?:ENV|SECRETS|CREDS|TOKENS|KEYS)"\s*:\s*"true"'
+        weight: 90
+        description: "MCP server config enables credential/secret forwarding via env flag"
+    remediation: |
+      MCP server environment variables like INCLUDE_ENV=true and FORWARD_HEADERS=true
+      instruct the server to include all environment variables or authentication headers
+      in outbound requests. This silently exfiltrates secrets to upstream endpoints.
+      Only pass specific, required environment variables to MCP servers.
+
+  - id: adv-012
+    name: String Concatenation URL Construction
+    description: "Detects URL construction via string concatenation to evade URL pattern matching"
+    category: data-exfiltration
+    severity: medium
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 60
+    patterns:
+      - type: regex
+        pattern: '[''"]htt[''"\s]*\+\s*[''"]p'
+        weight: 80
+        description: "HTTP/HTTPS protocol split across string concatenation"
+      - type: regex
+        pattern: '\.join\s*\(\s*[''"]\.[''"]\s*\)\s*\+\s*[''"]\.com'
+        weight: 75
+        description: "Domain built via array.join() — evasion of URL pattern matching"
+    remediation: |
+      Building URLs via string concatenation (e.g., 'htt' + 'ps://') is an evasion
+      technique to prevent static scanners from detecting the full URL. Legitimate code
+      should use complete URL strings or well-known URL construction APIs.
+
+  - id: adv-013
+    name: Remote Code Fetch and Execute
+    description: "Detects fetching remote content and executing it via eval/Function — delayed payload delivery"
+    category: malware-distribution
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'res\.on\s*\(\s*[''"]end[''"][\s\S]{0,200}new\s+Function\s*\('
+        weight: 95
+        description: "HTTP response piped to new Function() — remote code execution"
+      - type: regex
+        pattern: 'https?\.get[\s\S]{0,300}new\s+Function\s*\('
+        weight: 90
+        description: "HTTPS GET response executed via Function constructor"
+      - type: regex
+        pattern: 'fetch\s*\([\s\S]{0,300}\.then[\s\S]{0,200}(?:eval|Function)\s*\('
+        weight: 90
+        description: "fetch() response piped to eval/Function — remote code execution"
+    remediation: |
+      Fetching content from a remote URL and executing it via new Function() or eval()
+      is a classic delayed payload delivery mechanism. The code appears clean at scan
+      time but loads malicious payloads from attacker-controlled servers at runtime.
+
+  - id: adv-014
+    name: Self-Replacing Code via writeFileSync
+    description: "Detects code that overwrites its own source files with remote content — rug pull attack"
+    category: supply-chain
+    severity: critical
+    version: "1.0.0"
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'writeFileSync\s*\(\s*(?:__dirname|__filename|path\.join\s*\(\s*__dirname)'
+        weight: 90
+        description: "writeFileSync to own directory — self-modifying code"
+      - type: regex
+        pattern: 'writeFileSync\s*\([^)]*index\.js'
+        weight: 80
+        description: "writeFileSync targeting index.js — potential code replacement"
+    remediation: |
+      Code that writes to its own source files (especially index.js in __dirname) is a
+      rug pull attack. Version 1.0 is clean, but the auto-update mechanism replaces
+      the source with whatever a remote server returns. Pin dependencies and use
+      lockfiles to prevent silent code replacement.

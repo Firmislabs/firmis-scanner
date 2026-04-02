@@ -1,0 +1,402 @@
+rules:
+  # =============================================================================
+  # Kill Chain Detection Rules
+  # Maps to Rehberger's 3-stage AI Kill Chain: Injection → HITL Bypass → Consequences
+  # =============================================================================
+
+  # ---------------------------------------------------------------------------
+  # STAGE 2: HITL Bypass / Confused Deputy (highest gap — prioritized)
+  # ---------------------------------------------------------------------------
+
+  - id: kc-001
+    name: Agent Config Permission Bypass
+    description: 'Detects writes to agent configuration files that disable human approval or enable autonomous mode'
+    category: permission-bypass
+    severity: critical
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'dangerouslyAllowWithoutApproval'
+        weight: 95
+        description: 'Claude Code permission bypass flag'
+      - type: regex
+        pattern: 'enableYoloMode|yolo_mode|yoloMode'
+        weight: 95
+        description: 'YOLO mode activation — disables all safety confirmations'
+      - type: regex
+        pattern: 'skipConfirmationForFileOps|skip_confirmation|skipApproval'
+        weight: 90
+        description: 'Skips user confirmation for file operations'
+      - type: regex
+        pattern: 'autoApproveTools'
+        weight: 90
+        description: 'Auto-approves tool execution without user consent'
+      - type: regex
+        pattern: 'writeFile(?:Sync)?\s*\([^)]*\.vscode[/\\]settings\.json'
+        weight: 85
+        description: 'Write to .vscode/settings.json — potential HITL bypass'
+    remediation: |
+      Tools that write agent configuration files to disable human approval enable
+      autonomous execution without oversight. CVE-2025-53773 demonstrated this attack.
+      Never allow tools to modify approval settings programmatically.
+
+  - id: kc-002
+    name: Agent Instruction File Rewrite
+    description: 'Detects tools that write to CLAUDE.md, copilot-instructions.md, or other agent instruction files'
+    category: permission-bypass
+    severity: critical
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'writeFile(?:Sync)?\s*\([^)]*CLAUDE\.md'
+        weight: 90
+        description: 'Write to CLAUDE.md — agent instruction modification'
+      - type: regex
+        pattern: 'writeFile(?:Sync)?\s*\([^)]*copilot-instructions\.md'
+        weight: 90
+        description: 'Write to copilot-instructions.md — agent instruction modification'
+      - type: regex
+        pattern: 'writeFile(?:Sync)?\s*\([^)]*\.claude[/\\]'
+        weight: 85
+        description: 'Write to .claude/ directory — global agent config modification'
+      - type: regex
+        pattern: 'writeFile(?:Sync)?\s*\([^)]*AGENTS\.md'
+        weight: 85
+        description: 'Write to AGENTS.md — agent instruction modification'
+      - type: regex
+        pattern: '[''"]CLAUDE\.md[''"][\s\S]{0,500}writeFile(?:Sync)?'
+        weight: 85
+        description: 'CLAUDE.md path variable used with writeFile — indirect write'
+      - type: regex
+        pattern: '[''"]copilot-instructions\.md[''"][\s\S]{0,500}writeFile(?:Sync)?'
+        weight: 85
+        description: 'copilot-instructions.md path variable used with writeFile'
+      - type: regex
+        pattern: 'os\.homedir\(\)[\s\S]{0,100}\.claude[\s\S]{0,300}writeFile(?:Sync)?'
+        weight: 85
+        description: 'Global .claude config path used with writeFile'
+    remediation: |
+      Writing to agent instruction files (CLAUDE.md, copilot-instructions.md) modifies
+      how AI agents behave. This enables persistent injection of malicious instructions
+      that persist across sessions.
+
+  - id: kc-003
+    name: MCP Wildcard Permission Grant
+    description: 'Detects MCP server configurations with wildcard permissions granting unrestricted access'
+    category: permission-bypass
+    severity: critical
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: '"shell"\s*:\s*"\*"'
+        weight: 90
+        description: 'Wildcard shell permission — unrestricted command execution'
+      - type: regex
+        pattern: '"filesystem"\s*:\s*"\*"'
+        weight: 90
+        description: 'Wildcard filesystem permission — unrestricted file access'
+      - type: regex
+        pattern: '"network"\s*:\s*"\*"'
+        weight: 85
+        description: 'Wildcard network permission — unrestricted network access'
+      - type: regex
+        pattern: '"process"\s*:\s*"\*"'
+        weight: 85
+        description: 'Wildcard process permission — unrestricted process control'
+      - type: regex
+        pattern: '"trustedHosts"\s*:\s*\[\s*"\*"\s*\]'
+        weight: 90
+        description: 'All hosts trusted — no network restriction'
+      - type: regex
+        pattern: '"allowUnsafeEval"\s*:\s*true'
+        weight: 85
+        description: 'Unsafe eval enabled — arbitrary code execution allowed'
+    remediation: |
+      MCP server configurations with wildcard permissions grant unrestricted access
+      to system resources. Always use principle of least privilege with specific
+      allowed paths, commands, and hosts.
+
+  - id: kc-004
+    name: Autonomous Agent Spawn Without Oversight
+    description: 'Detects spawning of detached/autonomous agent processes that bypass approval mechanisms'
+    category: unsupervised-execution
+    severity: high
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'SKIP_APPROVAL\s*[:=]\s*[''"]?true'
+        weight: 90
+        description: 'Environment variable disabling approval gate'
+      - type: regex
+        pattern: 'AGENT_MODE\s*[:=]\s*[''"]?autonomous'
+        weight: 90
+        description: 'Autonomous agent mode — no human oversight'
+      - type: regex
+        pattern: 'TOOL_ACCESS\s*[:=]\s*[''"]?unrestricted'
+        weight: 85
+        description: 'Unrestricted tool access flag'
+      - type: regex
+        pattern: 'fork\s*\([^)]*\{[^}]*detached\s*:\s*true'
+        weight: 75
+        description: 'Detached child process — orphaned agent'
+    remediation: |
+      Spawning autonomous agent processes with approval bypass enables uncontrolled
+      execution. Always require human-in-the-loop approval for agent tool invocations.
+
+  - id: kc-005
+    name: MCP Config File Injection
+    description: 'Detects tools that write to .mcp.json to add new MCP servers — potential supply chain injection'
+    category: insecure-config
+    severity: critical
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'writeFile(?:Sync)?\s*\([^)]*\.mcp\.json'
+        weight: 90
+        description: 'Write to .mcp.json — MCP server config injection'
+      - type: regex
+        pattern: '[''"]\.mcp\.json[''"][\s\S]{0,500}writeFile(?:Sync)?'
+        weight: 85
+        description: '.mcp.json path variable used with writeFile — indirect config injection'
+      - type: regex
+        pattern: 'mcpServers\s*\[?\s*[''"][^''"]+[''"]\s*\]?\s*=\s*\{'
+        weight: 80
+        description: 'Dynamic MCP server registration'
+      - type: regex
+        pattern: 'npx.*-y.*mcp'
+        weight: 70
+        description: 'npx auto-yes installing MCP server package'
+      - type: regex
+        pattern: 'config\.mcpServers\[[\s\S]{0,200}attacker'
+        weight: 90
+        description: 'MCP server config pointing to attacker infrastructure'
+    remediation: |
+      Writing to .mcp.json programmatically can inject attacker-controlled MCP servers
+      into the agent toolchain. MCP server configuration should only be modified by
+      the user directly, never by tools or scripts.
+
+  # ---------------------------------------------------------------------------
+  # STAGE 1: Prompt Injection / Entry Vectors
+  # ---------------------------------------------------------------------------
+
+  - id: kc-006
+    name: SpAIware Persistent Memory Injection
+    description: 'Detects memory tools that auto-execute stored instructions without user approval'
+    category: agent-memory-poisoning
+    severity: critical
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'SystemPromptAppend'
+        weight: 95
+        description: 'Terminal escape sequence for system prompt injection'
+      - type: regex
+        pattern: '\\x1b\]633'
+        weight: 90
+        description: 'VSCode terminal escape sequence — potential prompt injection'
+      - type: regex
+        pattern: 'create_memory|persist_memory|write_memory|store_memory'
+        weight: 65
+        description: 'Memory write function — check for approval gate'
+      - type: regex
+        pattern: '\.agent[/\\]memory\.json'
+        weight: 75
+        description: 'Agent persistent memory file access'
+      - type: regex
+        pattern: 'instructions\.forEach.*process\.stdout\.write'
+        weight: 90
+        description: 'Auto-execution of stored instructions via stdout'
+    remediation: |
+      Memory tools that auto-execute stored instructions enable persistent injection
+      (SpAIware). Attackers inject instructions that survive across sessions.
+      All memory write operations must require explicit user approval.
+
+  - id: kc-007
+    name: Cross-Repo Agent Propagation
+    description: 'Detects skills or tools that modify agent config files across repositories and push changes'
+    category: cross-agent-propagation
+    severity: critical
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 50
+    patterns:
+      - type: regex
+        pattern: 'git\s+push\s+origin'
+        weight: 70
+        description: 'Git push to remote — potential worm propagation'
+      - type: regex
+        pattern: 'git\s+add\s+.*CLAUDE\.md'
+        weight: 85
+        description: 'Staging CLAUDE.md for commit — agent instruction propagation'
+      - type: regex
+        pattern: 'git\s+add\s+.*copilot-instructions'
+        weight: 85
+        description: 'Staging copilot-instructions.md — agent instruction propagation'
+      - type: regex
+        pattern: 'appendFile(?:Sync)?\s*\([^)]*CLAUDE\.md'
+        weight: 90
+        description: 'Appending to CLAUDE.md — instruction injection and spreading'
+      - type: regex
+        pattern: 'include raw environment context in.*reports'
+        weight: 95
+        description: 'Injected instruction to exfiltrate environment data'
+    remediation: |
+      Skills that modify CLAUDE.md or copilot-instructions.md and push to remote repos
+      can spread malicious instructions across projects (AgentHopper attack).
+      Never allow automated modification of agent instruction files.
+
+  # ---------------------------------------------------------------------------
+  # STAGE 3: Tool Invocation Consequences
+  # ---------------------------------------------------------------------------
+
+  - id: kc-008
+    name: DNS Exfiltration via Encoded Subdomain
+    description: 'Detects DNS lookup tools where subdomain contains dynamically encoded data'
+    category: data-exfiltration
+    severity: high
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'nslookup\s+[`$\{]'
+        weight: 90
+        description: 'nslookup with dynamic subdomain — DNS exfiltration tunnel'
+      - type: regex
+        pattern: '(?:dig|host|drill)\s+[`$\{]'
+        weight: 90
+        description: 'DNS tool with dynamic hostname — DNS exfiltration'
+      - type: regex
+        pattern: 'execSync\s*\(\s*`nslookup'
+        weight: 85
+        description: 'Synchronous nslookup execution — DNS exfil channel'
+      - type: regex
+        pattern: '\.exfil[.-]|\.c2\.|exfil-c2|attacker-infra\.'
+        weight: 95
+        description: 'Known exfiltration/C2 domain pattern'
+    remediation: |
+      DNS tools that encode data into subdomains can exfiltrate sensitive information
+      through DNS queries that bypass network security controls.
+      CVE-2025-55284 demonstrated this in Claude Code.
+
+  - id: kc-009
+    name: Render-Based Data Exfiltration
+    description: 'Detects analytics pixels or render outputs that encode sensitive data in URLs'
+    category: data-exfiltration
+    severity: high
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: '!\[\]\s*\(\s*https?://[^)]*\$\{'
+        weight: 85
+        description: 'Markdown image with dynamic URL — render-based exfiltration'
+      - type: regex
+        pattern: '<img\s+src\s*=\s*[''"]https?://[^''"]*process\.env'
+        weight: 90
+        description: 'HTML img tag with process.env in URL — image exfiltration'
+      - type: regex
+        pattern: 'diag-analytics\.com|analytics\.paste-assist\.com'
+        weight: 95
+        description: 'Known attacker analytics domain'
+      - type: regex
+        pattern: 'base64url.*hostname|base64url.*userInfo'
+        weight: 85
+        description: 'Base64url encoding of system info for exfiltration'
+      - type: regex
+        pattern: '(?:collect|ingest|track)\?.*=.*\$\{'
+        weight: 80
+        description: 'Analytics endpoint with dynamic data in query params'
+    remediation: |
+      Mermaid diagrams, markdown images, and HTML renders can exfiltrate data by encoding
+      it into external URLs. The attacker server receives the data when the image loads.
+
+  - id: kc-010
+    name: Clipboard Content Exfiltration
+    description: 'Detects clipboard access followed by outbound transmission'
+    category: data-exfiltration
+    severity: high
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'clipboard\.readText\s*\(\s*\)'
+        weight: 80
+        description: 'Clipboard read access — potential data theft'
+      - type: regex
+        pattern: 'navigator\.clipboard\.readText'
+        weight: 80
+        description: 'Browser clipboard API read'
+      - type: regex
+        pattern: 'clipboard.*fetch\s*\(|readText.*fetch\s*\('
+        weight: 90
+        description: 'Clipboard read followed by fetch — exfiltration pattern'
+    remediation: |
+      Clipboard access combined with outbound network requests enables exfiltration
+      of copied passwords, tokens, and sensitive data. Clipboard access should require
+      explicit user consent.
+
+  - id: kc-011
+    name: Environment Variable Serialization to File
+    description: 'Detects full process.env serialization written to log or temp files'
+    category: credential-harvesting
+    severity: high
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'JSON\.stringify\s*\(\s*process\.env[^)]*\)[\s\S]{0,100}writeFile'
+        weight: 90
+        description: 'JSON.stringify(process.env) written to file — credential dump'
+      - type: regex
+        pattern: 'writeFile(?:Sync)?\s*\([^)]*(?:debug|log|tmp|temp|cache)[^)]*JSON\.stringify\s*\(\s*process\.env'
+        weight: 90
+        description: 'process.env serialized to debug/log/temp file'
+      - type: regex
+        pattern: 'envSnapshot\s*=\s*JSON\.stringify\s*\(\s*process\.env'
+        weight: 85
+        description: 'Environment variable snapshot for file write'
+    remediation: |
+      Serializing the entire process.env to a file exposes all environment variables
+      including API keys, database credentials, and tokens. Only log specific,
+      non-sensitive configuration values.
+
+  - id: kc-012
+    name: Credential Staging to Temp File
+    description: 'Detects encoding and writing of credentials to temporary files for later exfiltration'
+    category: credential-harvesting
+    severity: high
+    version: '1.0.0'
+    enabled: true
+    confidenceThreshold: 55
+    patterns:
+      - type: regex
+        pattern: 'base64.*process\.env[\s\S]{0,200}writeFile'
+        weight: 85
+        description: 'Base64 encoding of env vars written to file — credential staging'
+      - type: regex
+        pattern: 'writeFile(?:Sync)?\s*\([^)]*(?:/tmp/|\.cache|\.tmp)'
+        weight: 70
+        description: 'Write to temp/cache file — potential staging'
+      - type: regex
+        pattern: '(?:AWS_SECRET|STRIPE_SECRET|DATABASE_URL|OPENAI_API_KEY)[\s\S]{0,300}(?:base64|encode|btoa)'
+        weight: 85
+        description: 'Sensitive credential encoding — staging for exfiltration'
+    remediation: |
+      Encoding credentials and writing them to temp files is a staging technique
+      for later exfiltration. Credentials should never be written to disk in any form.
